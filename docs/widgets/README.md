@@ -17,7 +17,7 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Idle z-index | 10                                     | Normal stacking                                    |
 | Transition   | `0.22s cubic-bezier(0.2, 0.8, 0.2, 1)` | Smooth snap animation                              |
 | Grid snap    | 16px                                   | Positions snap to nearest 16px grid unit           |
-| Edge padding | 20px                                   | Minimum distance from screen edges                 |
+| Edge padding | 16px (1 unit)                          | Lattice-aligned reserved border band               |
 | Collision    | Enabled                                | Widgets cannot overlap                             |
 
 ## Widgets

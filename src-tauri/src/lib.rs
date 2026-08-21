@@ -36,14 +36,21 @@ fn get_memory_usage() -> MemoryInfo {
     }
 }
 
+fn focus_window(win: &tauri::WebviewWindow) {
+    let _ = win.unminimize();
+    let _ = win.show();
+    let _ = win.set_always_on_top(true);
+    let _ = win.set_focus();
+    let _ = win.set_always_on_top(false);
+}
+
 fn open_settings(app: &tauri::AppHandle) {
     if let Some(win) = app.get_webview_window("settings") {
-        let _ = win.show();
-        let _ = win.set_focus();
+        focus_window(&win);
         return;
     }
 
-    let _ = tauri::WebviewWindowBuilder::new(
+    match tauri::WebviewWindowBuilder::new(
         app,
         "settings",
         tauri::WebviewUrl::App("settings.html".into()),
@@ -55,7 +62,11 @@ fn open_settings(app: &tauri::AppHandle) {
     .additional_browser_args(
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
     )
-    .build();
+    .build()
+    {
+        Ok(win) => focus_window(&win),
+        Err(_) => {}
+    }
 }
 
 #[tauri::command]

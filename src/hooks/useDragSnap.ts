@@ -1,13 +1,8 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-
-export interface Position {
-  x: number;
-  y: number;
-}
+import { MARGIN, clampToScreen, collidesWithAny, type Position } from "../lib/placement";
 
 interface DragSnapOptions {
   initialPositions: Record<string, Position>;
-  visibleIds: string[];
   widgetSize?: number;
   gridSize?: number;
   minGap?: number;
@@ -16,7 +11,6 @@ interface DragSnapOptions {
 
 export function useDragSnap({
   initialPositions,
-  visibleIds,
   widgetSize = 160,
   gridSize = 16,
   minGap = 16,
@@ -36,14 +30,23 @@ export function useDragSnap({
   positionsRef.current = positions;
 
   useEffect(() => {
+    if (dragIdRef.current) return;
     setPositions((prev) => {
-      const filtered: Record<string, Position> = {};
-      for (const id of visibleIds) {
-        if (prev[id]) filtered[id] = prev[id];
+      const ids = new Set([...Object.keys(prev), ...Object.keys(initialPositions)]);
+      let same = Object.keys(prev).length === Object.keys(initialPositions).length;
+      if (same) {
+        for (const id of ids) {
+          const a = prev[id];
+          const b = initialPositions[id];
+          if (!a || !b || a.x !== b.x || a.y !== b.y) {
+            same = false;
+            break;
+          }
+        }
       }
-      return filtered;
+      return same ? prev : { ...initialPositions };
     });
-  }, [visibleIds]);
+  }, [initialPositions]);
 
   const handleMouseDown = useCallback(
     (id: string, e: React.MouseEvent) => {
@@ -74,26 +77,25 @@ export function useDragSnap({
       let rawX = e.clientX - containerRect.left - dragOffset.current.x;
       let rawY = e.clientY - containerRect.top - dragOffset.current.y;
 
-      rawX = Math.max(20, Math.min(rawX, containerRect.width - widgetSize - 20));
-      rawY = Math.max(20, Math.min(rawY, containerRect.height - widgetSize - 20));
+      rawX = Math.max(MARGIN, Math.min(rawX, containerRect.width - widgetSize - MARGIN));
+      rawY = Math.max(MARGIN, Math.min(rawY, containerRect.height - widgetSize - MARGIN));
 
       setFluidPos({ x: rawX, y: rawY });
 
-      const snappedX = Math.round(rawX / gridSize) * gridSize;
-      const snappedY = Math.round(rawY / gridSize) * gridSize;
+      const screen = { width: containerRect.width, height: containerRect.height };
+      const snapped = clampToScreen(
+        {
+          x: Math.round(rawX / gridSize) * gridSize,
+          y: Math.round(rawY / gridSize) * gridSize,
+        },
+        screen,
+      );
+      const snappedX = snapped.x;
+      const snappedY = snapped.y;
 
       const pos = positionsRef.current;
-      const totalSize = widgetSize + minGap;
 
-      const collides = (tx: number, ty: number) =>
-        Object.entries(pos).some(
-          ([k, p]) =>
-            k !== id &&
-            tx < p.x + totalSize &&
-            tx + totalSize > p.x &&
-            ty < p.y + totalSize &&
-            ty + totalSize > p.y,
-        );
+      const collides = (tx: number, ty: number) => collidesWithAny(id, { x: tx, y: ty }, pos);
 
       if (!collides(snappedX, snappedY)) {
         dropTargetRef.current = { x: snappedX, y: snappedY };

@@ -37,9 +37,3 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
   await store.set("positions", settings.positions);
   await emit("settings-changed", settings);
 }
-
-export async function saveWidgetPositions(
-  positions: Record<string, { x: number; y: number }>,
-): Promise<void> {
-  await store.set("positions", positions);
-}

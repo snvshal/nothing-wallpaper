@@ -162,3 +162,75 @@ body,
 .toggle input:checked ~ .toggle-thumb {
   transform: translateX(20px);
 }
+
+/* Layout minimap */
+.minimap {
+  position: relative;
+  width: 100%;
+  background-color: #000000;
+  border: 1px solid #6e6e6e;
+  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.75px, transparent 1px);
+  overflow: hidden;
+}
+
+.minimap-margin {
+  position: absolute;
+  border: 1px dashed rgba(255, 255, 255, 0.12);
+  pointer-events: none;
+}
+
+.minimap-tile {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "NDot55", monospace;
+  letter-spacing: 0.05em;
+  color: #ffffff;
+  background: #111111;
+  border: 1px solid #b1b3b3;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+  transition:
+    border-color 0.15s,
+    box-shadow 0.15s;
+}
+
+.minimap-tile:hover {
+  border-color: #ffffff;
+}
+
+.minimap-tile.collides {
+  border-color: #c8102e;
+  color: #c8102e;
+  cursor: grabbing;
+}
+
+.minimap-ghost {
+  position: absolute;
+  border: 1px dashed #6e6e6e;
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.minimap-ghost.nospace {
+  border-color: #c8102e;
+  animation: minimap-pulse 1.6s ease-in-out infinite;
+}
+
+@keyframes minimap-pulse {
+  0%,
+  100% {
+    opacity: 0.25;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}
+
+.minimap-warning {
+  font-family: "NType82", sans-serif;
+  font-size: 12px;
+  color: #c8102e;
+}

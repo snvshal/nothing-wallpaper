@@ -1,5 +1,5 @@
-import { useEffect, useState, useCallback, useMemo } from "react";
-import { listen } from "@tauri-apps/api/event";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
+import { emit, listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useDragSnap } from "./hooks/useDragSnap";
 import DraggableWidget from "./components/DraggableWidget";
@@ -7,15 +7,9 @@ import ClockWidget from "./components/ClockWidget";
 import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
-import { loadSettings, saveWidgetPositions, type AppSettings } from "./settings/settings-store";
+import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
+import { DEFAULT_POSITIONS, evaluateLayout, type Screen } from "./lib/placement";
 import "./styles/global.css";
-
-const ALL_POSITIONS: Record<string, { x: number; y: number }> = {
-  clock: { x: 96, y: 96 },
-  calendar: { x: 256, y: 96 },
-  weather: { x: 96, y: 256 },
-  ram: { x: 256, y: 256 },
-};
 
 const WIDGET_SIZE = 144;
 
@@ -32,6 +26,13 @@ const WIDGET_CONTENT: Record<string, React.ReactNode> = {
 
 export default function App() {
   const [settings, setSettings] = useState<AppSettings | null>(null);
+  const [screen, setScreen] = useState<Screen>(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }));
+  const settingsRef = useRef<AppSettings | null>(null);
+
+  settingsRef.current = settings;
 
   useEffect(() => {
     loadSettings().then(setSettings);
@@ -41,6 +42,22 @@ export default function App() {
     });
     return () => {
       unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  useEffect(() => {
+    const emitScreen = () =>
+      emit("screen-info", { width: window.innerWidth, height: window.innerHeight });
+    const onResize = () => {
+      setScreen({ width: window.innerWidth, height: window.innerHeight });
+      emitScreen();
+    };
+    emitScreen();
+    const unlistenRequest = listen("request-screen", () => emitScreen());
+    window.addEventListener("resize", onResize);
+    return () => {
+      unlistenRequest.then((fn) => fn());
+      window.removeEventListener("resize", onResize);
     };
   }, []);
 
@@ -54,7 +71,11 @@ export default function App() {
       },
     [settings?.widgets],
   );
-  const savedPositions = settings?.positions ?? {};
+  const savedPositions = useMemo(() => settings?.positions ?? {}, [settings]);
+  const seededPositions = useMemo(
+    () => ({ ...DEFAULT_POSITIONS, ...savedPositions }),
+    [savedPositions],
+  );
 
   const bgUrl =
     settings?.wallpaper && settings.wallpaper !== "default"
@@ -62,25 +83,41 @@ export default function App() {
       : "/background.jpg";
 
   const visibleIds = useMemo(
-    () => Object.keys(ALL_POSITIONS).filter((id) => visibleWidgets[id]),
+    () => Object.keys(DEFAULT_POSITIONS).filter((id) => visibleWidgets[id]),
     [visibleWidgets],
   );
 
-  const initialPositions: Record<string, { x: number; y: number }> = {};
-  for (const id of visibleIds) {
-    initialPositions[id] = savedPositions[id] ?? ALL_POSITIONS[id];
-  }
-
-  const onDragEnd = useCallback(
-    (id: string, position: { x: number; y: number }) => {
-      const updated = { ...savedPositions, [id]: position };
-      saveWidgetPositions(updated);
-    },
-    [savedPositions],
+  const layout = useMemo(
+    () => evaluateLayout(visibleIds, seededPositions, screen),
+    [visibleIds, seededPositions, screen],
   );
 
+  useEffect(() => {
+    if (!settings) return;
+    const merged = { ...settings.positions };
+    let differs = false;
+    for (const id of visibleIds) {
+      const p = layout.placed[id];
+      if (p && (!merged[id] || merged[id].x !== p.x || merged[id].y !== p.y)) {
+        merged[id] = p;
+        differs = true;
+      }
+    }
+    if (!differs) return;
+    saveSettings({ ...settings, positions: merged });
+  }, [settings, layout, visibleIds]);
+
+  const onDragEnd = useCallback((id: string, position: { x: number; y: number }) => {
+    const current = settingsRef.current;
+    if (!current) return;
+    saveSettings({
+      ...current,
+      positions: { ...current.positions, [id]: position },
+    });
+  }, []);
+
   const { positions, draggingId, fluidPos, dropTarget, containerRef, handleMouseDown } =
-    useDragSnap({ initialPositions, visibleIds, widgetSize: WIDGET_SIZE, onDragEnd });
+    useDragSnap({ initialPositions: layout.placed, widgetSize: WIDGET_SIZE, onDragEnd });
 
   return (
     <div
@@ -106,7 +143,8 @@ export default function App() {
 
       {visibleIds.map((id) => {
         const isDragging = draggingId === id;
-        const pos = isDragging ? fluidPos : positions[id];
+        const pos = (isDragging ? fluidPos : positions[id]) ?? layout.placed[id];
+        if (!pos) return null;
 
         return (
           <DraggableWidget

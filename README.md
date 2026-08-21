@@ -9,6 +9,9 @@ A Nothing Phone-inspired desktop wallpaper application for Windows.
 - Desktop wallpaper layer — sits behind desktop icons, above system wallpaper
 - 4 widgets: analog clock, calendar, weather, RAM monitor
 - Draggable widgets with grid-snap and collision detection
+- Settings window: wallpaper picker (default / custom image) + per-widget toggles
+- Layout minimap: dot-grid desktop preview, drag to arrange, live two-way sync
+- Smart placement: overlap-free auto-positioning with "not enough space" indicator
 - Nothing design system: dot-matrix typography, monochrome palette, N-Red accent
 
 ## Tech Stack

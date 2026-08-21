@@ -131,8 +131,24 @@ All widget dimensions and positions snap to a **16px grid** (1 unit = 16px).
 | XL widget            | 15 units (240px) | Odd number for symmetry               |
 | Grid snap            | 16px             | Drag positions snap to nearest unit   |
 | Widget gap           | 16px (1 unit)    | Minimum space between any two widgets |
-| Edge padding         | 20px             | Minimum distance from screen edges    |
+| Edge padding         | 16px (1 unit)    | Lattice-aligned reserved border band  |
 | Border radius        | 24px             | `--radius-widget` CSS variable        |
+
+### Placement Engine
+
+Widget placement logic lives in `src/lib/placement.ts` and is shared by the
+wallpaper window and the settings layout minimap.
+
+- **Collision rule** — a widget's footprint is size + gap (160px); overlapping
+  widgets are never rendered side by side
+- **Toggle-on placement** — when a widget is enabled, its previous position is
+  restored if still valid; otherwise the first free slot scanning from the
+  top-left corner (16px steps) is assigned
+- **No-space state** — if no free slot exists anywhere, the widget stays hidden
+  and settings flags it ("not enough space"); it appears automatically once
+  space frees up or it is repositioned from the layout minimap
+- **Live sync** — position changes in either window persist to the store and
+  broadcast via the `settings-changed` event, keeping both views identical
 
 ### Modular Grid Rule
 
