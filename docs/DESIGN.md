@@ -2,6 +2,8 @@
 
 Design system based on [Nothing Brand Reference](https://nothing.wiki/nothing/brand_reference).
 
+For detailed per-widget specs, see [docs/widgets/](widgets/).
+
 ## Design Principles
 
 - **Transparency** — exposed internals, honest materials
