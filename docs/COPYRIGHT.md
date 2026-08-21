@@ -12,15 +12,15 @@ This document outlines what we can and can't do when building a Nothing-inspired
 Nothing explicitly states that the following are **copyright Nothing** and cannot be used directly:
 
 - **Nothing logo** (NOTHING wordmark, CMF by Nothing logo)
-- **Weather icons** — *"These icons are proprietary and copyright Nothing and should be used for design inspiration, rather than direct usage in your projects."*
+- **Weather icons** — _"These icons are proprietary and copyright Nothing and should be used for design inspiration, rather than direct usage in your projects."_
 - **Folder cover icons** — Same restriction. Design inspiration only, not direct usage.
-- **Any graphics from nothing.tech** — *"You may not copy, reproduce, upload, republish... any part of the Site or its Content, without Nothing's prior written consent."*
+- **Any graphics from nothing.tech** — _"You may not copy, reproduce, upload, republish... any part of the Site or its Content, without Nothing's prior written consent."_
 - **Product images, photos, artwork** from Nothing's website or press kits (unless downloaded from their official Brand Assets page for approved use)
 
 ### Trademarks & Affiliation
 
 - **Don't use "Nothing" in the app name** if distributing publicly — could imply official product or endorsement
-- **Don't use Nothing's trademarks** — *"Without written approval, you shall not use, transfer or license any third party to use... trademarks, logos, photographs or other content belonging to Nothing."*
+- **Don't use Nothing's trademarks** — _"Without written approval, you shall not use, transfer or license any third party to use... trademarks, logos, photographs or other content belonging to Nothing."_
 - **Don't claim official affiliation** — All pages state Nothing owns all IP
 
 ### Typography
@@ -49,18 +49,18 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 
 ### Current Status
 
-| Item | Status | Action Needed |
-|------|--------|---------------|
-| Project name "Nothing Wallpaper" | ⚠️ Risk | Add disclaimer or rename for public distribution |
-| NDot55 font | ⚠️ Verify | Confirm license permits use, or replace with open-source alternative |
-| Colour palette usage | ✅ Compliant | Using hex values for inspiration — no issue |
-| No Nothing icons/logos used | ✅ Compliant | All widget icons are generic or self-created |
-| No proprietary images | ✅ Compliant | Background image is user-provided |
-| Disclaimer | ❌ Missing | Add "Unofficial fan project" notice |
+| Item                             | Action Needed                                                        |
+| -------------------------------- | -------------------------------------------------------------------- |
+| Project name "Nothing Wallpaper" | Add disclaimer or rename for public distribution                     |
+| NDot55 font                      | Confirm license permits use, or replace with open-source alternative |
+| Colour palette usage             | Using hex values for inspiration — no issue                          |
+| No Nothing icons/logos used      | All widget icons are generic or self-created                         |
+| No proprietary images            | Background image is user-provided                                    |
+| Disclaimer                       | Added — see README                                                   |
 
 ### Recommended Actions
 
-1. **Add disclaimer** to app and README — *"Unofficial fan project. Not affiliated with or endorsed by Nothing Technology Limited."*
+1. **Add disclaimer** to app and README — _"Unofficial fan project. Not affiliated with or endorsed by Nothing Technology Limited."_
 2. **Verify font licenses** — Ensure NDot55 and other Nothing fonts permit redistribution, or switch to open-source alternatives
 3. **Don't bundle Nothing assets** — No Nothing icons, images, or logos in the repository
 4. **For commercial use** — Contact Nothing directly via [Press Contact](https://nothing.tech/pages/press-contact) or [Business Enquiry](https://nothing.tech/pages/business-enquiry)
