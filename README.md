@@ -40,11 +40,12 @@ bun run tauri build
 
 ## Fonts
 
-This project uses proprietary Nothing fonts (NDot55, NType82, Lettera Mono LL) that are not included in the repository due to licensing restrictions. To use them, obtain the fonts separately and place them in `src/assets/fonts/`:
+This project uses proprietary Nothing fonts (NDot55, NDot57, NType82, NType82Mono) that are not included in the repository due to licensing restrictions. To use them, obtain the fonts separately and place them in `src/assets/fonts/`:
 
 - `Ndot-55.otf`
+- `NDot-57.woff2`
 - `NType82-Regular.woff2`
-- `LetteraMonoLL-Regular.otf`
+- `NType82Mono-Regular.woff2`
 
 The app will still build without these fonts, but typography will fall back to system fonts.
 

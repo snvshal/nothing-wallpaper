@@ -52,7 +52,7 @@ export default function RamWidget() {
             RAM
           </div>
           <div
-            className="font-lettera text-nothing-ngrey mt-1"
+            className="font-ntype-mono text-nothing-ngrey mt-1"
             style={{ fontSize: "calc(var(--widget-size) * 0.06)" }}
           >
             {totalGB} GB
@@ -66,7 +66,7 @@ export default function RamWidget() {
             {usedPercent.toFixed(1)}%
           </div>
           <div
-            className="font-lettera text-nothing-ngrey mt-1"
+            className="font-ntype-mono text-nothing-ngrey mt-1"
             style={{ fontSize: "calc(var(--widget-size) * 0.06)" }}
           >
             {usedGB} GB

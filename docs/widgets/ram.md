@@ -6,7 +6,7 @@ Real-time memory usage monitor with dot-matrix graph.
 
 | Property         | Value                         |
 | ---------------- | ----------------------------- |
-| Border radius    | `var(--radius-widget)` (16px) |
+| Border radius    | `var(--radius-widget)` (24px) |
 | Padding          | Default (`p-4`, 16px)         |
 | Initial position | `{ x: 256, y: 256 }`          |
 
@@ -48,7 +48,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property   | Value                            |
 | ---------- | -------------------------------- |
-| Font       | Lettera Mono LL (`font-lettera`) |
+| Font       | NType82 Mono (`font-ntype-mono`) |
 | Size       | `--widget-size * 0.06`           |
 | Colour     | `text-nothing-ngrey` (`#DCD7D2`) |
 | Margin top | `mt-1` (4px)                     |
@@ -70,7 +70,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property   | Value                            |
 | ---------- | -------------------------------- |
-| Font       | Lettera Mono LL (`font-lettera`) |
+| Font       | NType82 Mono (`font-ntype-mono`) |
 | Size       | `--widget-size * 0.06`           |
 | Colour     | `text-nothing-ngrey` (`#DCD7D2`) |
 | Margin top | `mt-1` (4px)                     |

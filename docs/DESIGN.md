@@ -47,8 +47,9 @@ Located in `src/assets/fonts/` and `src/assets/emojis/`:
 | File                              | Format | Typeface        | Role                                |
 | --------------------------------- | ------ | --------------- | ----------------------------------- |
 | `Ndot-55.otf`                     | OTF    | NDot 55         | RAM title, percentage, weather temp |
+| `NDot-57.woff2`                   | WOFF2  | NDot 57         | Alternate dot-matrix (备用)         |
 | `NType82-Regular.woff2`           | WOFF2  | NType82 Regular | Calendar date, day name, city name  |
-| `LetteraMonoLL-Regular.otf`       | OTF    | Lettera Mono LL | RAM GB values, small details        |
+| `NType82Mono-Regular.woff2`       | WOFF2  | NType82 Mono    | RAM GB values, monospace details    |
 | `NotoEmoji-VariableFont_wght.ttf` | TTF    | Noto Emoji      | Weather cloud emoji                 |
 
 ### Typefaces (full reference)
@@ -131,7 +132,7 @@ All widget dimensions and positions snap to a **16px grid** (1 unit = 16px).
 | Grid snap            | 16px             | Drag positions snap to nearest unit   |
 | Widget gap           | 16px (1 unit)    | Minimum space between any two widgets |
 | Edge padding         | 20px             | Minimum distance from screen edges    |
-| Border radius        | 16px             | `--radius-widget` CSS variable        |
+| Border radius        | 24px             | `--radius-widget` CSS variable        |
 
 ### Modular Grid Rule
 
@@ -179,7 +180,7 @@ This ensures widgets maintain proportions when size changes.
 - Use drop shadows on any graphic element
 - Use gradients anywhere
 - Alter the established layout / grid
-- Mix font sizes within NDot55, NType82, or Lettera Mono blocks
+- Mix font sizes within NDot55, NType82, or NType82Mono blocks
 - Use NDot 55 for body text
 
 ## Current Deviations

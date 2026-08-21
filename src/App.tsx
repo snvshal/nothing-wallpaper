@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo } from "react";
 import { listen } from "@tauri-apps/api/event";
 import { convertFileSrc } from "@tauri-apps/api/core";
 import { useDragSnap } from "./hooks/useDragSnap";
@@ -44,12 +44,16 @@ export default function App() {
     };
   }, []);
 
-  const visibleWidgets = settings?.widgets ?? {
-    clock: true,
-    calendar: true,
-    weather: true,
-    ram: true,
-  };
+  const visibleWidgets = useMemo(
+    () =>
+      settings?.widgets ?? {
+        clock: true,
+        calendar: true,
+        weather: true,
+        ram: true,
+      },
+    [settings?.widgets],
+  );
   const savedPositions = settings?.positions ?? {};
 
   const bgUrl =
@@ -57,7 +61,10 @@ export default function App() {
       ? convertFileSrc(settings.wallpaper)
       : "/background.jpg";
 
-  const visibleIds = Object.keys(ALL_POSITIONS).filter((id) => visibleWidgets[id]);
+  const visibleIds = useMemo(
+    () => Object.keys(ALL_POSITIONS).filter((id) => visibleWidgets[id]),
+    [visibleWidgets],
+  );
 
   const initialPositions: Record<string, { x: number; y: number }> = {};
   for (const id of visibleIds) {

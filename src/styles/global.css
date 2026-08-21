@@ -2,8 +2,9 @@
 
 @theme {
   --font-ndot: "NDot55", monospace;
+  --font-ndot57: "NDot57", monospace;
   --font-ntype: "NType82", sans-serif;
-  --font-lettera: "LetteraMonoLL", monospace;
+  --font-ntype-mono: "NType82Mono", monospace;
   --font-emoji: "Noto Emoji", sans-serif;
 
   --color-nothing-black: #000000;
@@ -13,13 +14,21 @@
   --color-nothing-ngrey: #dcd7d2;
   --color-nothing-red: #c8102e;
 
-  --radius-widget: 16px;
+  --radius-widget: 24px;
   --widget-size: 144px;
 }
 
 @font-face {
   font-family: "NDot55";
   src: url("../assets/fonts/Ndot-55.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NDot57";
+  src: url("../assets/fonts/NDot-57.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -34,8 +43,8 @@
 }
 
 @font-face {
-  font-family: "LetteraMonoLL";
-  src: url("../assets/fonts/LetteraMonoLL-Regular.otf") format("opentype");
+  font-family: "NType82Mono";
+  src: url("../assets/fonts/NType82Mono-Regular.woff2") format("woff2");
   font-weight: 400;
   font-style: normal;
   font-display: swap;

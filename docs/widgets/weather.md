@@ -6,7 +6,7 @@ Static weather display with cloud emoji, temperature, and city name.
 
 | Property         | Value                         |
 | ---------------- | ----------------------------- |
-| Border radius    | `var(--radius-widget)` (16px) |
+| Border radius    | `var(--radius-widget)` (24px) |
 | Padding          | Default (`p-4`, 16px)         |
 | Initial position | `{ x: 96, y: 256 }`           |
 

@@ -6,7 +6,7 @@ Large date display with day name accent in Nothing style.
 
 | Property         | Value                         |
 | ---------------- | ----------------------------- |
-| Border radius    | `var(--radius-widget)` (16px) |
+| Border radius    | `var(--radius-widget)` (24px) |
 | Padding          | Default (`p-4`, 16px)         |
 | Initial position | `{ x: 256, y: 96 }`           |
 
