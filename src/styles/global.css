@@ -1,0 +1,72 @@
+@import "tailwindcss";
+
+@theme {
+  --font-ndot: "NDot55", monospace;
+  --font-ntype: "NType82", sans-serif;
+  --font-lettera: "LetteraMonoLL", monospace;
+  --font-emoji: "Noto Emoji", sans-serif;
+
+  --color-nothing-black: #000000;
+  --color-nothing-white: #ffffff;
+  --color-nothing-grey: #b1b3b3;
+  --color-nothing-dgrey: #6e6e6e;
+  --color-nothing-ngrey: #dcd7d2;
+  --color-nothing-red: #c8102e;
+
+  --radius-widget: 16px;
+  --widget-size: 144px;
+}
+
+@font-face {
+  font-family: "NDot55";
+  src: url("../assets/fonts/Ndot-55.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "NType82";
+  src: url("../assets/fonts/NType82-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "LetteraMonoLL";
+  src: url("../assets/fonts/LetteraMonoLL-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Noto Emoji";
+  src: url("../assets/emojis/NotoEmoji-VariableFont_wght.ttf") format("truetype");
+  font-weight: 300 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@layer base {
+  *,
+  *::before,
+  *::after {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: transparent;
+  color: #ffffff;
+  user-select: none;
+  -webkit-font-smoothing: antialiased;
+}
