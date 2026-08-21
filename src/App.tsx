@@ -1,12 +1,16 @@
+import { useEffect, useState, useCallback } from "react";
+import { listen } from "@tauri-apps/api/event";
+import { convertFileSrc } from "@tauri-apps/api/core";
 import { useDragSnap } from "./hooks/useDragSnap";
 import DraggableWidget from "./components/DraggableWidget";
 import ClockWidget from "./components/ClockWidget";
 import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
+import { loadSettings, saveWidgetPositions, type AppSettings } from "./settings/settings-store";
 import "./styles/global.css";
 
-const INITIAL_POSITIONS = {
+const ALL_POSITIONS: Record<string, { x: number; y: number }> = {
   clock: { x: 96, y: 96 },
   calendar: { x: 256, y: 96 },
   weather: { x: 96, y: 256 },
@@ -19,23 +23,64 @@ const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
 };
 
-export default function App() {
-  const { positions, draggingId, fluidPos, dropTarget, containerRef, handleMouseDown } =
-    useDragSnap({ initialPositions: INITIAL_POSITIONS, widgetSize: WIDGET_SIZE });
+const WIDGET_CONTENT: Record<string, React.ReactNode> = {
+  clock: <ClockWidget />,
+  calendar: <CalendarWidget />,
+  weather: <WeatherWidget />,
+  ram: <RamWidget />,
+};
 
-  const widgetContent: Record<string, React.ReactNode> = {
-    clock: <ClockWidget />,
-    calendar: <CalendarWidget />,
-    weather: <WeatherWidget />,
-    ram: <RamWidget />,
+export default function App() {
+  const [settings, setSettings] = useState<AppSettings | null>(null);
+
+  useEffect(() => {
+    loadSettings().then(setSettings);
+
+    const unlisten = listen<AppSettings>("settings-changed", (event) => {
+      setSettings(event.payload);
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, []);
+
+  const visibleWidgets = settings?.widgets ?? {
+    clock: true,
+    calendar: true,
+    weather: true,
+    ram: true,
   };
+  const savedPositions = settings?.positions ?? {};
+
+  const bgUrl =
+    settings?.wallpaper && settings.wallpaper !== "default"
+      ? convertFileSrc(settings.wallpaper)
+      : "/background.jpg";
+
+  const visibleIds = Object.keys(ALL_POSITIONS).filter((id) => visibleWidgets[id]);
+
+  const initialPositions: Record<string, { x: number; y: number }> = {};
+  for (const id of visibleIds) {
+    initialPositions[id] = savedPositions[id] ?? ALL_POSITIONS[id];
+  }
+
+  const onDragEnd = useCallback(
+    (id: string, position: { x: number; y: number }) => {
+      const updated = { ...savedPositions, [id]: position };
+      saveWidgetPositions(updated);
+    },
+    [savedPositions],
+  );
+
+  const { positions, draggingId, fluidPos, dropTarget, containerRef, handleMouseDown } =
+    useDragSnap({ initialPositions, visibleIds, widgetSize: WIDGET_SIZE, onDragEnd });
 
   return (
     <div
       ref={containerRef}
       className="relative w-screen h-screen overflow-hidden text-white select-none"
       style={{
-        background: `url("/background.jpg") center / cover no-repeat`,
+        background: `url("${bgUrl}") center / cover no-repeat`,
       }}
     >
       {draggingId && (
@@ -52,7 +97,7 @@ export default function App() {
         />
       )}
 
-      {Object.keys(INITIAL_POSITIONS).map((id) => {
+      {visibleIds.map((id) => {
         const isDragging = draggingId === id;
         const pos = isDragging ? fluidPos : positions[id];
 
@@ -66,7 +111,7 @@ export default function App() {
             radius={WIDGET_RADIUS[id]}
             noPadding={id === "clock"}
           >
-            {widgetContent[id]}
+            {WIDGET_CONTENT[id]}
           </DraggableWidget>
         );
       })}

@@ -36,6 +36,33 @@ fn get_memory_usage() -> MemoryInfo {
     }
 }
 
+fn open_settings(app: &tauri::AppHandle) {
+    if let Some(win) = app.get_webview_window("settings") {
+        let _ = win.show();
+        let _ = win.set_focus();
+        return;
+    }
+
+    let _ = tauri::WebviewWindowBuilder::new(
+        app,
+        "settings",
+        tauri::WebviewUrl::App("settings.html".into()),
+    )
+    .title("Nothing Wallpaper")
+    .inner_size(720.0, 520.0)
+    .min_inner_size(480.0, 360.0)
+    .center()
+    .additional_browser_args(
+        "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
+    )
+    .build();
+}
+
+#[tauri::command]
+fn open_settings_window(app: tauri::AppHandle) {
+    open_settings(&app);
+}
+
 #[cfg(target_os = "windows")]
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     use tauri_plugin_prevent_default::PlatformOptions;
@@ -47,7 +74,9 @@ fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
                 .default_context_menus(false)
                 .dev_tools(false)
                 .general_autofill(true)
-                .password_autosave(false),
+                .password_autosave(false)
+                .swipe_navigation(false)
+                .pinch_zoom(false),
         )
         .build()
 }
@@ -62,8 +91,13 @@ pub fn run() {
     tauri::Builder::default()
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_wallpaper::init())
+        .plugin(tauri_plugin_store::Builder::default().build())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(prevent_default_plugin())
-        .invoke_handler(tauri::generate_handler![get_memory_usage])
+        .invoke_handler(tauri::generate_handler![
+            get_memory_usage,
+            open_settings_window
+        ])
         .setup(|app| {
             let handle = app.handle();
             handle
@@ -75,6 +109,39 @@ pub fn run() {
                 let window = app.get_webview_window("main").unwrap();
                 let hwnd = window.hwnd().unwrap();
                 mouse_hook::install(hwnd.0 as isize);
+            }
+
+            // System tray
+            {
+                use tauri::menu::{Menu, MenuItem};
+                use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+
+                let settings_item =
+                    MenuItem::with_id(handle, "settings", "Settings", true, None::<&str>)?;
+                let quit_item = MenuItem::with_id(handle, "quit", "Quit", true, None::<&str>)?;
+                let menu = Menu::with_items(handle, &[&settings_item, &quit_item])?;
+
+                let _tray = TrayIconBuilder::with_id("main-tray")
+                    .icon(app.default_window_icon().unwrap().clone())
+                    .tooltip("Nothing Wallpaper")
+                    .menu(&menu)
+                    .show_menu_on_left_click(false)
+                    .on_menu_event(|app, event| match event.id.as_ref() {
+                        "settings" => open_settings(app),
+                        "quit" => app.exit(0),
+                        _ => {}
+                    })
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            open_settings(tray.app_handle());
+                        }
+                    })
+                    .build(app)?;
             }
 
             Ok(())

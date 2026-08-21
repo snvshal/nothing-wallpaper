@@ -7,16 +7,20 @@ export interface Position {
 
 interface DragSnapOptions {
   initialPositions: Record<string, Position>;
+  visibleIds: string[];
   widgetSize?: number;
   gridSize?: number;
   minGap?: number;
+  onDragEnd?: (id: string, position: Position) => void;
 }
 
 export function useDragSnap({
   initialPositions,
+  visibleIds,
   widgetSize = 160,
   gridSize = 16,
   minGap = 16,
+  onDragEnd,
 }: DragSnapOptions) {
   const [positions, setPositions] = useState(initialPositions);
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -30,6 +34,16 @@ export function useDragSnap({
   const positionsRef = useRef(positions);
 
   positionsRef.current = positions;
+
+  useEffect(() => {
+    setPositions((prev) => {
+      const filtered: Record<string, Position> = {};
+      for (const id of visibleIds) {
+        if (prev[id]) filtered[id] = prev[id];
+      }
+      return filtered;
+    });
+  }, [visibleIds]);
 
   const handleMouseDown = useCallback(
     (id: string, e: React.MouseEvent) => {
@@ -95,7 +109,9 @@ export function useDragSnap({
     const handleUp = () => {
       const id = dragIdRef.current;
       if (id) {
-        setPositions((prev) => ({ ...prev, [id]: dropTargetRef.current }));
+        const finalPos = dropTargetRef.current;
+        setPositions((prev) => ({ ...prev, [id]: finalPos }));
+        onDragEnd?.(id, finalPos);
       }
       dragIdRef.current = null;
       setDraggingId(null);
@@ -108,7 +124,7 @@ export function useDragSnap({
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleUp);
     };
-  }, [draggingId, widgetSize, gridSize, minGap]);
+  }, [draggingId, widgetSize, gridSize, minGap, onDragEnd]);
 
   return {
     positions,

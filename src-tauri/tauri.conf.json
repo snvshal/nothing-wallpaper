@@ -22,7 +22,21 @@
         "skipTaskbar": true,
         "alwaysOnTop": false,
         "resizable": false,
-        "shadow": false
+        "shadow": false,
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling"
+      },
+      {
+        "label": "settings",
+        "title": "Nothing Wallpaper",
+        "width": 720,
+        "height": 520,
+        "minWidth": 480,
+        "minHeight": 360,
+        "center": true,
+        "resizable": true,
+        "maximizable": false,
+        "create": false,
+        "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling"
       }
     ],
     "security": {
@@ -37,7 +51,8 @@
       "icons/128x128.png",
       "icons/128x128@2x.png",
       "icons/icon.icns",
-      "icons/icon.ico"
+      "icons/icon.ico",
+      "icons/icon.png"
     ]
   }
 }
