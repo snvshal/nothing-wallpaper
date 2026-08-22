@@ -142,12 +142,12 @@ All widget content scales relative to `--widget-size` CSS variable using `calc()
 font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 ```
 
-| Element         | Multiplier | Description                        |
-| --------------- | ---------- | ---------------------------------- |
-| Main number     | 0.39       | Calendar date, weather emoji       |
-| Secondary label | 0.1        | RAM title/percentage, weather temp |
-| Small text      | 0.07       | Day name, city name                |
-| Detail text     | 0.06       | RAM GB values                      |
+| Element         | Multiplier | Description                                  |
+| --------------- | ---------- | -------------------------------------------- |
+| Main number     | 0.39       | Calendar date, weather emoji                 |
+| Secondary label | 0.1        | RAM title/percentage, weather temp, day name |
+| Small text      | 0.07       | City name                                    |
+| Detail text     | 0.06       | RAM GB values                                |
 
 This ensures widgets maintain proportions when size changes.
 

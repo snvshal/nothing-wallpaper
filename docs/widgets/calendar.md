@@ -34,7 +34,7 @@ Centered date number with day name positioned in the top-right corner.
 | Size            | `--widget-size * 0.39`         |
 | Colour          | `#FFFFFF` (white)              |
 | Position        | Centered in widget             |
-| Vertical offset | `translate-y-2` (8px down)     |
+| Vertical offset | `translate-y-1` (4px down)     |
 | Letter spacing  | `tracking-wider`               |
 | Line height     | `leading-none`                 |
 | Case            | Numeric (no case)              |

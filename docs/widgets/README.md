@@ -9,8 +9,8 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Property     | Value                                  | Notes                                              |
 | ------------ | -------------------------------------- | -------------------------------------------------- |
 | Size         | 144px x 144px                          | `--widget-size` CSS variable                       |
-| Background   | `bg-black`                             | Pure black `#000000`                               |
-| Border       | `border-white/20`                      | 1px, 20% white opacity                             |
+| Background   | `bg-nothing-black`                     | Pure black `#000000`                               |
+| Border       | `border-nothing-white/20`              | 1px, 20% white opacity                             |
 | Drag border  | `border-nothing-red`                   | N-Red `#C8102E` when dragging                      |
 | Drag opacity | 0.9                                    | Widget becomes slightly transparent while dragging |
 | Drag z-index | 50                                     | Rises above other widgets                          |
