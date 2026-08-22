@@ -165,6 +165,7 @@ This ensures widgets maintain proportions when size changes.
 | Property        | Value                                                                            |
 | --------------- | -------------------------------------------------------------------------------- |
 | Window radius   | `8px` — native DWM rounding (`DWMWCP_ROUND`) on Windows 11, CSS-matched fallback |
+| Size            | Fixed `720×520`, non-resizable, not maximizable                                  |
 | Titlebar height | `36px`                                                                           |
 | Titlebar label  | Doto, `12px`, uppercase, `0.1em` spacing, grey (`--color-nothing-grey`)          |
 | Control buttons | `44px` wide, full bar height                                                     |

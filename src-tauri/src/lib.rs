@@ -77,10 +77,10 @@ fn open_settings(app: &tauri::AppHandle) {
     )
     .title("Nothing Wallpaper")
     .inner_size(720.0, 520.0)
-    .min_inner_size(560.0, 400.0)
     .center()
     .decorations(false)
     .transparent(true)
+    .resizable(false)
     .maximizable(false)
     .additional_browser_args(
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
