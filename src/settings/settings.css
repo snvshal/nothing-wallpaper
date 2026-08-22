@@ -26,7 +26,9 @@ body,
 }
 
 .settings-container {
-  padding: 32px 40px;
+  max-width: 880px;
+  margin-inline: auto;
+  padding: clamp(20px, 4vw, 40px);
   display: flex;
   flex-direction: column;
   gap: 32px;
@@ -58,6 +60,7 @@ body,
 /* Wallpaper picker */
 .wallpaper-grid {
   display: flex;
+  flex-wrap: wrap;
   gap: 12px;
   align-items: stretch;
 }
@@ -80,6 +83,8 @@ body,
   flex-direction: column;
   justify-content: space-between;
   gap: 12px;
+  flex: 1;
+  min-width: 220px;
 }
 
 .wallpaper-mode-btn {
@@ -146,9 +151,10 @@ body,
 
 /* Widget toggles */
 .widget-list {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  column-gap: 32px;
+  row-gap: 8px;
 }
 
 .widget-row {
