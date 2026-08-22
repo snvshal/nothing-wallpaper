@@ -11,7 +11,9 @@
     "lint": "oxlint src/",
     "fmt": "oxfmt src/ docs/ README.md AGENTS.md --write",
     "fmt:check": "oxfmt src/ docs/ README.md AGENTS.md",
-    "check": "oxlint src/ && tsc"
+    "fmt:rs": "cargo fmt --all --manifest-path src-tauri/Cargo.toml",
+    "check": "oxlint src/ && tsc",
+    "check:rs": "cargo clippy --all-targets --manifest-path src-tauri/Cargo.toml -- -D warnings"
   },
   "dependencies": {
     "@tauri-apps/api": "^2",

@@ -10,8 +10,16 @@ Nothing OS-style live wallpaper for Windows (Tauri 2 + React 19 + Tailwind CSS v
 
 ## Verify before claiming done
 
+Frontend:
+
 ```sh
 bun run fmt && bun run check && bun run build
+```
+
+Rust backend (`src-tauri/`):
+
+```sh
+bun run fmt:rs && bun run check:rs
 ```
 
 ## Hard rules

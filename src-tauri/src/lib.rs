@@ -50,22 +50,21 @@ fn open_settings(app: &tauri::AppHandle) {
         return;
     }
 
-    match tauri::WebviewWindowBuilder::new(
+    if let Ok(win) = tauri::WebviewWindowBuilder::new(
         app,
         "settings",
         tauri::WebviewUrl::App("settings.html".into()),
     )
     .title("Nothing Wallpaper")
     .inner_size(720.0, 520.0)
-    .min_inner_size(480.0, 360.0)
+    .min_inner_size(560.0, 400.0)
     .center()
     .additional_browser_args(
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
     )
     .build()
     {
-        Ok(win) => focus_window(&win),
-        Err(_) => {}
+        focus_window(&win);
     }
 }
 
