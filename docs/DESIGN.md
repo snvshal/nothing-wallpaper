@@ -160,6 +160,22 @@ This ensures widgets maintain proportions when size changes.
 - No decorative borders, dividers, or separators
 - Breathing room over density
 
+## Window Chrome (Settings)
+
+| Property        | Value                                                                            |
+| --------------- | -------------------------------------------------------------------------------- |
+| Window radius   | `8px` — native DWM rounding (`DWMWCP_ROUND`) on Windows 11, CSS-matched fallback |
+| Titlebar height | `36px`                                                                           |
+| Titlebar label  | Doto, `12px`, uppercase, `0.1em` spacing, grey (`--color-nothing-grey`)          |
+| Control buttons | `44px` wide, full bar height                                                     |
+| Button hover    | `--color-widget-bg`; close uses `--color-nothing-red`                            |
+| Icons           | Inline SVG, `10px`, stroke `currentColor`                                        |
+| Drag region     | Whole bar via `data-tauri-drag-region`                                           |
+
+- Native decorations disabled; transparent window background; corners rounded by Windows DWM (`DWMWCP_ROUND`) with matching CSS fallback
+- Minimize + Close only (window is not maximizable)
+- Dev builds additionally expose Inspect / F12 (release stays locked down)
+
 ## Graphics Rules
 
 ### Do

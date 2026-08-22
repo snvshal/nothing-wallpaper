@@ -9,6 +9,7 @@ import {
   type Screen,
 } from "../lib/placement";
 import { loadSettings, saveSettings, type AppSettings } from "./settings-store";
+import TitleBar from "./TitleBar";
 import WallpaperPicker from "./WallpaperPicker";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
@@ -88,24 +89,27 @@ export default function SettingsApp() {
   };
 
   return (
-    <div className="settings-container">
-      <div className="settings-header">Settings</div>
+    <div className="settings-shell">
+      <TitleBar />
+      <div className="settings-body">
+        <div className="settings-container">
+          <WallpaperPicker
+            selected={settings.wallpaper}
+            onSelect={(wallpaper) => update({ wallpaper })}
+          />
 
-      <WallpaperPicker
-        selected={settings.wallpaper}
-        onSelect={(wallpaper) => update({ wallpaper })}
-      />
+          <WidgetToggles widgets={settings.widgets} onToggle={updateWidgets} />
 
-      <WidgetToggles widgets={settings.widgets} onToggle={updateWidgets} />
-
-      <LayoutMinimap
-        widgets={settings.widgets}
-        placed={layout.placed}
-        positions={seededPositions}
-        screen={screen}
-        noSpaceIds={layout.skipped}
-        onChange={(positions) => update({ positions })}
-      />
+          <LayoutMinimap
+            widgets={settings.widgets}
+            placed={layout.placed}
+            positions={seededPositions}
+            screen={screen}
+            noSpaceIds={layout.skipped}
+            onChange={(positions) => update({ positions })}
+          />
+        </div>
+      </div>
     </div>
   );
 }

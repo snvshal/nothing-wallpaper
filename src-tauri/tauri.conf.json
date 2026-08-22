@@ -35,6 +35,8 @@
         "center": true,
         "resizable": true,
         "maximizable": false,
+        "decorations": false,
+        "transparent": true,
         "create": false,
         "additionalBrowserArgs": "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling"
       }

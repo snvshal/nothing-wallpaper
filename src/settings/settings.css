@@ -1,10 +1,27 @@
 html,
-body,
-#root {
-  background: #0a0a0a;
-  color: #ffffff;
-  overflow: auto;
+body {
+  background: transparent;
+  color: var(--color-nothing-white);
   overscroll-behavior: none;
+}
+
+#root {
+  height: 100vh;
+  background: #0a0a0a;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.settings-shell {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.settings-body {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 }
 
 ::-webkit-scrollbar {
@@ -34,12 +51,50 @@ body,
   gap: 32px;
 }
 
-.settings-header {
+/* Window chrome */
+.titlebar {
+  height: 36px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-left: 16px;
+}
+
+.titlebar-title {
   font-family: "Doto", monospace;
   font-variation-settings: "ROND" 100;
-  font-size: 24px;
-  letter-spacing: 0.05em;
-  color: #ffffff;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-nothing-grey);
+}
+
+.titlebar-actions {
+  display: flex;
+  align-self: stretch;
+}
+
+.titlebar-btn {
+  width: 44px;
+  display: grid;
+  place-items: center;
+  border: none;
+  background: transparent;
+  color: var(--color-nothing-dgrey);
+  cursor: pointer;
+  transition:
+    background-color 0.15s,
+    color 0.15s;
+}
+
+.titlebar-btn:hover {
+  background: var(--color-widget-bg);
+  color: var(--color-nothing-white);
+}
+
+.titlebar-btn-close:hover {
+  background: var(--color-nothing-red);
 }
 
 .settings-section {

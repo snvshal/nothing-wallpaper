@@ -44,6 +44,26 @@ fn focus_window(win: &tauri::WebviewWindow) {
     let _ = win.set_always_on_top(false);
 }
 
+#[cfg(target_os = "windows")]
+fn round_corners(win: &tauri::WebviewWindow<tauri::Wry>) {
+    use windows::Win32::Foundation::HWND;
+    use windows::Win32::Graphics::Dwm::{
+        DwmSetWindowAttribute, DWMWA_WINDOW_CORNER_PREFERENCE, DWMWCP_ROUND,
+    };
+
+    if let Ok(hwnd) = win.hwnd() {
+        let preference = DWMWCP_ROUND;
+        unsafe {
+            let _ = DwmSetWindowAttribute(
+                HWND(hwnd.0),
+                DWMWA_WINDOW_CORNER_PREFERENCE,
+                &preference as *const _ as *const core::ffi::c_void,
+                std::mem::size_of_val(&preference) as u32,
+            );
+        }
+    }
+}
+
 fn open_settings(app: &tauri::AppHandle) {
     if let Some(win) = app.get_webview_window("settings") {
         focus_window(&win);
@@ -59,12 +79,17 @@ fn open_settings(app: &tauri::AppHandle) {
     .inner_size(720.0, 520.0)
     .min_inner_size(560.0, 400.0)
     .center()
+    .decorations(false)
+    .transparent(true)
+    .maximizable(false)
     .additional_browser_args(
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
     )
     .build()
     {
         focus_window(&win);
+        #[cfg(target_os = "windows")]
+        round_corners(&win);
     }
 }
 
