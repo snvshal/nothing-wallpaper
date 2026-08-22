@@ -51,14 +51,14 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 
 ### Current Status
 
-| Item                         | Status                                                                   |
-| ---------------------------- | ------------------------------------------------------------------------ |
-| Fonts                        | Doto + Google Sans Code + Noto Emoji — all SIL OFL 1.1, licenses bundled |
-| Colour palette usage         | Publicly documented hex values — not owned                               |
-| No Nothing icons/logos used  | All widget icons are generic or self-created                             |
-| Default background image     | Original generated dot-grid artwork (3840×2160)                          |
-| Disclaimer                   | Present in README                                                        |
-| App name "Nothing Wallpaper" | Personal use only — rename before any public distribution                |
+| Item                         | Status                                                                                                                        |
+| ---------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Fonts                        | Doto + Google Sans Code + Noto Emoji — all SIL OFL 1.1, licenses bundled                                                      |
+| Colour palette usage         | Palettes are not copyrightable; these hex values are published openly by Nothing. Trademark risk applies to naming/logos only |
+| No Nothing icons/logos used  | All widget icons are generic or self-created                                                                                  |
+| Default background image     | Original generated dot-grid artwork (3840×2160)                                                                               |
+| Disclaimer                   | Present in README                                                                                                             |
+| App name "Nothing Wallpaper" | Personal use only — rename before any public distribution                                                                     |
 
 ### Recommended Actions
 

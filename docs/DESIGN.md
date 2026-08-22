@@ -24,11 +24,14 @@ For detailed per-widget specs, see [docs/widgets/](widgets/).
 
 ### Primary (accent — use sparingly)
 
-| Name     | Hex       | RGB       | Use               |
-| -------- | --------- | --------- | ----------------- |
-| N-Red    | `#C8102E` | 200/16/46 | Accent highlights |
-| N-Blue   | `#002F6C` | 0/47/108  | Accent highlights |
-| N-Yellow | `#FFC700` | 255/199/0 | Accent highlights |
+| Name       | Hex       | RGB       | Use                       |
+| ---------- | --------- | --------- | ------------------------- |
+| N-Red      | `#C8102E` | 200/16/46 | Accent highlights         |
+| N-Blue     | `#002F6C` | 0/47/108  | Accent highlights         |
+| N-Yellow   | `#FFC700` | 255/199/0 | Accent highlights         |
+| Widget Red | `#D71920` | 215/25/32 | Nothing OS widget accents |
+
+All eight values above are the official published palette and are exposed as theme tokens (`--color-nothing-*`) in `global.css`. **N-Blue, N-Yellow, and Widget Red are currently reserved** — defined but unused. Two project-local utility neutrals sit outside this palette and are used only for UI scaffolding: `nothing-dgrey` (`#6E6E6E`, muted borders/details) and `widget-bg` (`#111111`, minimap tiles).
 
 ### Rules
 
@@ -172,6 +175,9 @@ This ensures widgets maintain proportions when size changes.
 - Use drop shadows on any graphic element
 - Use gradients anywhere
 - Alter the established layout / grid
+- Increase logotype size beyond its column width
+- Change the placement of additional / partner logotypes
+- Apply colour fills, gradients, or shadows to logos — black & white only
 - Mix font sizes within Doto or Google Sans Code blocks
 - Use Doto for body text
 
