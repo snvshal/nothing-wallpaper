@@ -9,8 +9,8 @@
     "preview": "vite preview",
     "tauri": "tauri",
     "lint": "oxlint src/",
-    "fmt": "oxfmt src/ docs/ README.md --write",
-    "fmt:check": "oxfmt src/ docs/ README.md",
+    "fmt": "oxfmt src/ docs/ README.md AGENTS.md --write",
+    "fmt:check": "oxfmt src/ docs/ README.md AGENTS.md",
     "check": "oxlint src/ && tsc"
   },
   "dependencies": {
