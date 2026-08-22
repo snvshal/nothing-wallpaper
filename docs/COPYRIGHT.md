@@ -51,20 +51,20 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 
 ### Current Status
 
-| Item                             | Status                                                  |
-| -------------------------------- | ------------------------------------------------------- |
-| Project name "Nothing Wallpaper" | Add disclaimer or rename for public distribution        |
-| Fonts                            | Doto + Google Sans Code (SIL OFL 1.1), licenses bundled |
-| Colour palette usage             | Using hex values for inspiration — no issue             |
-| No Nothing icons/logos used      | All widget icons are generic or self-created            |
-| Default background image         | Original generated dot-grid artwork (3840×2160)         |
-| Disclaimer                       | Added — see README                                      |
+| Item                         | Status                                                                   |
+| ---------------------------- | ------------------------------------------------------------------------ |
+| Fonts                        | Doto + Google Sans Code + Noto Emoji — all SIL OFL 1.1, licenses bundled |
+| Colour palette usage         | Publicly documented hex values — not owned                               |
+| No Nothing icons/logos used  | All widget icons are generic or self-created                             |
+| Default background image     | Original generated dot-grid artwork (3840×2160)                          |
+| Disclaimer                   | Present in README                                                        |
+| App name "Nothing Wallpaper" | Personal use only — rename before any public distribution                |
 
 ### Recommended Actions
 
-1. **Add disclaimer** to app and README — _"Unofficial fan project. Not affiliated with or endorsed by Nothing Technology Limited."_
-2. **Don't bundle Nothing assets** — No Nothing icons, images, or logos in the repository
-3. **For commercial use** — Contact Nothing directly via [Press Contact](https://nothing.tech/pages/press-contact) or [Business Enquiry](https://nothing.tech/pages/business-enquiry)
+1. **Before public distribution** — rename the app and identifier away from the "Nothing" trademark (fine for personal use as-is)
+2. **Never bundle Nothing assets** — no icons, images, logos, or fonts from Nothing in the repository
+3. **Commercial use** — contact Nothing via [Press Contact](https://nothing.tech/pages/press-contact) or [Business Enquiry](https://nothing.tech/pages/business-enquiry) first
 
 ## Sources
 
