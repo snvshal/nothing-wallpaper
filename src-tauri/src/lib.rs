@@ -75,14 +75,17 @@ fn open_settings_window(app: tauri::AppHandle) {
 
 #[cfg(target_os = "windows")]
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
-    use tauri_plugin_prevent_default::PlatformOptions;
+    use tauri_plugin_prevent_default::{Flags, PlatformOptions};
+
+    let dev = cfg!(debug_assertions);
 
     tauri_plugin_prevent_default::Builder::new()
+        .with_flags(Flags::debug())
         .platform(
             PlatformOptions::new()
-                .browser_accelerator_keys(false)
-                .default_context_menus(false)
-                .dev_tools(false)
+                .browser_accelerator_keys(dev)
+                .default_context_menus(dev)
+                .dev_tools(dev)
                 .general_autofill(true)
                 .password_autosave(false)
                 .swipe_navigation(false)
