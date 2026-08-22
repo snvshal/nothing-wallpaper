@@ -34,7 +34,7 @@ export default function DraggableWidget({
       }}
       className={`w-[144px] h-[144px] cursor-grab active:cursor-grabbing flex flex-col justify-between border bg-nothing-black ${
         noPadding ? "" : "p-4"
-      } ${isDragging ? "border-nothing-red z-50 opacity-90" : "border-nothing-white/20 z-10"}`}
+      } ${isDragging ? "border-nothing-widget-red z-50" : "border-nothing-white/20 z-10"}`}
     >
       {children}
     </div>

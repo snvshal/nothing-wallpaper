@@ -141,7 +141,7 @@ export default function App() {
             height: `${WIDGET_SIZE}px`,
             borderRadius: WIDGET_RADIUS[draggingId] ?? "var(--radius-widget)",
           }}
-          className="border-2 border-dashed border-nothing-red/60 z-0 flex items-center justify-center pointer-events-none"
+          className="border-2 border-dashed border-nothing-widget-red/60 z-0 flex items-center justify-center pointer-events-none"
         />
       )}
 

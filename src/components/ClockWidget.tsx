@@ -48,7 +48,7 @@ export default function ClockWidget() {
           }}
         >
           <div
-            className="bg-nothing-red rounded-full"
+            className="bg-nothing-widget-red rounded-full"
             style={{
               width: "calc(var(--widget-size) * 0.03)",
               height: "calc(var(--widget-size) * 0.03)",

@@ -58,7 +58,7 @@ Centered circular face filling the entire widget. Three layered elements rotate 
 
 | Property      | Value                                          |
 | ------------- | ---------------------------------------------- |
-| Colour        | `bg-nothing-red` (`#C8102E`)                   |
+| Colour        | `bg-nothing-widget-red` (`#D71920`)            |
 | Size          | `--widget-size * 0.03` (both width and height) |
 | Position      | Centered horizontally                          |
 | Vertical      | `marginTop: 4%` from top                       |

@@ -45,7 +45,7 @@ Centered date number with day name positioned in the top-right corner.
 | -------------- | ----------------------------------------- |
 | Font           | Doto (`font-dot`)                         |
 | Size           | `--widget-size * 0.1`                     |
-| Colour         | `text-nothing-red` (`#C8102E`)            |
+| Colour         | `text-nothing-widget-red` (`#D71920`)     |
 | Position       | `absolute top-0 right-0`                  |
 | Letter spacing | `tracking-wider`                          |
 | Case           | Uppercase (via `toUpperCase()`)           |

@@ -13,7 +13,7 @@ export default function CalendarWidget() {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <span className="absolute top-0 right-0 font-dot text-widget-title text-nothing-red tracking-wider select-none">
+      <span className="absolute top-0 right-0 font-dot text-widget-title text-nothing-widget-red tracking-wider select-none">
         {dayName}
       </span>
       <span className="font-body text-nothing-white tracking-wider select-none leading-none text-widget-display translate-y-1">
