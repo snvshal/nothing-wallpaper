@@ -30,8 +30,8 @@
         "title": "Nothing Wallpaper",
         "width": 720,
         "height": 520,
-        "minWidth": 480,
-        "minHeight": 360,
+        "minWidth": 560,
+        "minHeight": 400,
         "center": true,
         "resizable": true,
         "maximizable": false,
@@ -40,7 +40,11 @@
       }
     ],
     "security": {
-      "csp": null
+      "csp": null,
+      "assetProtocol": {
+        "enable": true,
+        "scope": ["**"]
+      }
     }
   },
   "bundle": {

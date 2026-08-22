@@ -45,32 +45,16 @@ export default function RamWidget() {
     <>
       <div className="flex justify-between items-start">
         <div>
-          <div
-            className="font-ndot text-nothing-white tracking-widest leading-none"
-            style={{ fontSize: "calc(var(--widget-size) * 0.1)" }}
-          >
+          <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
             RAM
           </div>
-          <div
-            className="font-ntype-mono text-nothing-ngrey mt-1"
-            style={{ fontSize: "calc(var(--widget-size) * 0.06)" }}
-          >
-            {totalGB} GB
-          </div>
+          <div className="font-body text-nothing-ngrey mt-1 text-widget-detail">{totalGB} GB</div>
         </div>
         <div className="text-right">
-          <div
-            className="font-ndot text-nothing-white tracking-widest leading-none"
-            style={{ fontSize: "calc(var(--widget-size) * 0.1)" }}
-          >
+          <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
             {usedPercent.toFixed(1)}%
           </div>
-          <div
-            className="font-ntype-mono text-nothing-ngrey mt-1"
-            style={{ fontSize: "calc(var(--widget-size) * 0.06)" }}
-          >
-            {usedGB} GB
-          </div>
+          <div className="font-body text-nothing-ngrey mt-1 text-widget-detail">{usedGB} GB</div>
         </div>
       </div>
 
@@ -90,7 +74,7 @@ export default function RamWidget() {
                   cx={cx}
                   cy={cy}
                   r={1.8}
-                  fill={isActive ? "#FFFFFF" : "rgba(255,255,255,0.15)"}
+                  className={isActive ? "fill-nothing-white" : "fill-nothing-white/15"}
                 />
               );
             });

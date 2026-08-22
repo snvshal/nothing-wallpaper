@@ -38,7 +38,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property       | Value                            |
 | -------------- | -------------------------------- |
-| Font           | NDot 55 (`font-ndot`)            |
+| Font           | Doto (`font-dot`)                |
 | Size           | `--widget-size * 0.1`            |
 | Colour         | `text-nothing-white` (`#FFFFFF`) |
 | Letter spacing | `tracking-widest`                |
@@ -48,7 +48,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property   | Value                            |
 | ---------- | -------------------------------- |
-| Font       | NType82 Mono (`font-ntype-mono`) |
+| Font       | Google Sans Code (`font-body`)   |
 | Size       | `--widget-size * 0.06`           |
 | Colour     | `text-nothing-ngrey` (`#DCD7D2`) |
 | Margin top | `mt-1` (4px)                     |
@@ -58,7 +58,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property       | Value                                      |
 | -------------- | ------------------------------------------ |
-| Font           | NDot 55 (`font-ndot`)                      |
+| Font           | Doto (`font-dot`)                          |
 | Size           | `--widget-size * 0.1`                      |
 | Colour         | `text-nothing-white` (`#FFFFFF`)           |
 | Letter spacing | `tracking-widest`                          |
@@ -70,7 +70,7 @@ Two sections: stats row at top, dot-matrix graph filling remaining space.
 
 | Property   | Value                            |
 | ---------- | -------------------------------- |
-| Font       | NType82 Mono (`font-ntype-mono`) |
+| Font       | Google Sans Code (`font-body`)   |
 | Size       | `--widget-size * 0.06`           |
 | Colour     | `text-nothing-ngrey` (`#DCD7D2`) |
 | Margin top | `mt-1` (4px)                     |

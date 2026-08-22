@@ -2,12 +2,7 @@ export default function WeatherWidget() {
   return (
     <>
       <div className="flex justify-end items-start">
-        <span
-          className="font-ndot text-white select-none"
-          style={{ fontSize: "calc(var(--widget-size) * 0.1)" }}
-        >
-          28&deg;
-        </span>
+        <span className="font-dot text-nothing-white select-none text-widget-title">28&deg;</span>
       </div>
       <div className="my-auto flex items-center justify-center">
         <span
@@ -17,10 +12,7 @@ export default function WeatherWidget() {
           {"\u2601"}
         </span>
       </div>
-      <div
-        className="font-ntype text-nothing-ngrey tracking-wider select-none"
-        style={{ fontSize: "calc(var(--widget-size) * 0.07)" }}
-      >
+      <div className="font-body text-nothing-ngrey tracking-wider select-none text-widget-subtitle">
         Villupuram
       </div>
     </>

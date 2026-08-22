@@ -30,7 +30,7 @@ Centered date number with day name positioned in the top-right corner.
 
 | Property        | Value                          |
 | --------------- | ------------------------------ |
-| Font            | NType82 Regular (`font-ntype`) |
+| Font            | Google Sans Code (`font-body`) |
 | Size            | `--widget-size * 0.39`         |
 | Colour          | `#FFFFFF` (white)              |
 | Position        | Centered in widget             |
@@ -43,8 +43,8 @@ Centered date number with day name positioned in the top-right corner.
 
 | Property       | Value                                     |
 | -------------- | ----------------------------------------- |
-| Font           | NDot 55 (`font-ndot`)                     |
-| Size           | `--widget-size * 0.07`                    |
+| Font           | Doto (`font-dot`)                         |
+| Size           | `--widget-size * 0.1`                     |
 | Colour         | `text-nothing-red` (`#C8102E`)            |
 | Position       | `absolute top-0 right-0`                  |
 | Letter spacing | `tracking-wider`                          |

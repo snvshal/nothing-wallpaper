@@ -9,6 +9,7 @@ import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import { DEFAULT_POSITIONS, evaluateLayout, type Screen } from "./lib/placement";
+import { DEFAULT_WALLPAPER_URL } from "./lib/constants";
 import "./styles/global.css";
 
 const WIDGET_SIZE = 144;
@@ -77,10 +78,15 @@ export default function App() {
     [savedPositions],
   );
 
-  const bgUrl =
-    settings?.wallpaper && settings.wallpaper !== "default"
-      ? convertFileSrc(settings.wallpaper)
-      : "/background.jpg";
+  const wallpaper = settings?.wallpaper ?? "default";
+  const bgStyle: React.CSSProperties =
+    wallpaper === "system"
+      ? {}
+      : {
+          background: `url("${
+            wallpaper === "default" ? DEFAULT_WALLPAPER_URL : convertFileSrc(wallpaper)
+          }") center / cover no-repeat`,
+        };
 
   const visibleIds = useMemo(
     () => Object.keys(DEFAULT_POSITIONS).filter((id) => visibleWidgets[id]),
@@ -122,10 +128,8 @@ export default function App() {
   return (
     <div
       ref={containerRef}
-      className="relative w-screen h-screen overflow-hidden text-white select-none"
-      style={{
-        background: `url("${bgUrl}") center / cover no-repeat`,
-      }}
+      className="relative w-screen h-screen overflow-hidden text-nothing-white select-none"
+      style={bgStyle}
     >
       {draggingId && (
         <div

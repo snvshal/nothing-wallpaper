@@ -8,21 +8,15 @@ export default function CalendarWidget() {
     return () => clearInterval(timer);
   }, []);
 
-  const dayNum = date.getDate();
+  const dayNum = String(date.getDate()).padStart(2, "0");
   const dayName = date.toLocaleDateString("en-US", { weekday: "short" }).toUpperCase();
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <span
-        className="absolute top-0 right-0 font-ndot text-nothing-red tracking-wider select-none"
-        style={{ fontSize: "calc(var(--widget-size) * 0.07)" }}
-      >
+      <span className="absolute top-0 right-0 font-dot text-widget-title text-nothing-red tracking-wider select-none">
         {dayName}
       </span>
-      <span
-        className="font-ntype text-white tracking-wider select-none leading-none translate-y-2"
-        style={{ fontSize: "calc(var(--widget-size) * 0.39)" }}
-      >
+      <span className="font-body text-nothing-white tracking-wider select-none leading-none text-widget-display translate-y-1">
         {dayNum}
       </span>
     </div>

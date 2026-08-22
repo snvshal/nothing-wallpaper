@@ -1,10 +1,8 @@
 @import "tailwindcss";
 
 @theme {
-  --font-ndot: "NDot55", monospace;
-  --font-ndot57: "NDot57", monospace;
-  --font-ntype: "NType82", sans-serif;
-  --font-ntype-mono: "NType82Mono", monospace;
+  --font-dot: "Doto", monospace;
+  --font-body: "Google Sans Code", monospace;
   --font-emoji: "Noto Emoji", sans-serif;
 
   --color-nothing-black: #000000;
@@ -13,39 +11,30 @@
   --color-nothing-dgrey: #6e6e6e;
   --color-nothing-ngrey: #dcd7d2;
   --color-nothing-red: #c8102e;
+  --color-widget-bg: #111111;
 
   --radius-widget: 24px;
   --widget-size: 144px;
+
+  --text-widget-display: calc(var(--widget-size) * 0.39);
+  --text-widget-title: calc(var(--widget-size) * 0.1);
+  --text-widget-subtitle: calc(var(--widget-size) * 0.07);
+  --text-widget-detail: calc(var(--widget-size) * 0.06);
 }
 
 @font-face {
-  font-family: "NDot55";
-  src: url("../assets/fonts/Ndot-55.otf") format("opentype");
-  font-weight: 400;
+  font-family: "Doto";
+  src: url("../assets/fonts/Doto/Doto-VariableFont.ttf") format("truetype-variations");
+  font-weight: 100 900;
   font-style: normal;
   font-display: swap;
 }
 
 @font-face {
-  font-family: "NDot57";
-  src: url("../assets/fonts/NDot-57.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "NType82";
-  src: url("../assets/fonts/NType82-Regular.woff2") format("woff2");
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap;
-}
-
-@font-face {
-  font-family: "NType82Mono";
-  src: url("../assets/fonts/NType82Mono-Regular.woff2") format("woff2");
-  font-weight: 400;
+  font-family: "Google Sans Code";
+  src: url("../assets/fonts/Google_Sans_Code/GoogleSansCode-VariableFont.ttf")
+    format("truetype-variations");
+  font-weight: 100 800;
   font-style: normal;
   font-display: swap;
 }
@@ -56,6 +45,11 @@
   font-weight: 300 700;
   font-style: normal;
   font-display: swap;
+}
+
+@utility font-dot {
+  font-family: "Doto", monospace;
+  font-variation-settings: "ROND" 100;
 }
 
 @layer base {

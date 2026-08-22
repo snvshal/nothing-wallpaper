@@ -28,6 +28,8 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 - **NDot55 font** — Provided by Nothing but likely proprietary. Use only if license permits, or use open-source alternatives
 - **NType82, NType82Mono, Lettera Mono LL** — Same consideration. Verify license before distributing
 
+> **Resolved:** The project no longer bundles any Nothing fonts. It uses [Doto](https://fonts.google.com/specimen/Doto) and [Google Sans Code](https://fonts.google.com/specimen/Google+Sans+Code), both SIL OFL 1.1 with licenses included in-repo.
+
 ## What We CAN Do
 
 ### Design Principles (Non-Copyrightable)
@@ -49,19 +51,19 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 
 ### Current Status
 
-| Item                             | Action Needed                                                        |
-| -------------------------------- | -------------------------------------------------------------------- |
-| Project name "Nothing Wallpaper" | Add disclaimer or rename for public distribution                     |
-| NDot55 font                      | Confirm license permits use, or replace with open-source alternative |
-| Colour palette usage             | Using hex values for inspiration — no issue                          |
-| No Nothing icons/logos used      | All widget icons are generic or self-created                         |
-| No proprietary images            | Background image is user-provided                                    |
-| Disclaimer                       | Added — see README                                                   |
+| Item                             | Action Needed                                                  |
+| -------------------------------- | -------------------------------------------------------------- |
+| Project name "Nothing Wallpaper" | Add disclaimer or rename for public distribution               |
+| Fonts (NDot55, NType82, etc.)    | Resolved — replaced with Doto + Google Sans Code (SIL OFL 1.1) |
+| Colour palette usage             | Using hex values for inspiration — no issue                    |
+| No Nothing icons/logos used      | All widget icons are generic or self-created                   |
+| Default background image         | Resolved — original generated artwork (3840×2160)              |
+| Disclaimer                       | Added — see README                                             |
 
 ### Recommended Actions
 
 1. **Add disclaimer** to app and README — _"Unofficial fan project. Not affiliated with or endorsed by Nothing Technology Limited."_
-2. **Verify font licenses** — Ensure NDot55 and other Nothing fonts permit redistribution, or switch to open-source alternatives
+2. ~~**Verify font licenses**~~ — Resolved: Nothing fonts removed, replaced with SIL OFL 1.1 fonts (Doto, Google Sans Code)
 3. **Don't bundle Nothing assets** — No Nothing icons, images, or logos in the repository
 4. **For commercial use** — Contact Nothing directly via [Press Contact](https://nothing.tech/pages/press-contact) or [Business Enquiry](https://nothing.tech/pages/business-enquiry)
 

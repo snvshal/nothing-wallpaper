@@ -9,7 +9,7 @@ A Nothing Phone-inspired desktop wallpaper application for Windows.
 - Desktop wallpaper layer — sits behind desktop icons, above system wallpaper
 - 4 widgets: analog clock, calendar, weather, RAM monitor
 - Draggable widgets with grid-snap and collision detection
-- Settings window: wallpaper picker (default / custom image) + per-widget toggles
+- Settings window: wallpaper picker (default / system / custom image) + per-widget toggles
 - Layout minimap: dot-grid desktop preview, drag to arrange, live two-way sync
 - Smart placement: overlap-free auto-positioning with "not enough space" indicator
 - Nothing design system: dot-matrix typography, monochrome palette, N-Red accent
@@ -43,14 +43,13 @@ bun run tauri build
 
 ## Fonts
 
-This project uses proprietary Nothing fonts (NDot55, NDot57, NType82, NType82Mono) that are not included in the repository due to licensing restrictions. To use them, obtain the fonts separately and place them in `src/assets/fonts/`:
+Bundled open-source fonts, both [SIL OFL 1.1](https://openfontlicense.org) licensed with license files included in-repo:
 
-- `Ndot-55.otf`
-- `NDot-57.woff2`
-- `NType82-Regular.woff2`
-- `NType82Mono-Regular.woff2`
+- [Doto](https://fonts.google.com/specimen/Doto) — dot-matrix display typeface (variable `wght` + `ROND` axes)
+- [Google Sans Code](https://fonts.google.com/specimen/Google+Sans+Code) — UI/body monospace
+- Noto Emoji — weather emoji glyphs
 
-The app will still build without these fonts, but typography will fall back to system fonts.
+No proprietary Nothing assets are included in this repository.
 
 ## License
 

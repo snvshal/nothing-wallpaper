@@ -32,9 +32,9 @@ export default function DraggableWidget({
           ? "none"
           : "left 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)",
       }}
-      className={`w-[144px] h-[144px] cursor-grab active:cursor-grabbing flex flex-col justify-between border bg-black ${
+      className={`w-[144px] h-[144px] cursor-grab active:cursor-grabbing flex flex-col justify-between border bg-nothing-black ${
         noPadding ? "" : "p-4"
-      } ${isDragging ? "border-nothing-red z-50 opacity-90" : "border-white/20 z-10"}`}
+      } ${isDragging ? "border-nothing-red z-50 opacity-90" : "border-nothing-white/20 z-10"}`}
     >
       {children}
     </div>

@@ -30,7 +30,7 @@ Three-row vertical flex column: temperature at top, cloud emoji centered, city n
 
 | Property | Value                          |
 | -------- | ------------------------------ |
-| Font     | NDot 55 (`font-ndot`)          |
+| Font     | Doto (`font-dot`)              |
 | Size     | `--widget-size * 0.1`          |
 | Colour   | `#FFFFFF` (white)              |
 | Position | Top-right (`flex justify-end`) |
@@ -52,7 +52,7 @@ Three-row vertical flex column: temperature at top, cloud emoji centered, city n
 
 | Property       | Value                             |
 | -------------- | --------------------------------- |
-| Font           | NType82 Regular (`font-ntype`)    |
+| Font           | Google Sans Code (`font-body`)    |
 | Size           | `--widget-size * 0.07`            |
 | Colour         | `text-nothing-ngrey` (`#DCD7D2`)  |
 | Position       | Bottom-left (default flex)        |

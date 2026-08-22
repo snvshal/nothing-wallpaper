@@ -44,70 +44,46 @@ For detailed per-widget specs, see [docs/widgets/](widgets/).
 
 Located in `src/assets/fonts/` and `src/assets/emojis/`:
 
-| File                              | Format | Typeface        | Role                                |
-| --------------------------------- | ------ | --------------- | ----------------------------------- |
-| `Ndot-55.otf`                     | OTF    | NDot 55         | RAM title, percentage, weather temp |
-| `NDot-57.woff2`                   | WOFF2  | NDot 57         | Alternate dot-matrix (备用)         |
-| `NType82-Regular.woff2`           | WOFF2  | NType82 Regular | Calendar date, day name, city name  |
-| `NType82Mono-Regular.woff2`       | WOFF2  | NType82 Mono    | RAM GB values, monospace details    |
-| `NotoEmoji-VariableFont_wght.ttf` | TTF    | Noto Emoji      | Weather cloud emoji                 |
+| File                                               | Format       | Typeface         | Role                                            |
+| -------------------------------------------------- | ------------ | ---------------- | ----------------------------------------------- |
+| `Doto/Doto-VariableFont.ttf`                       | TTF variable | Doto             | Dot-matrix display: RAM title, percentage, temp |
+| `Google_Sans_Code/GoogleSansCode-VariableFont.ttf` | TTF variable | Google Sans Code | Body/UI: date, city name, RAM GB values         |
+| `NotoEmoji-VariableFont_wght.ttf`                  | TTF variable | Noto Emoji       | Weather cloud emoji                             |
+
+Both font families are SIL OFL 1.1 licensed (`OFL.txt` bundled alongside).
 
 ### Typefaces (full reference)
 
-#### NDot 55
+#### Doto
 
-- **Role**: Product names / logotype
-- **Inspiration**: Industrial dot-matrix printers
-- **Size range**: 10pt to unlimited
-- **Leading**: 90% of font size
-- **Tracking**: 0 (not optical or metrical)
-- **Case**: Mainly uppercase; can combine uppercase with lowercase for product names
-- **Wallpaper use**: RAM title/percentage, weather temperature
+- **Role**: Dot-matrix display text (headings, numerals)
+- **License**: SIL OFL 1.1
+- **Variation axes**: `wght` 100–900, `ROND` 0–100 (`ROND 100` = round dots, matching the NDot aesthetic)
+- **Case**: Uppercase preferred
+- **Wallpaper use**: Calendar day, weather temperature, RAM title/percentage
 
-#### NType82 Regular
+#### Google Sans Code
 
-- **Role**: Body text / preamble / quotes
-- **Inspiration**: Olivetti Lexikon 82 typewriter
-- **Leading / tracking by size**:
-  - 7.5–15pt: tracking +1%, leading 125%
-  - 15–30pt: tracking +1%, leading 115%
-  - 30–60pt: tracking −1%, leading 115%
-  - 60–120pt: tracking −1%, leading 100%
-  - 120pt+: tracking −1%, leading 85%
+- **Role**: Body / UI text and monospace details
+- **License**: SIL OFL 1.1
+- **Variation axes**: `wght` 100–800, `MONO` 0–1
 - **Case**: Sentence case
-- **Wallpaper use**: Calendar date, day name, weather city
-
-#### NType82 Headline (not used)
-
-- Headlines only, 40pt+
-- Not needed for this wallpaper
-
-#### NType82 Mono (not used)
-
-- Monospaced body, 7.5–15pt max
-- Not needed — Lettera Mono LL covers small text
-
-#### Lettera Mono LL
-
-- **Role**: Small / legal text, spec sheets, fine print
-- **Size range**: 5pt minimum to 10pt maximum
-- **Font width**: 90%
-- **Leading**: 110% of font size
-- **Tracking**: 0 (mono spaced, don't adjust)
-- **Wallpaper use**: RAM GB values, small details
+- **Wallpaper use**: Calendar date, weather city, RAM GB values
 
 ### Wallpaper Element Mapping
 
-| Element        | Font            | Size                   | Colour    | Case          |
-| -------------- | --------------- | ---------------------- | --------- | ------------- |
-| Calendar date  | NType82 Regular | `--widget-size * 0.39` | `#FFFFFF` | Sentence case |
-| Calendar day   | NDot 55         | `--widget-size * 0.07` | `#C8102E` | Uppercase     |
-| Weather temp   | NDot 55         | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| Weather city   | NType82 Regular | `--widget-size * 0.07` | `#DCD7D2` | Sentence case |
-| Weather emoji  | Noto Emoji      | `--widget-size * 0.39` | `#FFFFFF` | N/A           |
-| RAM title      | NDot 55         | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| RAM percentage | NDot 55         | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| RAM GB values  | Lettera Mono LL | `--widget-size * 0.06` | `#DCD7D2` | N/A           |
+| Element        | Font             | Size                   | Colour    | Case          |
+| -------------- | ---------------- | ---------------------- | --------- | ------------- |
+| Calendar date  | Google Sans Code | `--widget-size * 0.39` | `#FFFFFF` | Sentence case |
+| Calendar day   | Doto             | `--widget-size * 0.1`  | `#C8102E` | Uppercase     |
+| Weather temp   | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
+| Weather city   | Google Sans Code | `--widget-size * 0.07` | `#DCD7D2` | Sentence case |
+| Weather emoji  | Noto Emoji       | `--widget-size * 0.39` | `#FFFFFF` | N/A           |
+| RAM title      | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
+| RAM percentage | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
+| RAM GB values  | Google Sans Code | `--widget-size * 0.06` | `#DCD7D2` | N/A           |
+
+Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widget-display` (×0.39), `text-widget-title` (×0.1), `text-widget-subtitle` (×0.07), `text-widget-detail` (×0.06) — tune the scale by editing those four variables only.
 
 ## Layout
 
@@ -185,8 +161,8 @@ This ensures widgets maintain proportions when size changes.
 
 ### Do
 
-- Use NDot 55 for the Nothing logotype and product names only
-- Use NType82 for body text and headlines
+- Use Doto (`font-dot`) for dot-matrix display text only
+- Use Google Sans Code (`font-body`) for body text and UI
 - Keep monochrome
 - Use sharp edges by default (border-radius `16px` accepted for widget cards only)
 
@@ -196,15 +172,15 @@ This ensures widgets maintain proportions when size changes.
 - Use drop shadows on any graphic element
 - Use gradients anywhere
 - Alter the established layout / grid
-- Mix font sizes within NDot55, NType82, or NType82Mono blocks
-- Use NDot 55 for body text
+- Mix font sizes within Doto or Google Sans Code blocks
+- Use Doto for body text
 
 ## Current Deviations
 
-| Issue                | Current                    | Notes                                                         |
-| -------------------- | -------------------------- | ------------------------------------------------------------- |
-| Background           | `background.jpg` image     | Pure black `#000000` is Nothing spec — image is intentional   |
-| Widget border-radius | `16px`                     | Intentional deviation — matches Nothing card spec             |
-| Clock widget         | Circular with hands        | Nothing Phone lockscreen inspired — no digital time displayed |
-| Widget background    | `bg-black` (pure black)    | Compliant with Nothing spec                                   |
-| All sizing           | Relative (`--widget-size`) | Scales with widget — no fixed pixel sizes                     |
+| Issue                | Current                         | Notes                                                         |
+| -------------------- | ------------------------------- | ------------------------------------------------------------- |
+| Background           | `background.png` image          | Original generated artwork at 3840×2160 — black + dot grid    |
+| Widget border-radius | `16px`                          | Intentional deviation — matches Nothing card spec             |
+| Clock widget         | Circular with hands             | Nothing Phone lockscreen inspired — no digital time displayed |
+| Widget background    | `bg-nothing-black` (pure black) | Compliant with Nothing spec                                   |
+| All sizing           | Relative (`--widget-size`)      | Scales with widget — no fixed pixel sizes                     |
