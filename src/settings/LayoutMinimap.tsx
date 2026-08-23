@@ -1,12 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import {
-  GRID,
-  MARGIN,
-  WIDGET_SIZE,
   clampToScreen,
   collidesWithAny,
   findFreePosition,
   snap,
+  type GridMetrics,
   type Position,
   type Screen,
 } from "../lib/placement";
@@ -16,6 +14,7 @@ interface LayoutMinimapProps {
   placed: Record<string, Position>;
   positions: Record<string, Position>;
   screen: Screen;
+  metrics: GridMetrics;
   noSpaceIds: string[];
   onChange: (positions: Record<string, Position>) => void;
 }
@@ -40,6 +39,7 @@ export default function LayoutMinimap({
   placed,
   positions,
   screen,
+  metrics,
   noSpaceIds,
   onChange,
 }: LayoutMinimapProps) {
@@ -61,7 +61,7 @@ export default function LayoutMinimap({
 
   const scale = width > 0 ? width / screen.width : 0;
   const height = scale > 0 ? Math.round(screen.height * scale) : 0;
-  const cell = GRID * scale;
+  const cell = metrics.grid * scale;
 
   const othersOf = (id: string): Record<string, Position> => {
     const others: Record<string, Position> = {};
@@ -89,8 +89,12 @@ export default function LayoutMinimap({
       x: start.origin.x + (e.clientX - start.clientX) / scale,
       y: start.origin.y + (e.clientY - start.clientY) / scale,
     };
-    const next = clampToScreen({ x: snap(raw.x), y: snap(raw.y) }, screen);
-    setDrag({ id, pos: next, collides: collidesWithAny(id, next, othersOf(id)) });
+    const next = clampToScreen(
+      { x: snap(raw.x, metrics), y: snap(raw.y, metrics) },
+      screen,
+      metrics,
+    );
+    setDrag({ id, pos: next, collides: collidesWithAny(id, next, othersOf(id), metrics) });
   };
 
   const endDrag = () => {
@@ -103,8 +107,8 @@ export default function LayoutMinimap({
       return;
     }
     let finalPos = drag.pos;
-    if (collidesWithAny(id, finalPos, othersOf(id))) {
-      finalPos = findFreePosition(othersOf(id), id, screen) ?? start.origin;
+    if (collidesWithAny(id, finalPos, othersOf(id), metrics)) {
+      finalPos = findFreePosition(othersOf(id), id, screen, metrics) ?? start.origin;
     }
     setDrag(null);
     const stored = positions[id];
@@ -116,8 +120,8 @@ export default function LayoutMinimap({
   const tileStyle = (pos: Position): React.CSSProperties => ({
     left: `${pos.x * scale}px`,
     top: `${pos.y * scale}px`,
-    width: `${WIDGET_SIZE * scale}px`,
-    height: `${WIDGET_SIZE * scale}px`,
+    width: `${metrics.widgetSize * scale}px`,
+    height: `${metrics.widgetSize * scale}px`,
   });
 
   return (
@@ -132,14 +136,14 @@ export default function LayoutMinimap({
           backgroundPosition: `-${cell / 2}px -${cell / 2}px`,
         }}
       >
-        <div className="minimap-margin" style={{ inset: `${MARGIN * scale}px` }} />
+        <div className="minimap-margin" style={{ inset: `${metrics.margin * scale}px` }} />
         {ORDER.map((id) => {
           if (!widgets[id]) return null;
           const pos = drag?.id === id ? drag.pos : placed[id];
           if (!pos) {
             const storedPos = positions[id];
             if (!storedPos) return null;
-            const ghostPos = clampToScreen(storedPos, screen);
+            const ghostPos = clampToScreen(storedPos, screen, metrics);
             return (
               <div
                 key={id}

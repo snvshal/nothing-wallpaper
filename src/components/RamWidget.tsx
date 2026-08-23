@@ -48,13 +48,23 @@ export default function RamWidget() {
           <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
             RAM
           </div>
-          <div className="font-body text-nothing-ngrey mt-1 text-widget-detail">{totalGB} GB</div>
+          <div
+            className="font-body text-nothing-ngrey text-widget-detail"
+            style={{ marginTop: "calc(var(--unit) * 0.25)" }}
+          >
+            {totalGB} GB
+          </div>
         </div>
         <div className="text-right">
           <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
             {usedPercent.toFixed(1)}%
           </div>
-          <div className="font-body text-nothing-ngrey mt-1 text-widget-detail">{usedGB} GB</div>
+          <div
+            className="font-body text-nothing-ngrey text-widget-detail"
+            style={{ marginTop: "calc(var(--unit) * 0.25)" }}
+          >
+            {usedGB} GB
+          </div>
         </div>
       </div>
 

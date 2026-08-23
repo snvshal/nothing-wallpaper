@@ -16,7 +16,7 @@
   --color-nothing-widget-red: #d71920;
   --color-widget-bg: #111111;
 
-  --radius-widget: 24px;
+  --radius-widget: calc(var(--widget-size) / 6);
   --widget-size: 144px;
 
   --text-widget-display: calc(var(--widget-size) * 0.39);

@@ -1,20 +1,23 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { emitTo, listen } from "@tauri-apps/api/event";
 import {
-  DEFAULT_POSITIONS,
   clampToScreen,
   collidesWithAny,
+  defaultPositions,
   evaluateLayout,
   findFreePosition,
+  gridMetrics,
+  rescalePositions,
   type Screen,
 } from "../lib/placement";
 import { loadSettings, saveSettings, type AppSettings } from "./settings-store";
+import GridUnitPicker from "./GridUnitPicker";
 import TitleBar from "./TitleBar";
 import WallpaperPicker from "./WallpaperPicker";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
 
-const WIDGET_IDS = Object.keys(DEFAULT_POSITIONS);
+const WIDGET_IDS = ["clock", "calendar", "weather", "ram"];
 
 const FALLBACK_SCREEN: Screen = { width: 1920, height: 1080 };
 
@@ -53,14 +56,17 @@ export default function SettingsApp() {
     [settings],
   );
 
+  const unit = settings?.unit ?? 16;
+  const metrics = useMemo(() => gridMetrics(unit), [unit]);
+
   const seededPositions = useMemo(
-    () => ({ ...DEFAULT_POSITIONS, ...settings?.positions }),
-    [settings],
+    () => ({ ...defaultPositions(metrics), ...settings?.positions }),
+    [settings?.positions, metrics],
   );
 
   const layout = useMemo(
-    () => evaluateLayout(visibleIds, seededPositions, screen),
-    [visibleIds, seededPositions, screen],
+    () => evaluateLayout(visibleIds, seededPositions, screen, metrics),
+    [visibleIds, seededPositions, screen, metrics],
   );
 
   if (!settings) return null;
@@ -79,13 +85,22 @@ export default function SettingsApp() {
         WIDGET_IDS.filter((otherId) => otherId !== id && widgets[otherId]),
         seededPositions,
         screen,
+        metrics,
       ).placed;
       const saved = positions[id];
-      if (saved && !collidesWithAny(id, clampToScreen(saved, screen), others)) continue;
-      const free = findFreePosition(others, id, screen);
+      if (saved && !collidesWithAny(id, clampToScreen(saved, screen, metrics), others, metrics))
+        continue;
+      const free = findFreePosition(others, id, screen, metrics);
       if (free) positions = { ...positions, [id]: free };
     }
     await update({ widgets, positions });
+  };
+
+  const changeUnit = async (nextUnit: number) => {
+    await update({
+      unit: nextUnit,
+      positions: rescalePositions(settings.positions, unit, nextUnit),
+    });
   };
 
   return (
@@ -100,11 +115,14 @@ export default function SettingsApp() {
 
           <WidgetToggles widgets={settings.widgets} onToggle={updateWidgets} />
 
+          <GridUnitPicker unit={unit} onSelect={changeUnit} />
+
           <LayoutMinimap
             widgets={settings.widgets}
             placed={layout.placed}
             positions={seededPositions}
             screen={screen}
+            metrics={metrics}
             noSpaceIds={layout.skipped}
             onChange={(positions) => update({ positions })}
           />

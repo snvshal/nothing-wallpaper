@@ -7,7 +7,7 @@ body {
 
 #root {
   height: 100vh;
-  background: #0a0a0a;
+  background: var(--color-widget-bg);
   border-radius: 8px;
   overflow: hidden;
 }
@@ -108,7 +108,7 @@ body {
   font-variation-settings: "ROND" 100;
   font-size: 12px;
   letter-spacing: 0.1em;
-  color: #b1b3b3;
+  color: var(--color-nothing-grey);
   text-transform: uppercase;
 }
 
@@ -147,9 +147,9 @@ body {
   font-size: 13px;
   height: 34px;
   width: 100%;
-  color: #b1b3b3;
+  color: var(--color-nothing-grey);
   background: transparent;
-  border: 1px solid #6e6e6e;
+  border: 1px solid var(--color-nothing-dgrey);
   border-radius: 8px;
   padding: 0 16px;
   cursor: pointer;
@@ -160,14 +160,119 @@ body {
 }
 
 .wallpaper-mode-btn:hover {
-  color: #ffffff;
-  border-color: #b1b3b3;
+  color: var(--color-nothing-white);
+  border-color: var(--color-nothing-grey);
 }
 
 .wallpaper-mode-btn.active,
 .wallpaper-mode-btn.active:hover {
-  color: #ffffff;
-  border-color: #c8102e;
+  color: var(--color-nothing-white);
+  border-color: var(--color-nothing-red);
+}
+
+/* Grid unit stepped slider */
+.grid-unit-slider {
+  position: relative;
+  height: 46px;
+  margin: 10px 14px 0;
+  touch-action: none;
+}
+
+.grid-unit-slider:focus-visible {
+  outline: 1px solid var(--color-nothing-grey);
+  outline-offset: 4px;
+  border-radius: 4px;
+}
+
+.grid-unit-track,
+.grid-unit-track-fill {
+  position: absolute;
+  top: 9px;
+  height: 2px;
+  border-radius: 1px;
+}
+
+.grid-unit-track {
+  left: 0;
+  right: 0;
+  background: var(--color-nothing-dgrey);
+}
+
+.grid-unit-track-fill {
+  left: 0;
+  background-color: var(--color-nothing-red);
+  transition: width 0.15s;
+}
+
+.grid-unit-slider.dragging .grid-unit-track-fill,
+.grid-unit-slider.dragging .grid-unit-thumb {
+  transition: none;
+}
+
+.grid-unit-stop {
+  position: absolute;
+  top: 7px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  transform: translateX(-50%);
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.grid-unit-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--color-nothing-dgrey);
+  transition:
+    background-color 0.15s,
+    transform 0.15s;
+}
+
+.grid-unit-stop.passed .grid-unit-dot {
+  background-color: var(--color-nothing-red);
+}
+
+.grid-unit-stop:hover .grid-unit-dot {
+  background-color: var(--color-nothing-white);
+  transform: scale(1.25);
+}
+
+.grid-unit-stop.passed:hover .grid-unit-dot {
+  background-color: var(--color-nothing-red);
+}
+
+.grid-unit-thumb {
+  position: absolute;
+  top: 10px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background-color: var(--color-nothing-red);
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-nothing-red) 18%, transparent);
+  transform: translate(-50%, -50%);
+  transition: left 0.15s;
+  cursor: grab;
+  z-index: 1;
+}
+
+.grid-unit-slider.dragging .grid-unit-thumb {
+  cursor: grabbing;
+}
+
+.grid-unit-value {
+  font-family: var(--font-body);
+  font-size: 12px;
+  color: var(--color-nothing-grey);
+  transition: color 0.15s;
+}
+
+.grid-unit-stop.active .grid-unit-value {
+  color: var(--color-nothing-white);
 }
 
 .wallpaper-thumb-system {
@@ -181,23 +286,23 @@ body {
   font-weight: 700;
   font-size: 13px;
   letter-spacing: 0.15em;
-  color: #ffffff;
+  color: var(--color-nothing-white);
   font-variation-settings: "ROND" 100;
 }
 
 .wallpaper-thumb:hover {
-  border-color: #6e6e6e;
+  border-color: var(--color-nothing-dgrey);
 }
 
 .wallpaper-thumb.selected {
-  border-color: #c8102e;
+  border-color: var(--color-nothing-red);
 }
 
 .wallpaper-current {
   font-family: "Google Sans Code", monospace;
   font-size: 11px;
   letter-spacing: 0.05em;
-  color: #6e6e6e;
+  color: var(--color-nothing-dgrey);
   max-width: 100%;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -224,7 +329,7 @@ body {
   font-variation-settings: "ROND" 100;
   font-size: 14px;
   letter-spacing: 0.05em;
-  color: #ffffff;
+  color: var(--color-nothing-white);
 }
 
 /* Toggle switch */
@@ -244,13 +349,13 @@ body {
 .toggle-track {
   position: absolute;
   inset: 0;
-  background: #6e6e6e;
+  background: var(--color-nothing-dgrey);
   border-radius: 12px;
   transition: background 0.2s;
 }
 
 .toggle input:checked + .toggle-track {
-  background: #c8102e;
+  background: var(--color-nothing-red);
 }
 
 .toggle-thumb {
@@ -259,7 +364,7 @@ body {
   left: 3px;
   width: 18px;
   height: 18px;
-  background: #ffffff;
+  background: var(--color-nothing-white);
   border-radius: 50%;
   transition: transform 0.2s;
   pointer-events: none;
@@ -273,15 +378,19 @@ body {
 .minimap {
   position: relative;
   width: 100%;
-  background-color: #000000;
-  border: 1px solid #6e6e6e;
-  background-image: radial-gradient(circle, rgba(255, 255, 255, 0.22) 0.75px, transparent 1px);
+  background-color: var(--color-nothing-black);
+  border: 1px solid var(--color-nothing-dgrey);
+  background-image: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-nothing-white) 22%, transparent) 0.75px,
+    transparent 1px
+  );
   overflow: hidden;
 }
 
 .minimap-margin {
   position: absolute;
-  border: 1px dashed rgba(255, 255, 255, 0.12);
+  border: 1px dashed color-mix(in srgb, var(--color-nothing-white) 12%, transparent);
   pointer-events: none;
 }
 
@@ -293,9 +402,9 @@ body {
   font-family: "Doto", monospace;
   font-variation-settings: "ROND" 100;
   letter-spacing: 0.05em;
-  color: #ffffff;
+  color: var(--color-nothing-white);
   background: var(--color-widget-bg);
-  border: 1px solid #b1b3b3;
+  border: 1px solid var(--color-nothing-grey);
   cursor: grab;
   touch-action: none;
   user-select: none;
@@ -305,24 +414,24 @@ body {
 }
 
 .minimap-tile:hover {
-  border-color: #ffffff;
+  border-color: var(--color-nothing-white);
 }
 
 .minimap-tile.collides {
-  border-color: #c8102e;
-  color: #c8102e;
+  border-color: var(--color-nothing-red);
+  color: var(--color-nothing-red);
   cursor: grabbing;
 }
 
 .minimap-ghost {
   position: absolute;
-  border: 1px dashed #6e6e6e;
+  border: 1px dashed var(--color-nothing-dgrey);
   opacity: 0.35;
   pointer-events: none;
 }
 
 .minimap-ghost.nospace {
-  border-color: #c8102e;
+  border-color: var(--color-nothing-red);
   animation: minimap-pulse 1.6s ease-in-out infinite;
 }
 
@@ -339,5 +448,5 @@ body {
 .minimap-warning {
   font-family: "Google Sans Code", monospace;
   font-size: 12px;
-  color: #c8102e;
+  color: var(--color-nothing-red);
 }

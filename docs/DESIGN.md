@@ -98,31 +98,32 @@ Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widge
 
 ### Widget Grid System
 
-All widget dimensions and positions snap to a **16px grid** (1 unit = 16px).
+All widget dimensions and positions snap to the **grid unit** (default 16px,
+user-configurable in settings).
 
-| Property             | Value            | Notes                                 |
-| -------------------- | ---------------- | ------------------------------------- |
-| Grid unit            | 16px             | 1 unit = 16px                         |
-| Widget size variable | `--widget-size`  | CSS variable in `global.css`          |
-| Small widget         | 9 units (144px)  | Odd number for symmetry               |
-| Medium widget        | 11 units (176px) | Odd number for symmetry               |
-| Large widget         | 13 units (208px) | Odd number for symmetry               |
-| XL widget            | 15 units (240px) | Odd number for symmetry               |
-| Grid snap            | 16px             | Drag positions snap to nearest unit   |
-| Widget gap           | 16px (1 unit)    | Minimum space between any two widgets |
-| Edge padding         | 16px (1 unit)    | Lattice-aligned reserved border band  |
-| Border radius        | 24px             | `--radius-widget` CSS variable        |
+| Property             | Value                       | Notes                                                         |
+| -------------------- | --------------------------- | ------------------------------------------------------------- |
+| Grid unit            | 16px (configurable 12–24px) | Settings › Grid unit; 1 unit = chosen px                      |
+| Widget size variable | `--widget-size`             | `9 × unit`, set at runtime on `documentElement` with `--unit` |
+| Small widget         | 9 units                     | Odd number for symmetry                                       |
+| Medium widget        | 11 units                    | Odd number for symmetry                                       |
+| Large widget         | 13 units                    | Odd number for symmetry                                       |
+| XL widget            | 15 units                    | Odd number for symmetry                                       |
+| Grid snap            | 1 unit                      | Drag positions snap to nearest unit                           |
+| Widget gap           | 1 unit                      | Minimum space between any two widgets                         |
+| Edge padding         | 1 unit                      | Lattice-aligned reserved border band                          |
+| Border radius        | `var(--widget-size) / 6`    | `--radius-widget`; 24px at the default unit                   |
 
 ### Placement Engine
 
 Widget placement logic lives in `src/lib/placement.ts` and is shared by the
 wallpaper window and the settings layout minimap.
 
-- **Collision rule** — a widget's footprint is size + gap (160px); overlapping
-  widgets are never rendered side by side
+- **Collision rule** — a widget's footprint is size + gap (160px at the
+  default unit); overlapping widgets are never rendered side by side
 - **Toggle-on placement** — when a widget is enabled, its previous position is
   restored if still valid; otherwise the first free slot scanning from the
-  top-left corner (16px steps) is assigned
+  top-left corner (1-unit steps) is assigned
 - **No-space state** — if no free slot exists anywhere, the widget stays hidden
   and settings flags it ("not enough space"); it appears automatically once
   space frees up or it is repositioned from the layout minimap
@@ -151,6 +152,18 @@ font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 | Secondary label | 0.1        | RAM title/percentage, weather temp, day name |
 | Small text      | 0.07       | City name                                    |
 | Detail text     | 0.06       | RAM GB values                                |
+
+Spacing follows the unit the same way:
+
+| Element          | Value                              | Description                         |
+| ---------------- | ---------------------------------- | ----------------------------------- |
+| Widget padding   | 1 unit (`var(--unit)`)             | Inner padding of widget cards       |
+| RAM label margin | `calc(var(--unit) * 0.25)`         | Gap under RAM title/percentage rows |
+| Calendar nudge   | `calc(var(--widget-size) * 0.028)` | Optical centring of the date number |
+| Border           | fixed `1px`                        | Hairline strokes never scale        |
+
+`--widget-size` and `--unit` are set on `documentElement` at runtime so the
+`:root`-level token calcs recompute whenever the grid unit changes.
 
 This ensures widgets maintain proportions when size changes.
 

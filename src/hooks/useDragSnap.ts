@@ -1,11 +1,12 @@
 import { useState, useRef, useCallback, useEffect } from "react";
-import { MARGIN, clampToScreen, collidesWithAny, type Position } from "../lib/placement";
+import { clampToScreen, collidesWithAny, type GridMetrics, type Position } from "../lib/placement";
 
 interface DragSnapOptions {
   initialPositions: Record<string, Position>;
   widgetSize?: number;
   gridSize?: number;
   minGap?: number;
+  margin?: number;
   onDragEnd?: (id: string, position: Position) => void;
 }
 
@@ -14,6 +15,7 @@ export function useDragSnap({
   widgetSize = 160,
   gridSize = 16,
   minGap = 16,
+  margin = 16,
   onDragEnd,
 }: DragSnapOptions) {
   const [positions, setPositions] = useState(initialPositions);
@@ -28,6 +30,15 @@ export function useDragSnap({
   const positionsRef = useRef(positions);
 
   positionsRef.current = positions;
+
+  const metrics: GridMetrics = {
+    unit: gridSize,
+    widgetSize,
+    grid: gridSize,
+    gap: minGap,
+    margin,
+    footprint: widgetSize + minGap,
+  };
 
   useEffect(() => {
     if (dragIdRef.current) return;
@@ -77,8 +88,8 @@ export function useDragSnap({
       let rawX = e.clientX - containerRect.left - dragOffset.current.x;
       let rawY = e.clientY - containerRect.top - dragOffset.current.y;
 
-      rawX = Math.max(MARGIN, Math.min(rawX, containerRect.width - widgetSize - MARGIN));
-      rawY = Math.max(MARGIN, Math.min(rawY, containerRect.height - widgetSize - MARGIN));
+      rawX = Math.max(margin, Math.min(rawX, containerRect.width - widgetSize - margin));
+      rawY = Math.max(margin, Math.min(rawY, containerRect.height - widgetSize - margin));
 
       setFluidPos({ x: rawX, y: rawY });
 
@@ -89,13 +100,15 @@ export function useDragSnap({
           y: Math.round(rawY / gridSize) * gridSize,
         },
         screen,
+        metrics,
       );
       const snappedX = snapped.x;
       const snappedY = snapped.y;
 
       const pos = positionsRef.current;
 
-      const collides = (tx: number, ty: number) => collidesWithAny(id, { x: tx, y: ty }, pos);
+      const collides = (tx: number, ty: number) =>
+        collidesWithAny(id, { x: tx, y: ty }, pos, metrics);
 
       if (!collides(snappedX, snappedY)) {
         dropTargetRef.current = { x: snappedX, y: snappedY };
@@ -126,7 +139,7 @@ export function useDragSnap({
       window.removeEventListener("mousemove", handleMove);
       window.removeEventListener("mouseup", handleUp);
     };
-  }, [draggingId, widgetSize, gridSize, minGap, onDragEnd]);
+  }, [draggingId, widgetSize, gridSize, minGap, margin, onDragEnd]);
 
   return {
     positions,

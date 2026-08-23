@@ -8,11 +8,9 @@ import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
-import { DEFAULT_POSITIONS, evaluateLayout, type Screen } from "./lib/placement";
+import { defaultPositions, evaluateLayout, gridMetrics, type Screen } from "./lib/placement";
 import { DEFAULT_WALLPAPER_URL } from "./lib/constants";
 import "./styles/global.css";
-
-const WIDGET_SIZE = 144;
 
 const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
@@ -73,9 +71,18 @@ export default function App() {
     [settings?.widgets],
   );
   const savedPositions = useMemo(() => settings?.positions ?? {}, [settings]);
+  const unit = settings?.unit ?? 16;
+  const metrics = useMemo(() => gridMetrics(unit), [unit]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.style.setProperty("--unit", `${metrics.unit}px`);
+    root.style.setProperty("--widget-size", `${metrics.widgetSize}px`);
+  }, [metrics]);
+
   const seededPositions = useMemo(
-    () => ({ ...DEFAULT_POSITIONS, ...savedPositions }),
-    [savedPositions],
+    () => ({ ...defaultPositions(metrics), ...savedPositions }),
+    [savedPositions, metrics],
   );
 
   const wallpaper = settings?.wallpaper ?? "default";
@@ -89,13 +96,13 @@ export default function App() {
         };
 
   const visibleIds = useMemo(
-    () => Object.keys(DEFAULT_POSITIONS).filter((id) => visibleWidgets[id]),
-    [visibleWidgets],
+    () => Object.keys(defaultPositions(metrics)).filter((id) => visibleWidgets[id]),
+    [visibleWidgets, metrics],
   );
 
   const layout = useMemo(
-    () => evaluateLayout(visibleIds, seededPositions, screen),
-    [visibleIds, seededPositions, screen],
+    () => evaluateLayout(visibleIds, seededPositions, screen, metrics),
+    [visibleIds, seededPositions, screen, metrics],
   );
 
   useEffect(() => {
@@ -123,7 +130,14 @@ export default function App() {
   }, []);
 
   const { positions, draggingId, fluidPos, dropTarget, containerRef, handleMouseDown } =
-    useDragSnap({ initialPositions: layout.placed, widgetSize: WIDGET_SIZE, onDragEnd });
+    useDragSnap({
+      initialPositions: layout.placed,
+      widgetSize: metrics.widgetSize,
+      gridSize: metrics.grid,
+      minGap: metrics.gap,
+      margin: metrics.margin,
+      onDragEnd,
+    });
 
   return (
     <div
@@ -137,8 +151,8 @@ export default function App() {
             position: "absolute",
             left: `${dropTarget.x}px`,
             top: `${dropTarget.y}px`,
-            width: `${WIDGET_SIZE}px`,
-            height: `${WIDGET_SIZE}px`,
+            width: `${metrics.widgetSize}px`,
+            height: `${metrics.widgetSize}px`,
             borderRadius: WIDGET_RADIUS[draggingId] ?? "var(--radius-widget)",
           }}
           className="border-2 border-dashed border-nothing-widget-red/60 z-0 flex items-center justify-center pointer-events-none"

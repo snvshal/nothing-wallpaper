@@ -16,7 +16,10 @@ export default function CalendarWidget() {
       <span className="absolute top-0 right-0 font-dot text-widget-title text-nothing-widget-red tracking-wider select-none">
         {dayName}
       </span>
-      <span className="font-body text-nothing-white tracking-wider select-none leading-none text-widget-display translate-y-1">
+      <span
+        className="font-body text-nothing-white tracking-wider select-none leading-none text-widget-display"
+        style={{ transform: "translateY(calc(var(--widget-size) * 0.028))" }}
+      >
         {dayNum}
       </span>
     </div>

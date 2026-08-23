@@ -1,7 +1,26 @@
-export const WIDGET_SIZE = 144;
-export const GRID = 16;
-export const GAP = 16;
-export const MARGIN = GRID;
+export const UNITS_PER_WIDGET = 9;
+export const DEFAULT_UNIT = 16;
+export const UNIT_OPTIONS = [12, 16, 20, 24];
+
+export interface GridMetrics {
+  unit: number;
+  widgetSize: number;
+  grid: number;
+  gap: number;
+  margin: number;
+  footprint: number;
+}
+
+export function gridMetrics(unit: number = DEFAULT_UNIT): GridMetrics {
+  return {
+    unit,
+    widgetSize: UNITS_PER_WIDGET * unit,
+    grid: unit,
+    gap: unit,
+    margin: unit,
+    footprint: (UNITS_PER_WIDGET + 1) * unit,
+  };
+}
 
 export interface Screen {
   width: number;
@@ -13,16 +32,45 @@ export interface Position {
   y: number;
 }
 
-const FOOTPRINT = WIDGET_SIZE + GAP;
+const DEFAULT_POSITION_UNITS: Record<string, Position> = {
+  clock: { x: 6, y: 6 },
+  calendar: { x: 16, y: 6 },
+  weather: { x: 6, y: 16 },
+  ram: { x: 16, y: 16 },
+};
 
-function overlaps(a: Position, b: Position): boolean {
+export function defaultPositions(m: GridMetrics): Record<string, Position> {
+  const out: Record<string, Position> = {};
+  for (const [id, pos] of Object.entries(DEFAULT_POSITION_UNITS)) {
+    out[id] = { x: pos.x * m.unit, y: pos.y * m.unit };
+  }
+  return out;
+}
+
+export function rescalePositions(
+  positions: Record<string, Position>,
+  fromUnit: number,
+  toUnit: number,
+): Record<string, Position> {
+  if (fromUnit === toUnit) return positions;
+  const out: Record<string, Position> = {};
+  for (const [id, pos] of Object.entries(positions)) {
+    out[id] = {
+      x: Math.round(pos.x / fromUnit) * toUnit,
+      y: Math.round(pos.y / fromUnit) * toUnit,
+    };
+  }
+  return out;
+}
+
+function overlaps(a: Position, b: Position, footprint: number): boolean {
   return (
-    a.x < b.x + FOOTPRINT && a.x + FOOTPRINT > b.x && a.y < b.y + FOOTPRINT && a.y + FOOTPRINT > b.y
+    a.x < b.x + footprint && a.x + footprint > b.x && a.y < b.y + footprint && a.y + footprint > b.y
   );
 }
 
-export function snap(value: number): number {
-  return Math.round(value / GRID) * GRID;
+export function snap(value: number, m: GridMetrics): number {
+  return Math.round(value / m.grid) * m.grid;
 }
 
 interface Bounds {
@@ -32,31 +80,31 @@ interface Bounds {
   maxY: number;
 }
 
-function screenBounds(screen: Screen): Bounds {
+function screenBounds(screen: Screen, m: GridMetrics): Bounds {
   const floorToLattice = (v: number) =>
-    Math.max(MARGIN, MARGIN + Math.max(0, Math.floor((v - MARGIN) / GRID)) * GRID);
+    Math.max(m.margin, m.margin + Math.max(0, Math.floor((v - m.margin) / m.grid)) * m.grid);
   return {
-    minX: MARGIN,
-    minY: MARGIN,
-    maxX: floorToLattice(screen.width - MARGIN - WIDGET_SIZE),
-    maxY: floorToLattice(screen.height - MARGIN - WIDGET_SIZE),
+    minX: m.margin,
+    minY: m.margin,
+    maxX: floorToLattice(screen.width - m.margin - m.widgetSize),
+    maxY: floorToLattice(screen.height - m.margin - m.widgetSize),
   };
 }
 
-export function clampToScreen(p: Position, screen: Screen): Position {
-  const { minX, minY, maxX, maxY } = screenBounds(screen);
+export function clampToScreen(p: Position, screen: Screen, m: GridMetrics): Position {
+  const { minX, minY, maxX, maxY } = screenBounds(screen, m);
   return {
-    x: Math.min(maxX, Math.max(minX, snap(p.x))),
-    y: Math.min(maxY, Math.max(minY, snap(p.y))),
+    x: Math.min(maxX, Math.max(minX, snap(p.x, m))),
+    y: Math.min(maxY, Math.max(minY, snap(p.y, m))),
   };
 }
 
-export function inBounds(p: Position, screen: Screen): boolean {
+export function inBounds(p: Position, screen: Screen, m: GridMetrics): boolean {
   return (
-    p.x >= MARGIN &&
-    p.y >= MARGIN &&
-    p.x + WIDGET_SIZE <= screen.width - MARGIN &&
-    p.y + WIDGET_SIZE <= screen.height - MARGIN
+    p.x >= m.margin &&
+    p.y >= m.margin &&
+    p.x + m.widgetSize <= screen.width - m.margin &&
+    p.y + m.widgetSize <= screen.height - m.margin
   );
 }
 
@@ -64,10 +112,11 @@ export function collidesWithAny(
   id: string,
   pos: Position,
   positions: Record<string, Position>,
+  m: GridMetrics,
 ): boolean {
   for (const [otherId, other] of Object.entries(positions)) {
     if (otherId === id) continue;
-    if (overlaps(pos, other)) return true;
+    if (overlaps(pos, other, m.footprint)) return true;
   }
   return false;
 }
@@ -76,12 +125,13 @@ export function findFreePosition(
   placed: Record<string, Position>,
   id: string,
   screen: Screen,
+  m: GridMetrics,
 ): Position | null {
-  const { minX, minY, maxX, maxY } = screenBounds(screen);
-  for (let y = minY; y <= maxY; y += GRID) {
-    for (let x = minX; x <= maxX; x += GRID) {
+  const { minX, minY, maxX, maxY } = screenBounds(screen, m);
+  for (let y = minY; y <= maxY; y += m.grid) {
+    for (let x = minX; x <= maxX; x += m.grid) {
       const candidate = { x, y };
-      if (!collidesWithAny(id, candidate, placed)) return candidate;
+      if (!collidesWithAny(id, candidate, placed, m)) return candidate;
     }
   }
   return null;
@@ -92,29 +142,21 @@ export interface LayoutResult {
   skipped: string[];
 }
 
-export const DEFAULT_POSITIONS: Record<string, Position> = {
-  clock: { x: 96, y: 96 },
-  calendar: { x: 256, y: 96 },
-  weather: { x: 96, y: 256 },
-  ram: { x: 256, y: 256 },
-};
-
 export function evaluateLayout(
   visibleIds: string[],
   positions: Record<string, Position>,
   screen: Screen,
+  m: GridMetrics,
 ): LayoutResult {
   const placed: Record<string, Position> = {};
   const skipped: string[] = [];
+  const defaults = defaultPositions(m);
 
   for (const id of visibleIds) {
     const saved = positions[id];
-    let candidate = clampToScreen(
-      saved ?? DEFAULT_POSITIONS[id] ?? { x: MARGIN, y: MARGIN },
-      screen,
-    );
-    if (collidesWithAny(id, candidate, placed)) {
-      const rescued = findFreePosition(placed, id, screen);
+    let candidate = clampToScreen(saved ?? defaults[id] ?? { x: m.margin, y: m.margin }, screen, m);
+    if (collidesWithAny(id, candidate, placed, m)) {
+      const rescued = findFreePosition(placed, id, screen, m);
       if (!rescued) {
         skipped.push(id);
         continue;
