@@ -35,8 +35,10 @@ export default function DraggableWidget({
           ? "none"
           : "left 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)",
       }}
-      className={`cursor-grab active:cursor-grabbing flex flex-col justify-between border bg-nothing-black ${
-        isDragging ? "border-nothing-widget-red z-50" : "border-nothing-white/20 z-10"
+      className={`cursor-grab flex flex-col justify-between border bg-nothing-black ${
+        isDragging
+          ? "cursor-grabbing border-nothing-widget-red z-50"
+          : "border-nothing-white/20 z-10"
       }`}
     >
       {children}
