@@ -18,11 +18,19 @@ const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
 };
 
-const WIDGET_CONTENT: Record<string, React.ReactNode> = {
-  clock: <ClockWidget />,
-  calendar: <CalendarWidget />,
-  weather: <WeatherWidget />,
-  ram: <RamWidget />,
+const renderWidgetContent = (id: string, settings: AppSettings | null) => {
+  switch (id) {
+    case "clock":
+      return <ClockWidget />;
+    case "calendar":
+      return <CalendarWidget />;
+    case "weather":
+      return <WeatherWidget city={settings?.weatherCity} tempUnit={settings?.tempUnit} />;
+    case "ram":
+      return <RamWidget />;
+    default:
+      return null;
+  }
 };
 
 export default function App() {
@@ -320,7 +328,7 @@ export default function App() {
                   }
             }
           >
-            {WIDGET_CONTENT[id]}
+            {renderWidgetContent(id, settings)}
           </DraggableWidget>
         );
       })}

@@ -16,6 +16,7 @@ import GridUnitPicker from "./GridUnitPicker";
 import TitleBar from "./TitleBar";
 import ThemePicker from "./ThemePicker";
 import WallpaperPicker from "./WallpaperPicker";
+import WeatherSettings from "./WeatherSettings";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
 
@@ -117,6 +118,12 @@ export default function SettingsApp() {
             selected={settings.wallpaper}
             activeTheme={activeTheme}
             onSelect={(wallpaper) => update({ wallpaper })}
+          />
+
+          <WeatherSettings
+            city={settings.weatherCity}
+            tempUnit={settings.tempUnit}
+            onChange={(partial) => update(partial)}
           />
 
           <WidgetToggles widgets={settings.widgets} onToggle={updateWidgets} />

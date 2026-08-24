@@ -1,6 +1,6 @@
 # Weather Widget
 
-Static weather display with cloud emoji, temperature, and city name.
+Live meteorological weather display with condition emoji, temperature, and city name.
 
 ## DraggableWidget Config
 
@@ -12,7 +12,7 @@ Static weather display with cloud emoji, temperature, and city name.
 
 ## Layout
 
-Three-row vertical flex column: temperature at top, cloud emoji centered, city name at bottom.
+Three-row vertical flex column: temperature at top, condition emoji centered, city name at bottom.
 
 ```
 +---------------------------+
@@ -20,7 +20,7 @@ Three-row vertical flex column: temperature at top, cloud emoji centered, city n
 |                           |
 |             cloud         |
 |                           |
-|  Villupuram               |
+|  Surat                    |
 +---------------------------+
 ```
 
@@ -32,38 +32,39 @@ Three-row vertical flex column: temperature at top, cloud emoji centered, city n
 | -------- | ------------------------------ |
 | Font     | Doto (`font-dot`)              |
 | Size     | `--widget-size * 0.1`          |
-| Colour   | `#FFFFFF` (white)              |
+| Colour   | `--theme-text-primary`         |
 | Position | Top-right (`flex justify-end`) |
 | Case     | Uppercase                      |
-| Content  | Static `28°` (placeholder)     |
+| Content  | Live temperature (e.g. `24°`)  |
 
-### Cloud Emoji (main visual)
+### Weather Condition Emoji (main visual)
 
 | Property    | Value                                                 |
 | ----------- | ----------------------------------------------------- |
 | Font        | Noto Emoji (`font-emoji`)                             |
 | Size        | `--widget-size * 0.39`                                |
-| Colour      | `#FFFFFF` (white)                                     |
+| Colour      | `--theme-text-primary`                                |
 | Position    | Centered (`my-auto flex items-center justify-center`) |
-| Character   | `U+2601` (cloud)                                      |
 | Line height | `leading-none`                                        |
+| Mapping     | WMO code to Noto Emoji glyphs (sun, cloud, rain, etc) |
 
 ### City Name
 
-| Property       | Value                             |
-| -------------- | --------------------------------- |
-| Font           | Google Sans Code (`font-body`)    |
-| Size           | `--widget-size * 0.07`            |
-| Colour         | `text-nothing-ngrey` (`#DCD7D2`)  |
-| Position       | Bottom-left (default flex)        |
-| Letter spacing | `tracking-wider`                  |
-| Case           | Sentence case                     |
-| Content        | Static `Villupuram` (placeholder) |
+| Property       | Value                            |
+| -------------- | -------------------------------- |
+| Font           | Google Sans Code (`font-body`)   |
+| Size           | `--widget-size * 0.07`           |
+| Colour         | `--theme-text-secondary`         |
+| Position       | Bottom-left (default flex)       |
+| Letter spacing | `tracking-wider`                 |
+| Case           | Sentence case                    |
+| Content        | Live detected or configured city |
 
 ## Behaviour
 
-| Property        | Value                                     |
-| --------------- | ----------------------------------------- |
-| Data source     | None (static placeholder)                 |
-| Update interval | N/A                                       |
-| Future: API     | Could integrate weather API for live data |
+| Property        | Value                                                              |
+| --------------- | ------------------------------------------------------------------ |
+| Data source     | Open-Meteo Forecast & Geocoding APIs (free, no API key required)   |
+| Location        | Auto-detected via IP geolocation or custom city name from settings |
+| Update interval | 15 minutes (900,000ms) with local cache fallback                   |
+| Units           | Celsius (°C) or Fahrenheit (°F) user-configurable                  |

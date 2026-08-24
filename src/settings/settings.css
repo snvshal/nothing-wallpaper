@@ -148,6 +148,70 @@ body {
   border-color: var(--color-nothing-red);
 }
 
+/* Weather settings */
+.weather-settings-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+}
+
+.weather-input-wrapper {
+  position: relative;
+  flex: 1;
+  min-width: 200px;
+}
+
+.weather-city-input {
+  width: 100%;
+  height: 34px;
+  background: transparent;
+  border: 1px solid var(--theme-border-subtle);
+  border-radius: 8px;
+  padding: 0 32px 0 14px;
+  font-family: "Google Sans Code", monospace;
+  font-size: 13px;
+  color: var(--theme-text-primary);
+  outline: none;
+  transition:
+    border-color 0.15s,
+    color 0.15s;
+}
+
+.weather-city-input::placeholder {
+  color: var(--theme-text-muted);
+  opacity: 0.75;
+}
+
+.weather-city-input:focus {
+  border-color: var(--theme-text-primary);
+}
+
+.weather-clear-btn {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: transparent;
+  border: none;
+  color: var(--theme-text-muted);
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px;
+  transition: color 0.15s;
+}
+
+.weather-clear-btn:hover {
+  color: var(--theme-text-primary);
+}
+
+.weather-unit-group {
+  display: flex;
+  gap: 8px;
+  width: 140px;
+}
+
 /* Wallpaper picker */
 .wallpaper-grid {
   display: flex;
