@@ -1,6 +1,7 @@
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { emit } from "@tauri-apps/api/event";
 import { DEFAULT_UNIT, UNIT_OPTIONS } from "../lib/placement";
+import { isTauri } from "../lib/tauri";
 
 export interface AppSettings {
   wallpaper: string;
@@ -21,25 +22,60 @@ const DEFAULTS: AppSettings = {
   unit: 16,
 };
 
-const store = new LazyStore("settings.json", {
-  defaults: DEFAULTS as unknown as Record<string, unknown>,
-  autoSave: true,
-});
+const tauriStore = isTauri
+  ? new LazyStore("settings.json", {
+      defaults: DEFAULTS as unknown as Record<string, unknown>,
+      autoSave: true,
+    })
+  : null;
+
+// Plain-browser fallback (`bun run dev` outside Tauri): mirror settings into
+// localStorage so the preview keeps positions and choices across reloads.
+// localStorage can throw (privacy mode, disabled); memory keeps the session
+// working without persistence.
+const memoryFallback: Record<string, unknown> = {};
+const FALLBACK_PREFIX = "nothing-wallpaper:";
+
+function storageAvailable(): boolean {
+  try {
+    return typeof localStorage !== "undefined";
+  } catch {
+    return false;
+  }
+}
+
+async function getValue<T>(key: string): Promise<T | null> {
+  if (tauriStore) return (await tauriStore.get<T>(key)) ?? null;
+  if (!storageAvailable()) return (memoryFallback[key] as T) ?? null;
+  const raw = localStorage.getItem(FALLBACK_PREFIX + key);
+  return raw == null ? null : (JSON.parse(raw) as T);
+}
+
+async function setValue(key: string, value: unknown): Promise<void> {
+  if (tauriStore) {
+    await tauriStore.set(key, value);
+    return;
+  }
+  memoryFallback[key] = value;
+  if (storageAvailable()) {
+    localStorage.setItem(FALLBACK_PREFIX + key, JSON.stringify(value));
+  }
+}
 
 export async function loadSettings(): Promise<AppSettings> {
-  const wallpaper = (await store.get<string>("wallpaper")) ?? DEFAULTS.wallpaper;
-  const widgets = (await store.get<Record<string, boolean>>("widgets")) ?? DEFAULTS.widgets;
+  const wallpaper = (await getValue<string>("wallpaper")) ?? DEFAULTS.wallpaper;
+  const widgets = (await getValue<Record<string, boolean>>("widgets")) ?? DEFAULTS.widgets;
   const positions =
-    (await store.get<Record<string, { x: number; y: number }>>("positions")) ?? DEFAULTS.positions;
-  const storedUnit = await store.get<number>("unit");
+    (await getValue<Record<string, { x: number; y: number }>>("positions")) ?? DEFAULTS.positions;
+  const storedUnit = await getValue<number>("unit");
   const unit = storedUnit != null && UNIT_OPTIONS.includes(storedUnit) ? storedUnit : DEFAULT_UNIT;
   return { wallpaper, widgets, positions, unit };
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
-  await store.set("wallpaper", settings.wallpaper);
-  await store.set("widgets", settings.widgets);
-  await store.set("positions", settings.positions);
-  await store.set("unit", settings.unit);
-  await emit("settings-changed", settings);
+  await setValue("wallpaper", settings.wallpaper);
+  await setValue("widgets", settings.widgets);
+  await setValue("positions", settings.positions);
+  await setValue("unit", settings.unit);
+  if (isTauri) await emit("settings-changed", settings);
 }

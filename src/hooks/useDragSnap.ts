@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { clampToScreen, collidesWithAny, type GridMetrics, type Position } from "../lib/placement";
+import { SETTLE_TRANSITION } from "../lib/motion";
 
 interface DragSnapOptions {
   initialPositions: Record<string, Position>;
@@ -20,12 +21,20 @@ export function useDragSnap({
 }: DragSnapOptions) {
   const [positions, setPositions] = useState(initialPositions);
   const [draggingId, setDraggingId] = useState<string | null>(null);
-  const [fluidPos, setFluidPos] = useState<Position>({ x: 0, y: 0 });
   const [dropTarget, setDropTarget] = useState<Position>({ x: 0, y: 0 });
 
   const dragOffset = useRef<Position>({ x: 0, y: 0 });
   const containerRef = useRef<HTMLDivElement>(null);
+  const containerRectRef = useRef<{
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const dragIdRef = useRef<string | null>(null);
+  const dragElementRef = useRef<HTMLElement | null>(null);
+  /** Clamped cursor-follow position; the widget's on-screen spot right now. */
+  const lastRawRef = useRef<Position>({ x: 0, y: 0 });
   const dropTargetRef = useRef<Position>({ x: 0, y: 0 });
   const positionsRef = useRef(positions);
 
@@ -43,55 +52,63 @@ export function useDragSnap({
   useEffect(() => {
     if (dragIdRef.current) return;
     setPositions((prev) => {
-      const ids = new Set([...Object.keys(prev), ...Object.keys(initialPositions)]);
-      let same = Object.keys(prev).length === Object.keys(initialPositions).length;
-      if (same) {
-        for (const id of ids) {
-          const a = prev[id];
-          const b = initialPositions[id];
-          if (!a || !b || a.x !== b.x || a.y !== b.y) {
-            same = false;
-            break;
-          }
+      let changed = false;
+      const next = { ...prev };
+      for (const [id, b] of Object.entries(initialPositions)) {
+        const a = prev[id];
+        if (!a || a.x !== b.x || a.y !== b.y) {
+          next[id] = { ...b };
+          changed = true;
         }
       }
-      return same ? prev : { ...initialPositions };
+      for (const id of Object.keys(prev)) {
+        if (!(id in initialPositions)) {
+          delete next[id];
+          changed = true;
+        }
+      }
+      return changed ? next : prev;
     });
   }, [initialPositions]);
 
-  const handleMouseDown = useCallback(
-    (id: string, e: React.MouseEvent) => {
-      if ((e.target as HTMLElement).closest("button")) return;
+  /** Begin a hook-driven drag for `id` with the cursor at CSS coords. */
+  const beginExternal = useCallback((id: string, clientX: number, clientY: number) => {
+    if (!containerRef.current) return;
+    const pos = positionsRef.current[id];
+    if (!pos) return;
+    const el = document.querySelector<HTMLElement>(`[data-widget-id="${id}"]`);
+    if (!el) return;
+    // A previous settle may still be gliding; kill its transition and strip
+    // its transform so the measured rect matches the layout position.
+    el.style.setProperty("transition", "none");
+    el.style.removeProperty("transform");
+    const rect = el.getBoundingClientRect();
+    const c = containerRef.current.getBoundingClientRect();
+    containerRectRef.current = { left: c.left, top: c.top, width: c.width, height: c.height };
 
-      const el = e.currentTarget;
-      const rect = el.getBoundingClientRect();
-      const pos = positions[id];
+    dragIdRef.current = id;
+    dragElementRef.current = el;
+    setDraggingId(id);
+    lastRawRef.current = { x: pos.x, y: pos.y };
+    dragOffset.current = { x: clientX - rect.left, y: clientY - rect.top };
+    setDropTarget({ ...pos });
+    dropTargetRef.current = { ...pos };
+  }, []);
 
-      dragIdRef.current = id;
-      setDraggingId(id);
-      dragOffset.current = { x: e.clientX - rect.left, y: e.clientY - rect.top };
-      setFluidPos({ ...pos });
-      setDropTarget({ ...pos });
-      dropTargetRef.current = { ...pos };
-    },
-    [positions],
-  );
-
-  useEffect(() => {
-    if (!draggingId) return;
-
-    const handleMove = (e: MouseEvent) => {
+  /** Feed a new cursor position (CSS px) into the active drag. */
+  const moveExternal = useCallback(
+    (clientX: number, clientY: number) => {
       const id = dragIdRef.current;
-      if (!id || !containerRef.current) return;
+      if (!id || !containerRectRef.current) return;
 
-      const containerRect = containerRef.current.getBoundingClientRect();
-      let rawX = e.clientX - containerRect.left - dragOffset.current.x;
-      let rawY = e.clientY - containerRect.top - dragOffset.current.y;
+      // Container geometry is cached at gesture start; measuring per frame
+      // would force synchronous layout and stutter the drag.
+      const containerRect = containerRectRef.current;
+      let rawX = clientX - containerRect.left - dragOffset.current.x;
+      let rawY = clientY - containerRect.top - dragOffset.current.y;
 
       rawX = Math.max(margin, Math.min(rawX, containerRect.width - widgetSize - margin));
       rawY = Math.max(margin, Math.min(rawY, containerRect.height - widgetSize - margin));
-
-      setFluidPos({ x: rawX, y: rawY });
 
       const screen = { width: containerRect.width, height: containerRect.height };
       const snapped = clampToScreen(
@@ -118,35 +135,97 @@ export function useDragSnap({
         dropTargetRef.current = { x: pos[id].x, y: snappedY };
       }
 
-      setDropTarget({ ...dropTargetRef.current });
-    };
+      const base = pos[id];
+      lastRawRef.current = { x: rawX, y: rawY };
+      dragElementRef.current?.style.setProperty(
+        "transform",
+        `translate3d(${rawX - base.x}px, ${rawY - base.y}px, 0)`,
+      );
 
-    const handleUp = () => {
-      const id = dragIdRef.current;
-      if (id) {
-        const finalPos = dropTargetRef.current;
-        setPositions((prev) => ({ ...prev, [id]: finalPos }));
-        onDragEnd?.(id, finalPos);
+      setDropTarget((previous) =>
+        previous.x === dropTargetRef.current.x && previous.y === dropTargetRef.current.y
+          ? previous
+          : { ...dropTargetRef.current },
+      );
+    },
+    [widgetSize, gridSize, minGap, margin],
+  );
+
+  /**
+   * Commit the active drag at its drop target, gliding from the exact spot
+   * where the widget was released into its snapped cell.
+   *
+   * The settle is done imperatively and synchronously on purpose: this runs
+   * from an event listener outside React's batching, so the re-render that
+   * flips `isDragging` (and with it the CSS transition) lands in a later
+   * task. Writing only a transform target here used to let a frame paint in
+   * between with transitions still off — the widget snapped back to its old
+   * base and then fast-replayed the whole drag path via left/top. Freezing
+   * the visual position first makes every ordering converge to one glide.
+   */
+  const endExternal = useCallback(() => {
+    const id = dragIdRef.current;
+    containerRectRef.current = null;
+    if (id) {
+      const finalPos = dropTargetRef.current;
+      const el = dragElementRef.current;
+      if (el && positionsRef.current[id]) {
+        // 1. Bake the current on-screen position into left/top, no motion.
+        el.style.setProperty("transition", "none");
+        el.style.left = `${lastRawRef.current.x}px`;
+        el.style.top = `${lastRawRef.current.y}px`;
+        el.style.removeProperty("transform");
+        // 2. Flush styles so this frozen state becomes the before-value.
+        void el.getBoundingClientRect();
+        // 3. Arm the transition and glide home. React's later commit writes
+        //    identical left/top values — a no-op that cannot restart it.
+        el.style.transition = SETTLE_TRANSITION;
+        el.style.left = `${finalPos.x}px`;
+        el.style.top = `${finalPos.y}px`;
       }
-      dragIdRef.current = null;
-      setDraggingId(null);
-    };
+      setPositions((prev) => ({ ...prev, [id]: finalPos }));
+      onDragEnd?.(id, finalPos);
+    }
+    dragIdRef.current = null;
+    dragElementRef.current = null;
+    setDraggingId(null);
+  }, [onDragEnd]);
 
-    window.addEventListener("mousemove", handleMove);
-    window.addEventListener("mouseup", handleUp);
+  /**
+   * Browser-preview drag entry (`bun run dev` outside Tauri, where the
+   * native hook cannot exist): drives the same external-drag trio from DOM
+   * pointer events. No-op while a gesture is already active or if the id is
+   * unknown.
+   */
+  const beginPointerDrag = useCallback(
+    (id: string, clientX: number, clientY: number) => {
+      if (dragIdRef.current) return;
+      beginExternal(id, clientX, clientY);
+      // beginExternal rejects unknown ids/elements; only then listen.
+      if (!dragIdRef.current) return;
 
-    return () => {
-      window.removeEventListener("mousemove", handleMove);
-      window.removeEventListener("mouseup", handleUp);
-    };
-  }, [draggingId, widgetSize, gridSize, minGap, margin, onDragEnd]);
+      const finish = () => {
+        window.removeEventListener("pointermove", move);
+        window.removeEventListener("pointerup", finish);
+        window.removeEventListener("pointercancel", finish);
+        endExternal();
+      };
+      const move = (e: PointerEvent) => moveExternal(e.clientX, e.clientY);
+      window.addEventListener("pointermove", move);
+      window.addEventListener("pointerup", finish);
+      window.addEventListener("pointercancel", finish);
+    },
+    [beginExternal, moveExternal, endExternal],
+  );
 
   return {
     positions,
     draggingId,
-    fluidPos,
     dropTarget,
     containerRef,
-    handleMouseDown,
+    beginExternal,
+    moveExternal,
+    endExternal,
+    beginPointerDrag,
   };
 }

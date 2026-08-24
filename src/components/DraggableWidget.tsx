@@ -1,27 +1,32 @@
 import { type ReactNode } from "react";
+import { SETTLE_TRANSITION } from "../lib/motion";
 
 interface DraggableWidgetProps {
+  id: string;
   x: number;
   y: number;
   isDragging: boolean;
-  onMouseDown: (e: React.MouseEvent) => void;
   radius?: string;
   noPadding?: boolean;
+  /** Browser-preview drag entry; the desktop app drags via the native hook. */
+  onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
   children: ReactNode;
 }
 
 export default function DraggableWidget({
+  id,
   x,
   y,
   isDragging,
-  onMouseDown,
   radius = "var(--radius-widget)",
   noPadding = false,
+  onPointerDown,
   children,
 }: DraggableWidgetProps) {
   return (
     <div
-      onMouseDown={onMouseDown}
+      data-widget-id={id}
+      onPointerDown={onPointerDown}
       style={{
         position: "absolute",
         left: `${x}px`,
@@ -31,9 +36,8 @@ export default function DraggableWidget({
         padding: noPadding ? 0 : "var(--unit)",
         touchAction: "none",
         borderRadius: radius,
-        transition: isDragging
-          ? "none"
-          : "left 0.22s cubic-bezier(0.2, 0.8, 0.2, 1), top 0.22s cubic-bezier(0.2, 0.8, 0.2, 1)",
+        transition: isDragging ? "none" : SETTLE_TRANSITION,
+        willChange: isDragging ? "transform" : undefined,
       }}
       className={`cursor-grab flex flex-col justify-between border bg-nothing-black ${
         isDragging

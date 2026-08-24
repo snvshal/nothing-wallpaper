@@ -98,6 +98,37 @@ fn open_settings_window(app: tauri::AppHandle) {
     open_settings(&app);
 }
 
+#[derive(serde::Deserialize)]
+#[cfg_attr(not(target_os = "windows"), allow(dead_code))]
+struct RegionInput {
+    id: String,
+    x: f64,
+    y: f64,
+    w: f64,
+    h: f64,
+}
+
+#[tauri::command]
+fn set_widget_regions(regions: Vec<RegionInput>) {
+    #[cfg(target_os = "windows")]
+    mouse_hook::set_regions(
+        regions
+            .into_iter()
+            .map(|r| mouse_hook::WidgetRegion {
+                id: r.id,
+                rect: [
+                    r.x.round() as i32,
+                    r.y.round() as i32,
+                    r.w.round() as i32,
+                    r.h.round() as i32,
+                ],
+            })
+            .collect(),
+    );
+    #[cfg(not(target_os = "windows"))]
+    let _ = regions;
+}
+
 #[cfg(target_os = "windows")]
 fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     use tauri_plugin_prevent_default::{Flags, PlatformOptions};
@@ -134,7 +165,8 @@ pub fn run() {
         .plugin(prevent_default_plugin())
         .invoke_handler(tauri::generate_handler![
             get_memory_usage,
-            open_settings_window
+            open_settings_window,
+            set_widget_regions
         ])
         .setup(|app| {
             let handle = app.handle();
@@ -146,6 +178,7 @@ pub fn run() {
             {
                 let window = app.get_webview_window("main").unwrap();
                 let hwnd = window.hwnd().unwrap();
+                mouse_hook::set_emitter(app.handle().clone());
                 mouse_hook::install(hwnd.0 as isize);
             }
 

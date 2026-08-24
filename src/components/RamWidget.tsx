@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import { isTauri } from "../lib/tauri";
 
 interface MemoryInfo {
   total_bytes: number;
@@ -20,6 +21,8 @@ export default function RamWidget() {
   const historyRef = useRef<number[]>(Array.from({ length: COLS }, () => 0));
 
   useEffect(() => {
+    // Browser preview: no backend, show the placeholder graph untouched.
+    if (!isTauri) return;
     const fetchMemory = async () => {
       try {
         const info = await invoke<MemoryInfo>("get_memory_usage");
@@ -27,7 +30,7 @@ export default function RamWidget() {
 
         historyRef.current = [...historyRef.current.slice(1), info.used_percent];
       } catch {
-        // invoke fails in dev without tauri, keep defaults
+        // invoke can fail transiently, keep last values
       }
     };
 
