@@ -2,6 +2,14 @@ export const UNITS_PER_WIDGET = 9;
 export const DEFAULT_UNIT = 16;
 export const UNIT_OPTIONS = [12, 16, 20, 24];
 
+export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
+  clock: { w: 9, h: 9 },
+  calendar: { w: 9, h: 9 },
+  weather: { w: 9, h: 9 },
+  ram: { w: 9, h: 9 },
+  wifi: { w: 9, h: 4 },
+};
+
 export interface GridMetrics {
   unit: number;
   widgetSize: number;
@@ -22,6 +30,14 @@ export function gridMetrics(unit: number = DEFAULT_UNIT): GridMetrics {
   };
 }
 
+export function getWidgetPixelSize(id: string, m: GridMetrics): { w: number; h: number } {
+  const units = WIDGET_UNIT_SIZES[id] ?? { w: 9, h: 9 };
+  return {
+    w: units.w * m.unit,
+    h: units.h * m.unit,
+  };
+}
+
 export interface Screen {
   width: number;
   height: number;
@@ -37,6 +53,7 @@ const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   calendar: { x: 16, y: 6 },
   weather: { x: 6, y: 16 },
   ram: { x: 16, y: 16 },
+  wifi: { x: 26, y: 6 },
 };
 
 export function defaultPositions(m: GridMetrics): Record<string, Position> {
@@ -63,9 +80,18 @@ export function rescalePositions(
   return out;
 }
 
-function overlaps(a: Position, b: Position, footprint: number): boolean {
+function rectsOverlap(
+  posA: Position,
+  sizeA: { w: number; h: number },
+  posB: Position,
+  sizeB: { w: number; h: number },
+  gap: number,
+): boolean {
   return (
-    a.x < b.x + footprint && a.x + footprint > b.x && a.y < b.y + footprint && a.y + footprint > b.y
+    posA.x < posB.x + sizeB.w + gap &&
+    posA.x + sizeA.w + gap > posB.x &&
+    posA.y < posB.y + sizeB.h + gap &&
+    posA.y + sizeA.h + gap > posB.y
   );
 }
 
@@ -80,31 +106,33 @@ interface Bounds {
   maxY: number;
 }
 
-function screenBounds(screen: Screen, m: GridMetrics): Bounds {
+function screenBounds(screen: Screen, m: GridMetrics, id?: string): Bounds {
+  const size = id ? getWidgetPixelSize(id, m) : { w: m.widgetSize, h: m.widgetSize };
   const floorToLattice = (v: number) =>
     Math.max(m.margin, m.margin + Math.max(0, Math.floor((v - m.margin) / m.grid)) * m.grid);
   return {
     minX: m.margin,
     minY: m.margin,
-    maxX: floorToLattice(screen.width - m.margin - m.widgetSize),
-    maxY: floorToLattice(screen.height - m.margin - m.widgetSize),
+    maxX: floorToLattice(screen.width - m.margin - size.w),
+    maxY: floorToLattice(screen.height - m.margin - size.h),
   };
 }
 
-export function clampToScreen(p: Position, screen: Screen, m: GridMetrics): Position {
-  const { minX, minY, maxX, maxY } = screenBounds(screen, m);
+export function clampToScreen(p: Position, screen: Screen, m: GridMetrics, id?: string): Position {
+  const { minX, minY, maxX, maxY } = screenBounds(screen, m, id);
   return {
     x: Math.min(maxX, Math.max(minX, snap(p.x, m))),
     y: Math.min(maxY, Math.max(minY, snap(p.y, m))),
   };
 }
 
-export function inBounds(p: Position, screen: Screen, m: GridMetrics): boolean {
+export function inBounds(p: Position, screen: Screen, m: GridMetrics, id?: string): boolean {
+  const size = id ? getWidgetPixelSize(id, m) : { w: m.widgetSize, h: m.widgetSize };
   return (
     p.x >= m.margin &&
     p.y >= m.margin &&
-    p.x + m.widgetSize <= screen.width - m.margin &&
-    p.y + m.widgetSize <= screen.height - m.margin
+    p.x + size.w <= screen.width - m.margin &&
+    p.y + size.h <= screen.height - m.margin
   );
 }
 
@@ -114,9 +142,11 @@ export function collidesWithAny(
   positions: Record<string, Position>,
   m: GridMetrics,
 ): boolean {
+  const sizeA = getWidgetPixelSize(id, m);
   for (const [otherId, other] of Object.entries(positions)) {
     if (otherId === id) continue;
-    if (overlaps(pos, other, m.footprint)) return true;
+    const sizeB = getWidgetPixelSize(otherId, m);
+    if (rectsOverlap(pos, sizeA, other, sizeB, m.gap)) return true;
   }
   return false;
 }
@@ -127,7 +157,7 @@ export function findFreePosition(
   screen: Screen,
   m: GridMetrics,
 ): Position | null {
-  const { minX, minY, maxX, maxY } = screenBounds(screen, m);
+  const { minX, minY, maxX, maxY } = screenBounds(screen, m, id);
   for (let y = minY; y <= maxY; y += m.grid) {
     for (let x = minX; x <= maxX; x += m.grid) {
       const candidate = { x, y };
@@ -154,7 +184,12 @@ export function evaluateLayout(
 
   for (const id of visibleIds) {
     const saved = positions[id];
-    let candidate = clampToScreen(saved ?? defaults[id] ?? { x: m.margin, y: m.margin }, screen, m);
+    let candidate = clampToScreen(
+      saved ?? defaults[id] ?? { x: m.margin, y: m.margin },
+      screen,
+      m,
+      id,
+    );
     if (collidesWithAny(id, candidate, placed, m)) {
       const rescued = findFreePosition(placed, id, screen, m);
       if (!rescued) {

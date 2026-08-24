@@ -8,6 +8,8 @@ interface DraggableWidgetProps {
   isDragging: boolean;
   radius?: string;
   noPadding?: boolean;
+  unitsW?: number;
+  unitsH?: number;
   /** Browser-preview drag entry; the desktop app drags via the native hook. */
   onPointerDown?: (e: React.PointerEvent<HTMLDivElement>) => void;
   children: ReactNode;
@@ -20,6 +22,8 @@ export default function DraggableWidget({
   isDragging,
   radius = "var(--radius-widget)",
   noPadding = false,
+  unitsW = 9,
+  unitsH = 9,
   onPointerDown,
   children,
 }: DraggableWidgetProps) {
@@ -31,8 +35,8 @@ export default function DraggableWidget({
         position: "absolute",
         left: `${x}px`,
         top: `${y}px`,
-        width: "var(--widget-size)",
-        height: "var(--widget-size)",
+        width: unitsW === 9 ? "var(--widget-size)" : `calc(var(--unit) * ${unitsW})`,
+        height: unitsH === 9 ? "var(--widget-size)" : `calc(var(--unit) * ${unitsH})`,
         padding: noPadding ? 0 : "var(--unit)",
         touchAction: "none",
         borderRadius: radius,

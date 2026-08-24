@@ -23,6 +23,7 @@ const DEFAULTS: AppSettings = {
     calendar: true,
     weather: true,
     ram: true,
+    wifi: true,
   },
   positions: {},
   unit: 16,
@@ -73,7 +74,8 @@ async function setValue(key: string, value: unknown): Promise<void> {
 
 export async function loadSettings(): Promise<AppSettings> {
   const wallpaper = (await getValue<string>("wallpaper")) ?? DEFAULTS.wallpaper;
-  const widgets = (await getValue<Record<string, boolean>>("widgets")) ?? DEFAULTS.widgets;
+  const storedWidgets = await getValue<Record<string, boolean>>("widgets");
+  const widgets = { ...DEFAULTS.widgets, ...storedWidgets };
   const positions =
     (await getValue<Record<string, { x: number; y: number }>>("positions")) ?? DEFAULTS.positions;
   const storedUnit = await getValue<number>("unit");

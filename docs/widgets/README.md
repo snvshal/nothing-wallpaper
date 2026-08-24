@@ -26,5 +26,6 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | -------- | -------------------------- | -------------------------- |
 | Clock    | [clock.md](clock.md)       | Circular analog clock      |
 | Calendar | [calendar.md](calendar.md) | Date display with day name |
-| Weather  | [weather.md](weather.md)   | Static weather display     |
+| Weather  | [weather.md](weather.md)   | Live weather display       |
 | RAM      | [ram.md](ram.md)           | Real-time memory monitor   |
+| Wi-Fi    | [wifi.md](wifi.md)         | Interactive quick toggle   |

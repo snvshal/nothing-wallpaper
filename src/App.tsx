@@ -7,8 +7,16 @@ import ClockWidget from "./components/ClockWidget";
 import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
+import WifiWidget from "./components/WifiWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
-import { defaultPositions, evaluateLayout, gridMetrics, type Screen } from "./lib/placement";
+import {
+  defaultPositions,
+  evaluateLayout,
+  getWidgetPixelSize,
+  gridMetrics,
+  WIDGET_UNIT_SIZES,
+  type Screen,
+} from "./lib/placement";
 import { DEFAULT_WALLPAPER_URL, DEFAULT_LIGHT_WALLPAPER_URL } from "./lib/constants";
 import { isTauri } from "./lib/tauri";
 import { useTheme } from "./hooks/useTheme";
@@ -16,6 +24,7 @@ import "./styles/global.css";
 
 const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
+  wifi: "9999px",
 };
 
 const renderWidgetContent = (id: string, settings: AppSettings | null) => {
@@ -28,6 +37,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <WeatherWidget city={settings?.weatherCity} tempUnit={settings?.tempUnit} />;
     case "ram":
       return <RamWidget />;
+    case "wifi":
+      return <WifiWidget />;
     default:
       return null;
   }
@@ -201,16 +212,18 @@ export default function App() {
   useEffect(() => {
     if (!isTauri) return;
     const scale = window.devicePixelRatio || 1;
-    const sizePx = metrics.widgetSize * scale;
-    const regions = Object.entries(positions).map(([id, p]) => ({
-      id,
-      x: Math.round(p.x * scale),
-      y: Math.round(p.y * scale),
-      w: sizePx,
-      h: sizePx,
-    }));
+    const regions = Object.entries(positions).map(([id, p]) => {
+      const size = getWidgetPixelSize(id, metrics);
+      return {
+        id,
+        x: Math.round(p.x * scale),
+        y: Math.round(p.y * scale),
+        w: size.w * scale,
+        h: size.h * scale,
+      };
+    });
     invoke("set_widget_regions", { regions }).catch(() => {});
-  }, [positions, metrics.widgetSize, dpr]);
+  }, [positions, metrics, dpr]);
 
   // Hook-native drag lifecycle arrives entirely as push events from Rust:
   // "drag-phase" marks press / threshold / release transitions, and
@@ -296,8 +309,8 @@ export default function App() {
             position: "absolute",
             left: `${dropTarget.x}px`,
             top: `${dropTarget.y}px`,
-            width: `${metrics.widgetSize}px`,
-            height: `${metrics.widgetSize}px`,
+            width: `${getWidgetPixelSize(draggingId, metrics).w}px`,
+            height: `${getWidgetPixelSize(draggingId, metrics).h}px`,
             borderRadius: WIDGET_RADIUS[draggingId] ?? "var(--radius-widget)",
           }}
           className="border-2 border-dashed border-nothing-widget-red/60 z-0 flex items-center justify-center pointer-events-none"
@@ -317,7 +330,9 @@ export default function App() {
             y={base.y}
             isDragging={isDragging}
             radius={WIDGET_RADIUS[id]}
-            noPadding={id === "clock"}
+            noPadding={id === "clock" || id === "wifi"}
+            unitsW={WIDGET_UNIT_SIZES[id]?.w ?? 9}
+            unitsH={WIDGET_UNIT_SIZES[id]?.h ?? 9}
             onPointerDown={
               isTauri
                 ? undefined

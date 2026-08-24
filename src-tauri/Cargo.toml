@@ -32,5 +32,8 @@ windows = { version = "0.61", features = [
     "Win32_UI_Input",
     "Win32_UI_WindowsAndMessaging",
     "Win32_System_LibraryLoader",
+    "Win32_NetworkManagement_WiFi",
+    "Win32_Networking_NetworkListManager",
+    "Win32_System_Com",
 ] }
 

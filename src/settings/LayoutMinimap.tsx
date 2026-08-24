@@ -3,6 +3,7 @@ import {
   clampToScreen,
   collidesWithAny,
   findFreePosition,
+  getWidgetPixelSize,
   snap,
   type GridMetrics,
   type Position,
@@ -24,6 +25,7 @@ const LABELS: Record<string, string> = {
   calendar: "Calendar",
   weather: "Weather",
   ram: "RAM",
+  wifi: "Wi-Fi",
 };
 
 const ORDER = Object.keys(LABELS);
@@ -93,6 +95,7 @@ export default function LayoutMinimap({
       { x: snap(raw.x, metrics), y: snap(raw.y, metrics) },
       screen,
       metrics,
+      id,
     );
     setDrag({ id, pos: next, collides: collidesWithAny(id, next, othersOf(id), metrics) });
   };
@@ -117,12 +120,15 @@ export default function LayoutMinimap({
     }
   };
 
-  const tileStyle = (pos: Position): React.CSSProperties => ({
-    left: `${pos.x * scale}px`,
-    top: `${pos.y * scale}px`,
-    width: `${metrics.widgetSize * scale}px`,
-    height: `${metrics.widgetSize * scale}px`,
-  });
+  const tileStyle = (pos: Position, id: string): React.CSSProperties => {
+    const size = getWidgetPixelSize(id, metrics);
+    return {
+      left: `${pos.x * scale}px`,
+      top: `${pos.y * scale}px`,
+      width: `${size.w * scale}px`,
+      height: `${size.h * scale}px`,
+    };
+  };
 
   return (
     <div className="settings-section">
@@ -143,12 +149,12 @@ export default function LayoutMinimap({
           if (!pos) {
             const storedPos = positions[id];
             if (!storedPos) return null;
-            const ghostPos = clampToScreen(storedPos, screen, metrics);
+            const ghostPos = clampToScreen(storedPos, screen, metrics, id);
             return (
               <div
                 key={id}
                 className="minimap-ghost nospace"
-                style={{ ...tileStyle(ghostPos), fontSize: `${Math.max(8, 11 * scale)}px` }}
+                style={{ ...tileStyle(ghostPos, id), fontSize: `${Math.max(8, 11 * scale)}px` }}
               >
                 {LABELS[id]}
               </div>
@@ -159,7 +165,7 @@ export default function LayoutMinimap({
             <div
               key={id}
               className={`minimap-tile${collides ? " collides" : ""}`}
-              style={{ ...tileStyle(pos), fontSize: `${Math.max(8, 11 * scale)}px` }}
+              style={{ ...tileStyle(pos, id), fontSize: `${Math.max(8, 11 * scale)}px` }}
               onPointerDown={startDrag(id)}
               onPointerMove={moveDrag}
               onPointerUp={endDrag}

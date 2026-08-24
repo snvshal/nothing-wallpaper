@@ -20,7 +20,7 @@ import WeatherSettings from "./WeatherSettings";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
 
-const WIDGET_IDS = ["clock", "calendar", "weather", "ram"];
+const WIDGET_IDS = ["clock", "calendar", "weather", "ram", "wifi"];
 
 const FALLBACK_SCREEN: Screen = { width: 1920, height: 1080 };
 
