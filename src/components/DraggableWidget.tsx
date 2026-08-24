@@ -39,10 +39,8 @@ export default function DraggableWidget({
         transition: isDragging ? "none" : SETTLE_TRANSITION,
         willChange: isDragging ? "transform" : undefined,
       }}
-      className={`cursor-grab flex flex-col justify-between border bg-nothing-black ${
-        isDragging
-          ? "cursor-grabbing border-nothing-widget-red z-50"
-          : "border-nothing-white/20 z-10"
+      className={`cursor-grab flex flex-col justify-between border bg-widget-surface text-theme-primary ${
+        isDragging ? "cursor-grabbing border-nothing-widget-red z-50" : "border-widget-subtle z-10"
       }`}
     >
       {children}

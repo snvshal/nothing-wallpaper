@@ -55,6 +55,69 @@
   font-variation-settings: "ROND" 100;
 }
 
+:root,
+[data-theme="dark"] {
+  --theme-bg-widget: var(--color-nothing-black);
+  --theme-border-widget: color-mix(in srgb, var(--color-nothing-white) 20%, transparent);
+  --theme-text-primary: var(--color-nothing-white);
+  --theme-text-secondary: var(--color-nothing-ngrey);
+  --theme-text-muted: var(--color-nothing-grey);
+  --theme-border-subtle: var(--color-nothing-dgrey);
+  --theme-bg-settings: var(--color-widget-bg);
+  --theme-minimap-bg: var(--color-nothing-black);
+  --theme-minimap-dot: color-mix(in srgb, var(--color-nothing-white) 22%, transparent);
+  --theme-clock-face: var(--color-nothing-black);
+  --theme-clock-hour: var(--color-nothing-white);
+  --theme-clock-minute: var(--color-nothing-dgrey);
+}
+
+[data-theme="light"] {
+  --theme-bg-widget: var(--color-nothing-white);
+  --theme-border-widget: color-mix(in srgb, var(--color-nothing-black) 15%, transparent);
+  --theme-text-primary: var(--color-nothing-black);
+  --theme-text-secondary: var(--color-nothing-dgrey);
+  --theme-text-muted: var(--color-nothing-dgrey);
+  --theme-border-subtle: var(--color-nothing-grey);
+  --theme-bg-settings: #f4f4f4;
+  --theme-minimap-bg: #ececec;
+  --theme-minimap-dot: color-mix(in srgb, var(--color-nothing-black) 22%, transparent);
+  --theme-clock-face: var(--color-nothing-white);
+  --theme-clock-hour: var(--color-nothing-black);
+  --theme-clock-minute: var(--color-nothing-dgrey);
+}
+
+@utility bg-widget-surface {
+  background-color: var(--theme-bg-widget);
+}
+
+@utility bg-theme-primary {
+  background-color: var(--theme-text-primary);
+}
+
+@utility text-theme-primary {
+  color: var(--theme-text-primary);
+}
+
+@utility text-theme-secondary {
+  color: var(--theme-text-secondary);
+}
+
+@utility text-theme-muted {
+  color: var(--theme-text-muted);
+}
+
+@utility border-widget-subtle {
+  border-color: var(--theme-border-widget);
+}
+
+@utility fill-theme-primary {
+  fill: var(--theme-text-primary);
+}
+
+@utility fill-theme-inactive {
+  fill: var(--theme-border-widget);
+}
+
 @layer base {
   *,
   *::before,
@@ -73,7 +136,7 @@ body,
   overflow: hidden;
   overscroll-behavior: none;
   background: transparent;
-  color: #ffffff;
+  color: var(--theme-text-primary);
   user-select: none;
   -webkit-font-smoothing: antialiased;
 }

@@ -1,14 +1,20 @@
 import { open } from "@tauri-apps/plugin-dialog";
 import { convertFileSrc } from "@tauri-apps/api/core";
-import { DEFAULT_WALLPAPER_URL } from "../lib/constants";
+import { DEFAULT_WALLPAPER_URL, DEFAULT_LIGHT_WALLPAPER_URL } from "../lib/constants";
 
 interface WallpaperPickerProps {
   selected: string;
+  activeTheme?: "dark" | "light";
   onSelect: (wallpaper: string) => void;
 }
 
-export default function WallpaperPicker({ selected, onSelect }: WallpaperPickerProps) {
+export default function WallpaperPicker({
+  selected,
+  activeTheme = "dark",
+  onSelect,
+}: WallpaperPickerProps) {
   const isCustom = selected !== "default" && selected !== "system";
+  const defaultBg = activeTheme === "light" ? DEFAULT_LIGHT_WALLPAPER_URL : DEFAULT_WALLPAPER_URL;
 
   const handleCustom = async () => {
     const path = await open({
@@ -41,7 +47,7 @@ export default function WallpaperPicker({ selected, onSelect }: WallpaperPickerP
         ) : (
           <div
             className="wallpaper-thumb selected"
-            style={{ backgroundImage: `url('${DEFAULT_WALLPAPER_URL}')` }}
+            style={{ backgroundImage: `url('${defaultBg}')` }}
             role="img"
             aria-label="Current default wallpaper"
           />

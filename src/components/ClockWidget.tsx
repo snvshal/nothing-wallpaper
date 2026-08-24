@@ -18,9 +18,9 @@ export default function ClockWidget() {
 
   return (
     <div className="relative w-full h-full flex items-center justify-center">
-      <div className="relative w-full h-full rounded-full bg-nothing-black flex items-center justify-center overflow-hidden">
+      <div className="relative w-full h-full rounded-full bg-widget-surface flex items-center justify-center overflow-hidden">
         <div
-          className="absolute pointer-events-none rounded-full bg-nothing-white z-10"
+          className="absolute pointer-events-none rounded-full bg-theme-primary z-10"
           style={{
             width: "12%",
             height: "30%",

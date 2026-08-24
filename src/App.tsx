@@ -9,8 +9,9 @@ import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import { defaultPositions, evaluateLayout, gridMetrics, type Screen } from "./lib/placement";
-import { DEFAULT_WALLPAPER_URL } from "./lib/constants";
+import { DEFAULT_WALLPAPER_URL, DEFAULT_LIGHT_WALLPAPER_URL } from "./lib/constants";
 import { isTauri } from "./lib/tauri";
+import { useTheme } from "./hooks/useTheme";
 import "./styles/global.css";
 
 const WIDGET_RADIUS: Record<string, string> = {
@@ -115,14 +116,16 @@ export default function App() {
   );
 
   const wallpaper = settings?.wallpaper ?? "default";
+  const activeTheme = useTheme(settings?.theme ?? "dark");
+  const defaultBgUrl =
+    activeTheme === "light" ? DEFAULT_LIGHT_WALLPAPER_URL : DEFAULT_WALLPAPER_URL;
+
   const bgStyle: React.CSSProperties =
     wallpaper === "system"
       ? {}
       : {
           background: `url("${
-            // Custom file wallpapers need the asset protocol: unavailable in
-            // the browser preview, fall back to the bundled default there.
-            wallpaper === "default" || !isTauri ? DEFAULT_WALLPAPER_URL : convertFileSrc(wallpaper)
+            wallpaper === "default" || !isTauri ? defaultBgUrl : convertFileSrc(wallpaper)
           }") center / cover no-repeat`,
         };
 
@@ -276,7 +279,7 @@ export default function App() {
   return (
     <div
       ref={containerRef}
-      className="relative w-screen h-screen overflow-hidden text-nothing-white select-none"
+      className="relative w-screen h-screen overflow-hidden text-theme-primary select-none"
       style={bgStyle}
     >
       {draggingId && (

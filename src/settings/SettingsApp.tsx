@@ -11,8 +11,10 @@ import {
   type Screen,
 } from "../lib/placement";
 import { loadSettings, saveSettings, type AppSettings } from "./settings-store";
+import { useTheme } from "../hooks/useTheme";
 import GridUnitPicker from "./GridUnitPicker";
 import TitleBar from "./TitleBar";
+import ThemePicker from "./ThemePicker";
 import WallpaperPicker from "./WallpaperPicker";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
@@ -57,6 +59,7 @@ export default function SettingsApp() {
   );
 
   const unit = settings?.unit ?? 16;
+  const activeTheme = useTheme(settings?.theme ?? "dark");
   const metrics = useMemo(() => gridMetrics(unit), [unit]);
 
   const seededPositions = useMemo(
@@ -108,8 +111,11 @@ export default function SettingsApp() {
       <TitleBar />
       <div className="settings-body">
         <div className="settings-container">
+          <ThemePicker theme={settings.theme} onSelect={(theme) => update({ theme })} />
+
           <WallpaperPicker
             selected={settings.wallpaper}
+            activeTheme={activeTheme}
             onSelect={(wallpaper) => update({ wallpaper })}
           />
 

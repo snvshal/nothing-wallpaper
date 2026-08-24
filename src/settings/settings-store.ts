@@ -3,11 +3,14 @@ import { emit } from "@tauri-apps/api/event";
 import { DEFAULT_UNIT, UNIT_OPTIONS } from "../lib/placement";
 import { isTauri } from "../lib/tauri";
 
+export type ThemeMode = "dark" | "light" | "system";
+
 export interface AppSettings {
   wallpaper: string;
   widgets: Record<string, boolean>;
   positions: Record<string, { x: number; y: number }>;
   unit: number;
+  theme: ThemeMode;
 }
 
 const DEFAULTS: AppSettings = {
@@ -20,6 +23,7 @@ const DEFAULTS: AppSettings = {
   },
   positions: {},
   unit: 16,
+  theme: "dark",
 };
 
 const tauriStore = isTauri
@@ -69,7 +73,12 @@ export async function loadSettings(): Promise<AppSettings> {
     (await getValue<Record<string, { x: number; y: number }>>("positions")) ?? DEFAULTS.positions;
   const storedUnit = await getValue<number>("unit");
   const unit = storedUnit != null && UNIT_OPTIONS.includes(storedUnit) ? storedUnit : DEFAULT_UNIT;
-  return { wallpaper, widgets, positions, unit };
+  const storedTheme = await getValue<ThemeMode>("theme");
+  const theme =
+    storedTheme === "light" || storedTheme === "dark" || storedTheme === "system"
+      ? storedTheme
+      : DEFAULTS.theme;
+  return { wallpaper, widgets, positions, unit, theme };
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
@@ -77,5 +86,6 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
   await setValue("widgets", settings.widgets);
   await setValue("positions", settings.positions);
   await setValue("unit", settings.unit);
+  await setValue("theme", settings.theme);
   if (isTauri) await emit("settings-changed", settings);
 }

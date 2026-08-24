@@ -48,22 +48,22 @@ export default function RamWidget() {
     <>
       <div className="flex justify-between items-start">
         <div>
-          <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
+          <div className="font-dot text-theme-primary tracking-widest leading-none text-widget-title">
             RAM
           </div>
           <div
-            className="font-body text-nothing-ngrey text-widget-detail"
+            className="font-body text-theme-secondary text-widget-detail"
             style={{ marginTop: "calc(var(--unit) * 0.25)" }}
           >
             {totalGB} GB
           </div>
         </div>
         <div className="text-right">
-          <div className="font-dot text-nothing-white tracking-widest leading-none text-widget-title">
+          <div className="font-dot text-theme-primary tracking-widest leading-none text-widget-title">
             {usedPercent.toFixed(1)}%
           </div>
           <div
-            className="font-body text-nothing-ngrey text-widget-detail"
+            className="font-body text-theme-secondary text-widget-detail"
             style={{ marginTop: "calc(var(--unit) * 0.25)" }}
           >
             {usedGB} GB
@@ -87,7 +87,7 @@ export default function RamWidget() {
                   cx={cx}
                   cy={cy}
                   r={1.8}
-                  className={isActive ? "fill-nothing-white" : "fill-nothing-white/15"}
+                  className={isActive ? "fill-theme-primary" : "fill-theme-inactive"}
                 />
               );
             });

@@ -17,7 +17,7 @@ export default function CalendarWidget() {
         {dayName}
       </span>
       <span
-        className="font-body text-nothing-white tracking-wider select-none leading-none text-widget-display"
+        className="font-body text-theme-primary tracking-wider select-none leading-none text-widget-display"
         style={{ transform: "translateY(calc(var(--widget-size) * 0.028))" }}
       >
         {dayNum}

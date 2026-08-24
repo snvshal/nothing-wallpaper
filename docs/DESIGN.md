@@ -33,6 +33,16 @@ For detailed per-widget specs, see [docs/widgets/](widgets/).
 
 All eight values above are the official published palette and are exposed as theme tokens (`--color-nothing-*`) in `global.css`. **Widget Red is active** for all widget-layer accents (calendar day name, clock second hand, drag borders, snap indicators); **N-Red remains in use for settings-window UI accents only**. **N-Blue and N-Yellow are currently reserved** — defined but unused. Two project-local utility neutrals sit outside this palette and are used only for UI scaffolding: `nothing-dgrey` (`#6E6E6E`, muted borders/details) and `widget-bg` (`#111111`, minimap tiles).
 
+### Theme System (Dark & Light Modes)
+
+The wallpaper and settings applications support three theme preferences (`dark`, `light`, `system`):
+
+- **Dark Mode**: Default Nothing OS pitch-black aesthetic (`#000000` / `#111111` canvas and widget cards, `#FFFFFF` typography, subtle white/grey borders).
+- **Light Mode**: Inverted monochrome aesthetic (`#FFFFFF` / `#F4F4F4` canvas and widget cards, `#000000` typography, subtle black borders).
+- **System Mode**: Dynamically follows the Windows OS dark/light mode preference (`prefers-color-scheme`).
+
+Theme switching is mediated via semantic CSS variables at `:root` / `[data-theme="dark"]` and `[data-theme="light"]` (`--theme-bg-widget`, `--theme-text-primary`, `--theme-text-secondary`, `--theme-border-widget`, etc.). Signature red accents remain consistently active in both modes.
+
 ### Rules
 
 - No gradients on any element
