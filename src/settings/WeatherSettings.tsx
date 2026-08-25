@@ -8,8 +8,14 @@ interface WeatherSettingsProps {
   onChange: (partial: { weatherCity?: string; tempUnit?: TempUnit }) => void;
 }
 
+const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  if (e.key === "Enter") {
+    e.currentTarget.blur();
+  }
+};
+
 export default function WeatherSettings({ city, tempUnit, onChange }: WeatherSettingsProps) {
-  const [localCity, setLocalCity] = useState(city);
+  const [localCity, setLocalCity] = useState("");
   const [detectedCity, setDetectedCity] = useState(getLastAutoCity);
 
   useEffect(() => {
@@ -25,12 +31,6 @@ export default function WeatherSettings({ city, tempUnit, onChange }: WeatherSet
   const handleBlur = () => {
     if (localCity !== city) {
       onChange({ weatherCity: localCity });
-    }
-  };
-
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      e.currentTarget.blur();
     }
   };
 

@@ -2,6 +2,7 @@ import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { emit, listen } from "@tauri-apps/api/event";
 import { convertFileSrc, invoke } from "@tauri-apps/api/core";
 import { useDragSnap } from "./hooks/useDragSnap";
+import { useNativeDrag } from "./hooks/useNativeDrag";
 import DraggableWidget from "./components/DraggableWidget";
 import ClockWidget from "./components/ClockWidget";
 import CalendarWidget from "./components/CalendarWidget";
@@ -55,7 +56,9 @@ export default function App() {
   const [dpr, setDpr] = useState(() => window.devicePixelRatio || 1);
   const settingsRef = useRef<AppSettings | null>(null);
 
-  settingsRef.current = settings;
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   useEffect(() => {
     const mq = window.matchMedia(`(resolution: ${dpr}dppx)`);
@@ -225,77 +228,7 @@ export default function App() {
     invoke("set_widget_regions", { regions }).catch(() => {});
   }, [positions, metrics, dpr]);
 
-  // Hook-native drag lifecycle arrives entirely as push events from Rust:
-  // "drag-phase" marks press / threshold / release transitions, and
-  // "drag-cursor" streams cursor motion between frames. WebView2 never sees
-  // button input during drags, so no polling or mouse handlers are needed.
-  useEffect(() => {
-    if (!isTauri) return;
-    let stopped = false;
-    let moveFrame = 0;
-    let latestCursor: { x: number; y: number } | null = null;
-    /** Seq of the gesture being tracked; null while idle. */
-    let activeSeq: number | null = null;
-    /** Highest finished seq — drops reordered tails of an ended gesture. */
-    let endedSeq = -1;
-
-    // Native input may arrive much faster than the monitor can paint. Apply
-    // only the newest point per frame so each visual update is smooth and
-    // avoids unnecessary React work.
-    const flushMove = () => {
-      moveFrame = 0;
-      if (!latestCursor) return;
-      moveExternal(latestCursor.x, latestCursor.y);
-      latestCursor = null;
-    };
-    const queueMove = (x: number, y: number) => {
-      latestCursor = { x, y };
-      if (!moveFrame) moveFrame = requestAnimationFrame(flushMove);
-    };
-    const finishDrag = () => {
-      if (moveFrame) cancelAnimationFrame(moveFrame);
-      flushMove();
-      endExternal();
-    };
-    const toCss = (v: number) => v / (window.devicePixelRatio || 1);
-
-    const unlistenPhase = listen<{
-      seq: number;
-      phase: string;
-      id: string | null;
-      x: number;
-      y: number;
-    }>("drag-phase", (e) => {
-      if (stopped) return;
-      const { seq, phase, id, x, y } = e.payload;
-      if (phase === "pending" || phase === "drag") {
-        if (!id || seq <= endedSeq) return;
-        if (activeSeq !== seq) {
-          activeSeq = seq;
-          beginExternal(id, toCss(x), toCss(y));
-        } else {
-          queueMove(toCss(x), toCss(y));
-        }
-      } else if (activeSeq !== null) {
-        endedSeq = Math.max(endedSeq, seq);
-        activeSeq = null;
-        queueMove(toCss(x), toCss(y)); // land exactly on the release point
-        finishDrag();
-      }
-    });
-
-    const unlistenPush = listen<{ seq: number; x: number; y: number }>("drag-cursor", (e) => {
-      if (stopped || activeSeq === null || e.payload.seq !== activeSeq) return;
-      queueMove(toCss(e.payload.x), toCss(e.payload.y));
-    });
-
-    return () => {
-      stopped = true;
-      if (moveFrame) cancelAnimationFrame(moveFrame);
-      unlistenPhase.then((fn) => fn());
-      unlistenPush.then((fn) => fn());
-    };
-  }, [beginExternal, moveExternal, endExternal]);
+  useNativeDrag({ beginExternal, moveExternal, endExternal });
 
   return (
     <div

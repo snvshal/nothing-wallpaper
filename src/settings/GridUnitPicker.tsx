@@ -91,11 +91,9 @@ export default function GridUnitPicker({ unit, onSelect }: GridUnitPickerProps) 
         <div className="grid-unit-track" />
         <div className="grid-unit-track-fill" style={{ width: `${thumbPct}%` }} />
         {UNIT_OPTIONS.map((value, index) => (
-          <button
+          <span
             key={value}
-            type="button"
-            tabIndex={-1}
-            aria-label={`${value} pixels`}
+            aria-hidden="true"
             className={`grid-unit-stop ${index <= activeIndex ? "passed" : ""} ${
               value === unit ? "active" : ""
             }`}
@@ -104,7 +102,7 @@ export default function GridUnitPicker({ unit, onSelect }: GridUnitPickerProps) 
           >
             <span className="grid-unit-dot" />
             <span className="grid-unit-value">{value}</span>
-          </button>
+          </span>
         ))}
         <div
           className="grid-unit-thumb"

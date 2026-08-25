@@ -18,7 +18,11 @@ const ROWS = 10;
 
 export default function RamWidget() {
   const [memory, setMemory] = useState<MemoryInfo | null>(null);
-  const historyRef = useRef<number[]>(Array.from({ length: COLS }, () => 0));
+  const historyRef = useRef<number[]>([]);
+
+  useEffect(() => {
+    historyRef.current = Array.from({ length: COLS }, () => 0);
+  }, []);
 
   useEffect(() => {
     // Browser preview: no backend, show the placeholder graph untouched.

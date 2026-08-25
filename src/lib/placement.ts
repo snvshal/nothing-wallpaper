@@ -126,16 +126,6 @@ export function clampToScreen(p: Position, screen: Screen, m: GridMetrics, id?: 
   };
 }
 
-export function inBounds(p: Position, screen: Screen, m: GridMetrics, id?: string): boolean {
-  const size = id ? getWidgetPixelSize(id, m) : { w: m.widgetSize, h: m.widgetSize };
-  return (
-    p.x >= m.margin &&
-    p.y >= m.margin &&
-    p.x + size.w <= screen.width - m.margin &&
-    p.y + size.h <= screen.height - m.margin
-  );
-}
-
 export function collidesWithAny(
   id: string,
   pos: Position,

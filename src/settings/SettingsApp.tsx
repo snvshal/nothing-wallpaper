@@ -29,7 +29,9 @@ export default function SettingsApp() {
   const [screen, setScreen] = useState<Screen>(FALLBACK_SCREEN);
   const settingsRef = useRef<AppSettings | null>(null);
 
-  settingsRef.current = settings;
+  useEffect(() => {
+    settingsRef.current = settings;
+  }, [settings]);
 
   useEffect(() => {
     loadSettings().then(setSettings);

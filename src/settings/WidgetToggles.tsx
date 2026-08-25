@@ -22,14 +22,17 @@ export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps)
       <div className="widget-list">
         {Object.keys(WIDGET_LABELS).map((id) => (
           <div key={id} className="widget-row">
-            <span className="widget-label">{WIDGET_LABELS[id]}</span>
-            <label className="toggle" htmlFor={`widget-toggle-${id}`}>
+            <span className="widget-label" id={`widget-label-${id}`}>
+              {WIDGET_LABELS[id]}
+            </span>
+            <label className="toggle">
               <input
                 id={`widget-toggle-${id}`}
                 name={`widget-toggle-${id}`}
                 type="checkbox"
                 checked={widgets[id] ?? true}
                 onChange={() => toggle(id)}
+                aria-labelledby={`widget-label-${id}`}
               />
               <span className="toggle-track" />
               <span className="toggle-thumb" />
