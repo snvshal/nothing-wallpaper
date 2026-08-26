@@ -28,6 +28,7 @@ const LABELS: Record<string, string> = {
   wifi: "Wi-Fi",
   music: "Music",
   screentime: "Screen Time",
+  countdown: "Sand Timer",
 };
 
 const ORDER = Object.keys(LABELS);

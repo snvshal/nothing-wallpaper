@@ -168,7 +168,15 @@ font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 | Main number     | 0.39       | Calendar date, weather emoji                 |
 | Secondary label | 0.1        | RAM title/percentage, weather temp, day name |
 | Small text      | 0.07       | City name                                    |
-| Detail text     | 0.06       | RAM GB values                                |
+
+### Dot Matrix Grid Standard
+
+All vector dot-matrix widgets (RAM usage, Screen Time history, Sand Timer countdown) share unified SVG coordinate tokens defined in `src/lib/constants.ts`:
+
+- **`MATRIX_VIEWBOX_WIDTH = 140`** — Standard horizontal SVG coordinate baseline.
+- **`MATRIX_DOT_RADIUS = 1.8`** — Unified dot radius across all matrix components.
+- **Active / Inactive Tokens**: `fill-theme-primary` for illuminated state, `fill-theme-inactive` for empty lattice points.
+  | Detail text | 0.06 | RAM GB values |
 
 Spacing follows the unit the same way:
 

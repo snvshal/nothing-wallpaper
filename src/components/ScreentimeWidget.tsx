@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "../lib/tauri";
+import { MATRIX_DOT_RADIUS } from "../lib/constants";
 
 export interface ScreenTimeApp {
   name: string;
@@ -225,7 +226,7 @@ export default function ScreentimeWidget() {
                       key={`${col}-${rowFromTop}`}
                       cx={cx}
                       cy={cy}
-                      r={1.8}
+                      r={MATRIX_DOT_RADIUS}
                       className={isActive ? "fill-theme-primary" : "fill-theme-inactive"}
                     />
                   );

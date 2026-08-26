@@ -10,6 +10,7 @@ export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
   wifi: { w: 9, h: 4 },
   music: { w: 19, h: 9 },
   screentime: { w: 9, h: 9 },
+  countdown: { w: 9, h: 9 },
 };
 
 export interface GridMetrics {
@@ -58,6 +59,7 @@ const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   wifi: { x: 26, y: 6 },
   music: { x: 26, y: 11 },
   screentime: { x: 6, y: 26 },
+  countdown: { x: 16, y: 26 },
 };
 
 export function defaultPositions(m: GridMetrics): Record<string, Position> {

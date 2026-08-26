@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "../lib/tauri";
+import { MATRIX_DOT_RADIUS } from "../lib/constants";
 
 interface MemoryInfo {
   total_bytes: number;
@@ -90,7 +91,7 @@ export default function RamWidget() {
                   key={`${col}-${rowFromTop}`}
                   cx={cx}
                   cy={cy}
-                  r={1.8}
+                  r={MATRIX_DOT_RADIUS}
                   className={isActive ? "fill-theme-primary" : "fill-theme-inactive"}
                 />
               );

@@ -11,6 +11,7 @@ import RamWidget from "./components/RamWidget";
 import WifiWidget from "./components/WifiWidget";
 import MusicWidget from "./components/MusicWidget";
 import ScreentimeWidget from "./components/ScreentimeWidget";
+import CountdownWidget from "./components/CountdownWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import {
   defaultPositions,
@@ -46,6 +47,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <MusicWidget />;
     case "screentime":
       return <ScreentimeWidget />;
+    case "countdown":
+      return <CountdownWidget />;
     default:
       return null;
   }

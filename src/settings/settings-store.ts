@@ -28,6 +28,7 @@ const DEFAULTS: AppSettings = {
     wifi: true,
     music: true,
     screentime: true,
+    countdown: true,
   },
   positions: {},
   unit: 16,

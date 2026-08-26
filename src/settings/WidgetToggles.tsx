@@ -11,6 +11,7 @@ const WIDGET_LABELS: Record<string, string> = {
   wifi: "Wi-Fi",
   music: "Music",
   screentime: "Screen Time",
+  countdown: "Sand Timer",
 };
 
 export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps) {
