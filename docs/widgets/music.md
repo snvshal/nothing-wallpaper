@@ -35,12 +35,12 @@ Two-column widescreen Hi-Fi deck layout:
 
 ### Standalone Spinning CD with Stylus (Left Column)
 
-| Property      | Value                                                                                                  |
-| ------------- | ------------------------------------------------------------------------------------------------------ |
+| Property      | Value                                                                                                   |
+| ------------- | ------------------------------------------------------------------------------------------------------- |
 | Disc Graphic  | Full-height contained theme-adaptive anisotropic metallic disc (`--theme-cd-disc`, `--theme-cd-border`) |
-| Spin Behavior | Smooth CSS continuous rotation (`animate-[spin_6s_linear_infinite]`)                                   |
-| Center Hub    | Theme-adaptive hub (`--theme-cd-hub`) with theme-aware center hole (`bg-widget-surface`)               |
-| Stylus Needle | Floating Nothing Widget Red (`#D71920`) capsule needle angled at 30° tangent to CD with exact 8px gap  |
+| Spin Behavior | Smooth CSS continuous rotation (`animate-[spin_6s_linear_infinite]`)                                    |
+| Center Hub    | Theme-adaptive hub (`--theme-cd-hub`) with theme-aware center hole (`bg-widget-surface`)                |
+| Stylus Needle | Floating Nothing Widget Red (`#D71920`) capsule needle angled at 30° tangent to CD with exact 8px gap   |
 
 ### Stacked Deck & Playback Controls (Right Column)
 

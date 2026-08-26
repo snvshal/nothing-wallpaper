@@ -120,14 +120,56 @@ pub struct DragState {
 const PROGMAN_CLASS: [u16; 7] = [80, 114, 111, 103, 109, 97, 110]; // Progman
 const WORKERW_CLASS: [u16; 7] = [87, 111, 114, 107, 101, 114, 87]; // WorkerW
 
-fn fg_is_desktop() -> bool {
+fn is_desktop_window(hwnd: HWND) -> bool {
+    if hwnd.is_invalid() || hwnd.0.is_null() {
+        return false;
+    }
     let mut buf = [0u16; 32];
-    let len = unsafe { GetClassNameW(GetForegroundWindow(), &mut buf) };
+    let len = unsafe { GetClassNameW(hwnd, &mut buf) };
     if len <= 0 {
         return false;
     }
     let name = &buf[..len as usize];
     name == PROGMAN_CLASS || name == WORKERW_CLASS
+}
+
+fn fg_is_desktop() -> bool {
+    is_desktop_window(unsafe { GetForegroundWindow() })
+}
+
+fn point_is_on_desktop(screen_pt: POINT) -> bool {
+    // Both the active foreground window and the window physically under the cursor
+    // must belong to the desktop shell or our pinned wallpaper webview.
+    if !fg_is_desktop() {
+        return false;
+    }
+
+    unsafe {
+        let hwnd_under = WindowFromPoint(screen_pt);
+        if hwnd_under.is_invalid() || hwnd_under.0.is_null() {
+            return false;
+        }
+
+        let root = GetAncestor(hwnd_under, GA_ROOT);
+        let target = if root.is_invalid() || root.0.is_null() {
+            hwnd_under
+        } else {
+            root
+        };
+
+        if is_desktop_window(target) || is_desktop_window(hwnd_under) {
+            return true;
+        }
+
+        let webview_hwnd = WEBVIEW_HWND.load(Ordering::Relaxed);
+        if webview_hwnd != 0
+            && (target.0 as isize == webview_hwnd || hwnd_under.0 as isize == webview_hwnd)
+        {
+            return true;
+        }
+
+        false
+    }
 }
 
 /// Convert a physical screen point to webview-client physical pixels.
@@ -510,8 +552,8 @@ unsafe extern "system" fn mouse_proc(ncode: i32, wparam: WPARAM, lparam: LPARAM)
             let msg = wparam.0 as u32;
 
             // Widgets are only interactive while the desktop shell is the
-            // active surface; every other app gets its input untouched.
-            if !fg_is_desktop() {
+            // active surface and no top-level window sits between cursor and desktop.
+            if !point_is_on_desktop(screen_pt) {
                 // Focus moved elsewhere mid-gesture: drop our state instead
                 // of swallowing system input for a dead gesture.
                 let prev = DRAG_STATE.swap(STATE_IDLE, Ordering::SeqCst);
