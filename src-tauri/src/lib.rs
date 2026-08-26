@@ -323,6 +323,98 @@ fn toggle_wifi() -> Result<bool, String> {
     }
 }
 
+#[derive(Serialize, Clone, Debug)]
+struct BluetoothInfo {
+    enabled: bool,
+    connected: bool,
+    device_name: Option<String>,
+}
+
+#[tauri::command]
+fn get_bluetooth_status() -> BluetoothInfo {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Devices::Radios::{Radio, RadioKind, RadioState};
+
+        if let Ok(op) = Radio::GetRadiosAsync() {
+            if let Ok(radios) = op.get() {
+                for radio in radios {
+                    if let Ok(kind) = radio.Kind() {
+                        if kind == RadioKind::Bluetooth {
+                            let enabled =
+                                radio.State().map(|s| s == RadioState::On).unwrap_or(false);
+                            let name = radio.Name().map(|h| h.to_string()).ok();
+                            return BluetoothInfo {
+                                enabled,
+                                connected: enabled,
+                                device_name: name,
+                            };
+                        }
+                    }
+                }
+            }
+        }
+
+        BluetoothInfo {
+            enabled: false,
+            connected: false,
+            device_name: None,
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        BluetoothInfo {
+            enabled: true,
+            connected: true,
+            device_name: Some("Nothing Ear".into()),
+        }
+    }
+}
+
+#[tauri::command]
+fn toggle_bluetooth() -> Result<bool, String> {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Devices::Radios::{Radio, RadioKind, RadioState};
+
+        if let Ok(op) = Radio::GetRadiosAsync() {
+            if let Ok(radios) = op.get() {
+                for radio in radios {
+                    if let Ok(kind) = radio.Kind() {
+                        if kind == RadioKind::Bluetooth {
+                            let current = radio.State().unwrap_or(RadioState::Off);
+                            let target = if current == RadioState::On {
+                                RadioState::Off
+                            } else {
+                                RadioState::On
+                            };
+                            if let Ok(set_op) = radio.SetStateAsync(target) {
+                                let _ = set_op.get();
+                                return Ok(target == RadioState::On);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // Fallback: Launch Windows Bluetooth Settings
+        use std::os::windows::process::CommandExt;
+        use std::process::Command;
+        const CREATE_NO_WINDOW: u32 = 0x08000000;
+        let _ = Command::new("explorer")
+            .arg("ms-settings:bluetooth")
+            .creation_flags(CREATE_NO_WINDOW)
+            .spawn();
+
+        Err("No Bluetooth radio found, opened Bluetooth settings".into())
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        Ok(true)
+    }
+}
+
 fn focus_window(win: &tauri::WebviewWindow) {
     let _ = win.unminimize();
     let _ = win.show();
@@ -1055,6 +1147,8 @@ pub fn run() {
             set_widget_regions,
             get_wifi_status,
             toggle_wifi,
+            get_bluetooth_status,
+            toggle_bluetooth,
             get_media_status,
             toggle_media_playback,
             next_media_track,

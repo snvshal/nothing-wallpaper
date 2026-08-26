@@ -9,6 +9,7 @@ const WIDGET_LABELS: Record<string, string> = {
   weather: "Weather",
   ram: "RAM",
   wifi: "Wi-Fi",
+  bluetooth: "Bluetooth",
   music: "Music",
   screentime: "Screen Time",
   countdown: "Sand Timer",

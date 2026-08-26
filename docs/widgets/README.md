@@ -29,6 +29,7 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Weather     | [weather.md](weather.md)       | Live weather display            |
 | RAM         | [ram.md](ram.md)               | Real-time memory monitor        |
 | Wi-Fi       | [wifi.md](wifi.md)             | Interactive quick toggle        |
+| Bluetooth   | [bluetooth.md](bluetooth.md)   | Circular quick toggle           |
 | Music       | [music.md](music.md)           | Spinning CD media player        |
 | Screen Time | [screentime.md](screentime.md) | Live active app usage tracker   |
 | Sand Timer  | [countdown.md](countdown.md)   | Live 1-minute digital sandglass |
