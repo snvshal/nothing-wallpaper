@@ -135,6 +135,10 @@ export default function App() {
     root.style.setProperty("--widget-size", `${metrics.widgetSize}px`);
   }, [metrics]);
 
+  useEffect(() => {
+    document.documentElement.setAttribute("data-surface", settings?.surfaceStyle ?? "solid");
+  }, [settings?.surfaceStyle]);
+
   const seededPositions = useMemo(
     () => ({ ...defaultPositions(metrics), ...savedPositions }),
     [savedPositions, metrics],

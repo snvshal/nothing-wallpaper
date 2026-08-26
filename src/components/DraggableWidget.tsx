@@ -40,6 +40,9 @@ export default function DraggableWidget({
         padding: noPadding ? 0 : "var(--unit)",
         touchAction: "none",
         borderRadius: radius,
+        overflow: "hidden",
+        backdropFilter: "var(--theme-widget-backdrop, none)",
+        WebkitBackdropFilter: "var(--theme-widget-backdrop, none)",
         transition: isDragging ? "none" : SETTLE_TRANSITION,
         willChange: isDragging ? "transform" : undefined,
       }}

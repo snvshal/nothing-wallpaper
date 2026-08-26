@@ -20,7 +20,7 @@ import WeatherSettings from "./WeatherSettings";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
 
-const WIDGET_IDS = ["clock", "calendar", "weather", "ram", "wifi"];
+const WIDGET_IDS = ["clock", "calendar", "weather", "ram", "wifi", "music"];
 
 const FALLBACK_SCREEN: Screen = { width: 1920, height: 1080 };
 
@@ -36,6 +36,10 @@ export default function SettingsApp() {
   useEffect(() => {
     loadSettings().then(setSettings);
   }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute("data-surface", settings?.surfaceStyle ?? "solid");
+  }, [settings?.surfaceStyle]);
 
   useEffect(() => {
     emitTo("main", "request-screen", null).catch(() => {});
@@ -114,7 +118,12 @@ export default function SettingsApp() {
       <TitleBar />
       <div className="settings-body">
         <div className="settings-container">
-          <ThemePicker theme={settings.theme} onSelect={(theme) => update({ theme })} />
+          <ThemePicker
+            theme={settings.theme}
+            surfaceStyle={settings.surfaceStyle}
+            onSelectTheme={(theme) => update({ theme })}
+            onSelectSurface={(surfaceStyle) => update({ surfaceStyle })}
+          />
 
           <WallpaperPicker
             selected={settings.wallpaper}

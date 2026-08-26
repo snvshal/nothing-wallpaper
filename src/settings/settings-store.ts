@@ -4,6 +4,7 @@ import { DEFAULT_UNIT, UNIT_OPTIONS } from "../lib/placement";
 import { isTauri } from "../lib/tauri";
 
 export type ThemeMode = "dark" | "light" | "system";
+export type SurfaceStyle = "solid" | "glass";
 export type TempUnit = "celsius" | "fahrenheit";
 
 export interface AppSettings {
@@ -12,6 +13,7 @@ export interface AppSettings {
   positions: Record<string, { x: number; y: number }>;
   unit: number;
   theme: ThemeMode;
+  surfaceStyle: SurfaceStyle;
   weatherCity: string;
   tempUnit: TempUnit;
 }
@@ -29,6 +31,7 @@ const DEFAULTS: AppSettings = {
   positions: {},
   unit: 16,
   theme: "dark",
+  surfaceStyle: "solid",
   weatherCity: "",
   tempUnit: "celsius",
 };
@@ -86,13 +89,16 @@ export async function loadSettings(): Promise<AppSettings> {
     storedTheme === "light" || storedTheme === "dark" || storedTheme === "system"
       ? storedTheme
       : DEFAULTS.theme;
+  const storedSurface = await getValue<SurfaceStyle>("surfaceStyle");
+  const surfaceStyle =
+    storedSurface === "glass" || storedSurface === "solid" ? storedSurface : DEFAULTS.surfaceStyle;
   const weatherCity = (await getValue<string>("weatherCity")) ?? DEFAULTS.weatherCity;
   const storedTempUnit = await getValue<TempUnit>("tempUnit");
   const tempUnit =
     storedTempUnit === "celsius" || storedTempUnit === "fahrenheit"
       ? storedTempUnit
       : DEFAULTS.tempUnit;
-  return { wallpaper, widgets, positions, unit, theme, weatherCity, tempUnit };
+  return { wallpaper, widgets, positions, unit, theme, surfaceStyle, weatherCity, tempUnit };
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {
@@ -101,6 +107,7 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
   await setValue("positions", settings.positions);
   await setValue("unit", settings.unit);
   await setValue("theme", settings.theme);
+  await setValue("surfaceStyle", settings.surfaceStyle);
   await setValue("weatherCity", settings.weatherCity);
   await setValue("tempUnit", settings.tempUnit);
   if (isTauri) await emit("settings-changed", settings);

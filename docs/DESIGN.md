@@ -43,6 +43,13 @@ The wallpaper and settings applications support three theme preferences (`dark`,
 
 Theme switching is mediated via semantic CSS variables at `:root` / `[data-theme="dark"]` and `[data-theme="light"]` (`--theme-bg-widget`, `--theme-text-primary`, `--theme-text-secondary`, `--theme-border-widget`, etc.). Signature red accents remain consistently active in both modes.
 
+### Widget Surface Styles (Solid & Frosted Glass)
+
+The wallpaper supports two surface material styles (`solid`, `glass`):
+
+- **Solid**: Traditional high-contrast Nothing OS opaque widget cards (`#000000` in dark mode, `#FFFFFF` in light mode).
+- **Frosted Glass**: Translucent acrylic cards inspired by Nothing transparent hardware (`rgba` alpha transparency + `backdrop-filter: blur(16px)`), allowing wallpaper artwork to softly blur through the cards while preserving sharp border geometry and high-contrast typography.
+
 ### Rules
 
 - No gradients on any element
