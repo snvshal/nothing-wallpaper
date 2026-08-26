@@ -1,5 +1,11 @@
 import { useState, useRef, useCallback, useEffect, useMemo } from "react";
-import { clampToScreen, collidesWithAny, type GridMetrics, type Position } from "../lib/placement";
+import {
+  clampToScreen,
+  collidesWithAny,
+  getWidgetPixelSize,
+  type GridMetrics,
+  type Position,
+} from "../lib/placement";
 import { SETTLE_TRANSITION } from "../lib/motion";
 
 interface DragSnapOptions {
@@ -19,7 +25,7 @@ export function useDragSnap({
   margin = 16,
   onDragEnd,
 }: DragSnapOptions) {
-  const [positions, setPositions] = useState(initialPositions);
+  const [positions, setPositions] = useState<Record<string, Position>>(initialPositions);
   const [draggingId, setDraggingId] = useState<string | null>(null);
   const [dropTarget, setDropTarget] = useState<Position>({ x: 0, y: 0 });
 
@@ -109,11 +115,12 @@ export function useDragSnap({
       // Container geometry is cached at gesture start; measuring per frame
       // would force synchronous layout and stutter the drag.
       const containerRect = containerRectRef.current;
+      const widgetDimensions = getWidgetPixelSize(id, metrics);
       let rawX = clientX - containerRect.left - dragOffset.current.x;
       let rawY = clientY - containerRect.top - dragOffset.current.y;
 
-      rawX = Math.max(margin, Math.min(rawX, containerRect.width - widgetSize - margin));
-      rawY = Math.max(margin, Math.min(rawY, containerRect.height - widgetSize - margin));
+      rawX = Math.max(margin, Math.min(rawX, containerRect.width - widgetDimensions.w - margin));
+      rawY = Math.max(margin, Math.min(rawY, containerRect.height - widgetDimensions.h - margin));
 
       const screen = { width: containerRect.width, height: containerRect.height };
       const snapped = clampToScreen(
@@ -123,6 +130,7 @@ export function useDragSnap({
         },
         screen,
         metrics,
+        id,
       );
       const snappedX = snapped.x;
       const snappedY = snapped.y;

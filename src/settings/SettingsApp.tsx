@@ -27,6 +27,7 @@ const WIDGET_IDS = [
   "ram",
   "wifi",
   "bluetooth",
+  "volume",
   "music",
   "screentime",
   "countdown",

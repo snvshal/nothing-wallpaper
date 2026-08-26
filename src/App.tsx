@@ -13,6 +13,7 @@ import MusicWidget from "./components/MusicWidget";
 import ScreentimeWidget from "./components/ScreentimeWidget";
 import CountdownWidget from "./components/CountdownWidget";
 import BluetoothWidget from "./components/BluetoothWidget";
+import VolumeWidget from "./components/VolumeWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import {
   defaultPositions,
@@ -31,7 +32,10 @@ const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
   wifi: "9999px",
   bluetooth: "50%",
+  volume: "50%",
 };
+
+const NO_PADDING_WIDGETS = new Set(["clock", "wifi", "bluetooth", "volume"]);
 
 const renderWidgetContent = (id: string, settings: AppSettings | null) => {
   switch (id) {
@@ -47,6 +51,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <WifiWidget />;
     case "bluetooth":
       return <BluetoothWidget />;
+    case "volume":
+      return <VolumeWidget />;
     case "music":
       return <MusicWidget />;
     case "screentime":
@@ -280,7 +286,7 @@ export default function App() {
             y={base.y}
             isDragging={isDragging}
             radius={WIDGET_RADIUS[id]}
-            noPadding={id === "clock" || id === "wifi" || id === "bluetooth"}
+            noPadding={NO_PADDING_WIDGETS.has(id)}
             unitsW={WIDGET_UNIT_SIZES[id]?.w ?? 9}
             unitsH={WIDGET_UNIT_SIZES[id]?.h ?? 9}
             onPointerDown={

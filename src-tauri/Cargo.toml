@@ -38,5 +38,7 @@ windows = { version = "0.61", features = [
     "Media_Control",
     "Storage_Streams",
     "Devices_Radios",
+    "Win32_Media_Audio",
+    "Win32_Media_Audio_Endpoints",
 ] }
 

@@ -27,6 +27,7 @@ const DEFAULTS: AppSettings = {
     ram: true,
     wifi: true,
     bluetooth: true,
+    volume: true,
     music: true,
     screentime: true,
     countdown: true,

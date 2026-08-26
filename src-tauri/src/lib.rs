@@ -415,6 +415,105 @@ fn toggle_bluetooth() -> Result<bool, String> {
     }
 }
 
+#[derive(Serialize, Clone, Debug)]
+struct AudioVolumeInfo {
+    muted: bool,
+    volume: f32,
+}
+
+#[tauri::command]
+fn get_audio_volume() -> AudioVolumeInfo {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::Media::Audio::Endpoints::IAudioEndpointVolume;
+        use windows::Win32::Media::Audio::{
+            eMultimedia, eRender, IMMDeviceEnumerator, MMDeviceEnumerator,
+        };
+        use windows::Win32::System::Com::{
+            CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED,
+        };
+
+        unsafe {
+            let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
+
+            if let Ok(enumerator) =
+                CoCreateInstance::<_, IMMDeviceEnumerator>(&MMDeviceEnumerator, None, CLSCTX_ALL)
+            {
+                if let Ok(device) = enumerator.GetDefaultAudioEndpoint(eRender, eMultimedia) {
+                    if let Ok(endpoint_volume) =
+                        device.Activate::<IAudioEndpointVolume>(CLSCTX_ALL, None)
+                    {
+                        let muted = endpoint_volume
+                            .GetMute()
+                            .map(|b| b.as_bool())
+                            .unwrap_or(false);
+                        let volume = endpoint_volume.GetMasterVolumeLevelScalar().unwrap_or(1.0);
+                        return AudioVolumeInfo { muted, volume };
+                    }
+                }
+            }
+
+            AudioVolumeInfo {
+                muted: false,
+                volume: 1.0,
+            }
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        AudioVolumeInfo {
+            muted: false,
+            volume: 0.8,
+        }
+    }
+}
+
+#[tauri::command]
+fn toggle_audio_mute() -> Result<bool, String> {
+    #[cfg(target_os = "windows")]
+    {
+        use windows::Win32::Media::Audio::Endpoints::IAudioEndpointVolume;
+        use windows::Win32::Media::Audio::{
+            eMultimedia, eRender, IMMDeviceEnumerator, MMDeviceEnumerator,
+        };
+        use windows::Win32::System::Com::{
+            CoCreateInstance, CoInitializeEx, CLSCTX_ALL, COINIT_MULTITHREADED,
+        };
+
+        unsafe {
+            let _ = CoInitializeEx(None, COINIT_MULTITHREADED);
+
+            let enumerator: IMMDeviceEnumerator =
+                CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_ALL)
+                    .map_err(|e| format!("Failed to create device enumerator: {e}"))?;
+
+            let device = enumerator
+                .GetDefaultAudioEndpoint(eRender, eMultimedia)
+                .map_err(|e| format!("Failed to get default audio endpoint: {e}"))?;
+
+            let endpoint_volume: IAudioEndpointVolume = device
+                .Activate(CLSCTX_ALL, None)
+                .map_err(|e| format!("Failed to activate IAudioEndpointVolume: {e}"))?;
+
+            let current_mute = endpoint_volume
+                .GetMute()
+                .map(|b| b.as_bool())
+                .unwrap_or(false);
+
+            let new_mute = !current_mute;
+            endpoint_volume
+                .SetMute(new_mute, std::ptr::null())
+                .map_err(|e| format!("Failed to set mute: {e}"))?;
+
+            Ok(new_mute)
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        Ok(false)
+    }
+}
+
 fn focus_window(win: &tauri::WebviewWindow) {
     let _ = win.unminimize();
     let _ = win.show();
@@ -1149,6 +1248,8 @@ pub fn run() {
             toggle_wifi,
             get_bluetooth_status,
             toggle_bluetooth,
+            get_audio_volume,
+            toggle_audio_mute,
             get_media_status,
             toggle_media_playback,
             next_media_track,

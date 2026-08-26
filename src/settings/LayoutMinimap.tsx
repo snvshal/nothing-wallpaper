@@ -27,6 +27,7 @@ const LABELS: Record<string, string> = {
   ram: "RAM",
   wifi: "Wi-Fi",
   bluetooth: "Bluetooth",
+  volume: "Audio Mute",
   music: "Music",
   screentime: "Screen Time",
   countdown: "Sand Timer",
