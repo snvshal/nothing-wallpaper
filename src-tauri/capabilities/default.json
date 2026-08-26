@@ -6,7 +6,6 @@
   "permissions": [
     "core:default",
     "core:webview:allow-create-webview-window",
-    "opener:default",
     "wallpaper:default",
     "store:default"
   ]

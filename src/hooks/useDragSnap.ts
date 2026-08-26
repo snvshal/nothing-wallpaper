@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from "react";
+import { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { clampToScreen, collidesWithAny, type GridMetrics, type Position } from "../lib/placement";
 import { SETTLE_TRANSITION } from "../lib/motion";
 
@@ -38,16 +38,21 @@ export function useDragSnap({
   const dropTargetRef = useRef<Position>({ x: 0, y: 0 });
   const positionsRef = useRef(positions);
 
-  positionsRef.current = positions;
+  useEffect(() => {
+    positionsRef.current = positions;
+  }, [positions]);
 
-  const metrics: GridMetrics = {
-    unit: gridSize,
-    widgetSize,
-    grid: gridSize,
-    gap: minGap,
-    margin,
-    footprint: widgetSize + minGap,
-  };
+  const metrics: GridMetrics = useMemo(
+    () => ({
+      unit: gridSize,
+      widgetSize,
+      grid: gridSize,
+      gap: minGap,
+      margin,
+      footprint: widgetSize + minGap,
+    }),
+    [gridSize, widgetSize, minGap, margin],
+  );
 
   useEffect(() => {
     if (dragIdRef.current) return;
@@ -148,7 +153,7 @@ export function useDragSnap({
           : { ...dropTargetRef.current },
       );
     },
-    [widgetSize, gridSize, minGap, margin],
+    [widgetSize, gridSize, margin, metrics],
   );
 
   /**

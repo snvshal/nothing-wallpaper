@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "../lib/tauri";
 
@@ -25,7 +25,7 @@ const getBrowserInitialStatus = (): WifiStatus => {
 
 export default function WifiWidget() {
   const [status, setStatus] = useState<WifiStatus>(getBrowserInitialStatus);
-  const [toggling, setToggling] = useState(false);
+  const togglingRef = useRef(false);
 
   const fetchStatus = async () => {
     if (!isTauri) return;
@@ -103,8 +103,8 @@ export default function WifiWidget() {
 
   const handleToggle = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (toggling) return;
-    setToggling(true);
+    if (togglingRef.current) return;
+    togglingRef.current = true;
 
     if (isTauri) {
       try {
@@ -129,7 +129,9 @@ export default function WifiWidget() {
       });
     }
 
-    setTimeout(() => setToggling(false), 600);
+    setTimeout(() => {
+      togglingRef.current = false;
+    }, 600);
   };
 
   const isOnline = status.enabled && status.connected;
