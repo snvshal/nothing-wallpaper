@@ -27,6 +27,7 @@ const DEFAULTS: AppSettings = {
     ram: true,
     wifi: true,
     music: true,
+    screentime: true,
   },
   positions: {},
   unit: 16,
@@ -98,7 +99,16 @@ export async function loadSettings(): Promise<AppSettings> {
     storedTempUnit === "celsius" || storedTempUnit === "fahrenheit"
       ? storedTempUnit
       : DEFAULTS.tempUnit;
-  return { wallpaper, widgets, positions, unit, theme, surfaceStyle, weatherCity, tempUnit };
+  return {
+    wallpaper,
+    widgets,
+    positions,
+    unit,
+    theme,
+    surfaceStyle,
+    weatherCity,
+    tempUnit,
+  };
 }
 
 export async function saveSettings(settings: AppSettings): Promise<void> {

@@ -5,7 +5,7 @@ Nothing OS-style live wallpaper for Windows (Tauri 2 + React 19 + Tailwind CSS v
 ## Read first
 
 - `docs/DESIGN.md` — design-system source of truth (fonts, colors, sizes, layout)
-- `docs/widgets/*.md` — per-widget specs (clock, calendar, weather, ram, wifi, music)
+- `docs/widgets/*.md` — per-widget specs (clock, calendar, weather, ram, wifi, music, screentime)
 - `CONTRIBUTING.md` — step-by-step checklist for building & registering new widgets
 - `docs/COPYRIGHT.md` — what must NEVER be bundled
 

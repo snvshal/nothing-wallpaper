@@ -10,6 +10,7 @@ import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
 import WifiWidget from "./components/WifiWidget";
 import MusicWidget from "./components/MusicWidget";
+import ScreentimeWidget from "./components/ScreentimeWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import {
   defaultPositions,
@@ -43,6 +44,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <WifiWidget />;
     case "music":
       return <MusicWidget />;
+    case "screentime":
+      return <ScreentimeWidget />;
     default:
       return null;
   }

@@ -1,7 +1,7 @@
 #[cfg(target_os = "windows")]
 mod mouse_hook;
 
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::sync::Mutex;
 use std::time::Instant;
 use sysinfo::{Networks, System};
@@ -815,6 +815,233 @@ fn seek_media(delta_seconds: i64) -> bool {
     }
 }
 
+// ---------------------------------------------------------------------------
+// Screen Time Tracking Subsystem
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScreenTimeApp {
+    pub name: String,
+    pub seconds: u64,
+    pub percentage: f32,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct DailyScreenTime {
+    pub day_offset: i32, // -9 to 0 (0 = today)
+    pub seconds: u64,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ScreenTimeData {
+    pub total_seconds: u64,
+    pub top_apps: Vec<ScreenTimeApp>,
+    pub history_days: Vec<DailyScreenTime>,
+}
+
+static CURRENT_DAY: Mutex<u32> = Mutex::new(0);
+static APP_DURATIONS: Mutex<Option<std::collections::HashMap<String, u64>>> = Mutex::new(None);
+static DAILY_HISTORY: Mutex<Option<std::collections::HashMap<u32, u64>>> = Mutex::new(None);
+
+fn get_today_key() -> u32 {
+    let now = std::time::SystemTime::now();
+    match now.duration_since(std::time::UNIX_EPOCH) {
+        Ok(d) => (d.as_secs() / 86400) as u32,
+        Err(_) => 0,
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn clean_app_name(exe: &str) -> String {
+    let lower = exe.to_lowercase();
+    if lower.contains("code") {
+        return "VS Code".to_string();
+    }
+    if lower.contains("chrome") {
+        return "Chrome".to_string();
+    }
+    if lower.contains("msedge") || lower.contains("edge") {
+        return "Edge".to_string();
+    }
+    if lower.contains("spotify") {
+        return "Spotify".to_string();
+    }
+    if lower.contains("discord") {
+        return "Discord".to_string();
+    }
+    if lower.contains("firefox") {
+        return "Firefox".to_string();
+    }
+    if lower.contains("brave") {
+        return "Brave".to_string();
+    }
+    if lower.contains("explorer") {
+        return "Explorer".to_string();
+    }
+    if lower.contains("windowsterminal") || lower.contains("powershell") || lower.contains("cmd") {
+        return "Terminal".to_string();
+    }
+    if lower.contains("slack") {
+        return "Slack".to_string();
+    }
+    if lower.contains("telegram") {
+        return "Telegram".to_string();
+    }
+    if lower.contains("notion") {
+        return "Notion".to_string();
+    }
+    if lower.contains("figma") {
+        return "Figma".to_string();
+    }
+    if lower.contains("steam") {
+        return "Steam".to_string();
+    }
+
+    let base = exe.trim_end_matches(".exe").trim_end_matches(".EXE");
+    if base.is_empty() {
+        return "Desktop".to_string();
+    }
+    let mut chars = base.chars();
+    match chars.next() {
+        None => String::new(),
+        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn get_active_foreground_app() -> Option<String> {
+    use windows::Win32::Foundation::CloseHandle;
+    use windows::Win32::System::Threading::{
+        OpenProcess, QueryFullProcessImageNameW, PROCESS_NAME_FORMAT,
+        PROCESS_QUERY_LIMITED_INFORMATION,
+    };
+    use windows::Win32::UI::WindowsAndMessaging::{GetForegroundWindow, GetWindowThreadProcessId};
+
+    unsafe {
+        let hwnd = GetForegroundWindow();
+        if hwnd.0.is_null() {
+            return None;
+        }
+        let mut pid = 0u32;
+        GetWindowThreadProcessId(hwnd, Some(&mut pid));
+        if pid == 0 {
+            return None;
+        }
+
+        if let Ok(handle) = OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, false, pid) {
+            let mut buf = [0u16; 512];
+            let mut size = buf.len() as u32;
+            let ok = QueryFullProcessImageNameW(
+                handle,
+                PROCESS_NAME_FORMAT(0),
+                windows::core::PWSTR(buf.as_mut_ptr()),
+                &mut size,
+            );
+            let _ = CloseHandle(handle);
+            if ok.is_ok() && size > 0 {
+                let raw_path = String::from_utf16_lossy(&buf[..size as usize]);
+                let exe_name = raw_path.rsplit('\\').next().unwrap_or(&raw_path);
+                return Some(clean_app_name(exe_name));
+            }
+        }
+        None
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn start_screentime_tracker() {
+    std::thread::spawn(|| loop {
+        std::thread::sleep(std::time::Duration::from_secs(1));
+        if let Some(app) = get_active_foreground_app() {
+            if app.to_lowercase().contains("nothing-wallpaper") {
+                continue;
+            }
+            let today = get_today_key();
+            let mut day_guard = CURRENT_DAY.lock().unwrap();
+            let mut app_guard = APP_DURATIONS.lock().unwrap();
+            let mut hist_guard = DAILY_HISTORY.lock().unwrap();
+
+            let map = app_guard.get_or_insert_with(std::collections::HashMap::new);
+            let hist_map = hist_guard.get_or_insert_with(std::collections::HashMap::new);
+
+            if *day_guard != today {
+                *day_guard = today;
+                map.clear();
+            }
+            *map.entry(app).or_insert(0) += 1;
+            *hist_map.entry(today).or_insert(0) += 1;
+        }
+    });
+}
+
+#[tauri::command]
+fn get_screen_time() -> ScreenTimeData {
+    let app_guard = APP_DURATIONS.lock().unwrap();
+    let map = match &*app_guard {
+        Some(m) => m.clone(),
+        None => std::collections::HashMap::new(),
+    };
+
+    let total_seconds: u64 = map.values().sum();
+    let mut items: Vec<(String, u64)> = map.into_iter().collect();
+    items.sort_by_key(|b| std::cmp::Reverse(b.1));
+
+    let mut top_apps: Vec<ScreenTimeApp> = items
+        .iter()
+        .take(3)
+        .map(|(name, seconds)| {
+            let percentage = if total_seconds > 0 {
+                (*seconds as f32 / total_seconds as f32) * 100.0
+            } else {
+                0.0
+            };
+            ScreenTimeApp {
+                name: name.clone(),
+                seconds: *seconds,
+                percentage,
+            }
+        })
+        .collect();
+
+    let top3_sum: u64 = items.iter().take(3).map(|(_, s)| *s).sum();
+    if total_seconds > top3_sum {
+        let other_seconds = total_seconds - top3_sum;
+        let percentage = (other_seconds as f32 / total_seconds as f32) * 100.0;
+        top_apps.push(ScreenTimeApp {
+            name: "Other".to_string(),
+            seconds: other_seconds,
+            percentage,
+        });
+    }
+
+    let today = get_today_key();
+    let hist_guard = DAILY_HISTORY.lock().unwrap();
+    let hist_map = match &*hist_guard {
+        Some(h) => h.clone(),
+        None => std::collections::HashMap::new(),
+    };
+
+    let mut history_days = Vec::with_capacity(10);
+    for offset in -9..=0 {
+        let day_key = if offset < 0 {
+            today.saturating_sub((-offset) as u32)
+        } else {
+            today
+        };
+        let seconds = hist_map.get(&day_key).copied().unwrap_or(0);
+        history_days.push(DailyScreenTime {
+            day_offset: offset,
+            seconds,
+        });
+    }
+
+    ScreenTimeData {
+        total_seconds,
+        top_apps,
+        history_days,
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -833,6 +1060,7 @@ pub fn run() {
             next_media_track,
             previous_media_track,
             seek_media,
+            get_screen_time,
         ])
         .setup(|app| {
             let handle = app.handle();
@@ -847,6 +1075,7 @@ pub fn run() {
                 mouse_hook::set_emitter(app.handle().clone());
                 mouse_hook::install(hwnd.0 as isize);
                 start_media_monitor();
+                start_screentime_tracker();
             }
 
             // System tray

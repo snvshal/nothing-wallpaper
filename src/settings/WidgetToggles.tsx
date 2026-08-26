@@ -10,6 +10,7 @@ const WIDGET_LABELS: Record<string, string> = {
   ram: "RAM",
   wifi: "Wi-Fi",
   music: "Music",
+  screentime: "Screen Time",
 };
 
 export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps) {

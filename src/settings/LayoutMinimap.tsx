@@ -27,6 +27,7 @@ const LABELS: Record<string, string> = {
   ram: "RAM",
   wifi: "Wi-Fi",
   music: "Music",
+  screentime: "Screen Time",
 };
 
 const ORDER = Object.keys(LABELS);
