@@ -153,7 +153,7 @@ export default function MusicWidget() {
           />
         </div>
 
-        {/* Spinning Metallic CD Disc (Full Height, Shifted Right) */}
+        {/* Spinning Metallic CD Disc (Full Height, Shifted Right with True Center Cutout Hole) */}
         <div
           className={`relative rounded-full flex items-center justify-center flex-shrink-0 aspect-square h-full ${
             media.is_playing ? "animate-[spin_6s_linear_infinite]" : ""
@@ -161,6 +161,8 @@ export default function MusicWidget() {
           style={{
             background: "var(--theme-cd-disc)",
             border: "1px solid var(--theme-cd-border)",
+            maskImage: "radial-gradient(circle, transparent 5.4%, black 5.6%)",
+            WebkitMaskImage: "radial-gradient(circle, transparent 5.4%, black 5.6%)",
           }}
         >
           {/* Center Spindle Ring */}
@@ -173,9 +175,9 @@ export default function MusicWidget() {
               border: "1px solid var(--theme-cd-border)",
             }}
           >
-            {/* Center Spindle Hole (Theme-Aware Surface Match) */}
+            {/* Center Spindle Hole Rim */}
             <div
-              className="rounded-full bg-widget-surface border border-widget-subtle"
+              className="rounded-full border border-widget-subtle"
               style={{
                 width: "36%",
                 height: "36%",
