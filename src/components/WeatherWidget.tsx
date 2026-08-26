@@ -22,7 +22,7 @@ export default function WeatherWidget({ city = "", tempUnit = "celsius" }: Weath
     };
 
     void load();
-    const interval = setInterval(load, 15 * 60 * 1000);
+    const interval = setInterval(load, 60 * 60 * 1000); // 1 hour (60 minutes)
     return () => {
       active = false;
       clearInterval(interval);

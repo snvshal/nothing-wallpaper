@@ -12,7 +12,7 @@ interface CachedWeather {
   timestamp: number;
 }
 
-const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutes
+const CACHE_TTL_MS = 60 * 60 * 1000; // 1 hour (60 minutes)
 const CACHE_PREFIX = "nothing-weather:";
 
 export function getWeatherEmoji(code: number): string {

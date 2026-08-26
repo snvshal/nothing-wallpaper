@@ -66,5 +66,5 @@ Three-row vertical flex column: temperature at top, condition emoji centered, ci
 | --------------- | ------------------------------------------------------------------ |
 | Data source     | Open-Meteo Forecast & Geocoding APIs (free, no API key required)   |
 | Location        | Auto-detected via IP geolocation or custom city name from settings |
-| Update interval | 15 minutes (900,000ms) with local cache fallback                   |
+| Update interval | 1 hour (3,600,000ms) with local cache fallback                     |
 | Units           | Celsius (°C) or Fahrenheit (°F) user-configurable                  |
