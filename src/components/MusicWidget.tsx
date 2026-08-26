@@ -128,49 +128,20 @@ export default function MusicWidget() {
     media.is_playing || (media.title !== "Nothing Playing" && media.title !== "");
 
   return (
-    <div className="w-full h-full flex items-center justify-between select-none overflow-hidden">
-      {/* Left Column: Contained Standalone CD with Simple Capsule Stylus */}
-      <div className="relative w-1/2 h-full flex items-center justify-center flex-shrink-0 overflow-hidden">
-        {/* Spinning Metallic CD Disc */}
-        <div
-          className={`relative rounded-full flex items-center justify-center flex-shrink-0 ${
-            media.is_playing ? "animate-[spin_6s_linear_infinite]" : ""
-          }`}
-          style={{
-            width: "calc(var(--unit) * 6.6)",
-            height: "calc(var(--unit) * 6.6)",
-            background: "var(--theme-cd-disc)",
-            border: "1px solid var(--theme-cd-border)",
-          }}
-        >
-          {/* Center Spindle Ring */}
-          <div
-            className="rounded-full flex items-center justify-center"
-            style={{
-              width: "calc(var(--unit) * 2.0)",
-              height: "calc(var(--unit) * 2.0)",
-              background: "var(--theme-cd-hub)",
-              border: "1px solid var(--theme-cd-border)",
-            }}
-          >
-            {/* Center Spindle Hole (Theme-Aware Surface Match) */}
-            <div
-              className="rounded-full bg-widget-surface border border-widget-subtle"
-              style={{
-                width: "calc(var(--unit) * 0.75)",
-                height: "calc(var(--unit) * 0.75)",
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Simple Capsule Stylus Needle (Pure Clean Solid Red Pill) */}
+    <div className="w-full h-full flex items-center justify-between select-none overflow-hidden gap-4">
+      {/* Left Column: Contained Full-Size Standalone CD with Floating Tangent Red Pill */}
+      <div
+        className="relative h-full flex items-center justify-end flex-shrink-0"
+        style={{ width: "calc(var(--unit) * 7.80)" }}
+      >
+        {/* Simple Capsule Stylus Needle (Exact 8px Gap at 150° Tangent with rotate(30deg)) */}
         <div
           className="absolute z-20 pointer-events-none"
           style={{
-            top: "calc(var(--unit) * 0.6)",
-            left: "calc(var(--unit) * 0.8)",
+            top: "calc(var(--unit) * 0.50)",
+            left: "calc(var(--unit) * 0.44)",
             transform: "rotate(30deg)",
+            transformOrigin: "center",
           }}
         >
           <div
@@ -181,10 +152,41 @@ export default function MusicWidget() {
             }}
           />
         </div>
+
+        {/* Spinning Metallic CD Disc (Full Height, Shifted Right) */}
+        <div
+          className={`relative rounded-full flex items-center justify-center flex-shrink-0 aspect-square h-full ${
+            media.is_playing ? "animate-[spin_6s_linear_infinite]" : ""
+          }`}
+          style={{
+            background: "var(--theme-cd-disc)",
+            border: "1px solid var(--theme-cd-border)",
+          }}
+        >
+          {/* Center Spindle Ring */}
+          <div
+            className="rounded-full flex items-center justify-center"
+            style={{
+              width: "30%",
+              height: "30%",
+              background: "var(--theme-cd-hub)",
+              border: "1px solid var(--theme-cd-border)",
+            }}
+          >
+            {/* Center Spindle Hole (Theme-Aware Surface Match) */}
+            <div
+              className="rounded-full bg-widget-surface border border-widget-subtle"
+              style={{
+                width: "36%",
+                height: "36%",
+              }}
+            />
+          </div>
+        </div>
       </div>
 
       {/* Right Column: Symmetrical Centered Stack (Cover, Track Info, Clean Vector Controls) */}
-      <div className="w-1/2 h-full flex flex-col items-center justify-between min-w-0 overflow-hidden text-center pl-2">
+      <div className="flex-1 h-full flex flex-col items-center justify-between min-w-0 overflow-hidden text-center">
         {/* Top: Square Album Cover Art */}
         <div
           className="rounded-none border border-widget-subtle overflow-hidden flex-shrink-0 bg-widget-surface flex items-center justify-center"
