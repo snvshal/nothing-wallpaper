@@ -8,6 +8,7 @@ import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
 import WifiWidget from "./components/WifiWidget";
+import MusicWidget from "./components/MusicWidget";
 import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
 import {
   defaultPositions,
@@ -39,6 +40,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <RamWidget />;
     case "wifi":
       return <WifiWidget />;
+    case "music":
+      return <MusicWidget />;
     default:
       return null;
   }

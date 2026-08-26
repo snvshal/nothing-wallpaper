@@ -24,6 +24,7 @@ const DEFAULTS: AppSettings = {
     weather: true,
     ram: true,
     wifi: true,
+    music: true,
   },
   positions: {},
   unit: 16,

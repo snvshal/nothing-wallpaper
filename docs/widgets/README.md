@@ -29,3 +29,4 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Weather  | [weather.md](weather.md)   | Live weather display       |
 | RAM      | [ram.md](ram.md)           | Real-time memory monitor   |
 | Wi-Fi    | [wifi.md](wifi.md)         | Interactive quick toggle   |
+| Music    | [music.md](music.md)       | Spinning CD media player   |

@@ -9,6 +9,7 @@ const WIDGET_LABELS: Record<string, string> = {
   weather: "Weather",
   ram: "RAM",
   wifi: "Wi-Fi",
+  music: "Music",
 };
 
 export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps) {

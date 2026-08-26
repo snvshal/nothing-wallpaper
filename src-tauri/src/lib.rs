@@ -442,6 +442,379 @@ fn prevent_default_plugin() -> tauri::plugin::TauriPlugin<tauri::Wry> {
     tauri_plugin_prevent_default::init()
 }
 
+#[derive(Clone, Serialize)]
+struct MediaInfo {
+    is_playing: bool,
+    title: String,
+    artist: String,
+    album: String,
+    cover_base64: String,
+}
+
+#[cfg(target_os = "windows")]
+static CURRENT_MEDIA: Mutex<Option<MediaInfo>> = Mutex::new(None);
+
+#[cfg(target_os = "windows")]
+fn encode_base64(bytes: &[u8]) -> String {
+    const BASE64_ALPHABET: &[u8; 64] =
+        b"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
+    let mut encoded = String::with_capacity(bytes.len().div_ceil(3) * 4);
+    for chunk in bytes.chunks(3) {
+        let b0 = chunk[0];
+        let b1 = if chunk.len() > 1 { chunk[1] } else { 0 };
+        let b2 = if chunk.len() > 2 { chunk[2] } else { 0 };
+        let n = ((b0 as u32) << 16) | ((b1 as u32) << 8) | (b2 as u32);
+        encoded.push(BASE64_ALPHABET[((n >> 18) & 63) as usize] as char);
+        encoded.push(BASE64_ALPHABET[((n >> 12) & 63) as usize] as char);
+        if chunk.len() > 1 {
+            encoded.push(BASE64_ALPHABET[((n >> 6) & 63) as usize] as char);
+        } else {
+            encoded.push('=');
+        }
+        if chunk.len() > 2 {
+            encoded.push(BASE64_ALPHABET[(n & 63) as usize] as char);
+        } else {
+            encoded.push('=');
+        }
+    }
+    encoded
+}
+
+/// Resolve the best-fit GSMTC session:
+/// 1. CurrentSession if actively Playing (user's focused/primary media)
+/// 2. Any other session that is actively Playing (background browser tab / Spotify)
+/// 3. CurrentSession if paused (the last active session)
+/// 4. First session in list as a final fallback
+#[cfg(target_os = "windows")]
+fn find_media_session() -> Option<windows::Media::Control::GlobalSystemMediaTransportControlsSession>
+{
+    use windows::Media::Control::{
+        GlobalSystemMediaTransportControlsSessionManager,
+        GlobalSystemMediaTransportControlsSessionPlaybackStatus,
+    };
+
+    let manager = GlobalSystemMediaTransportControlsSessionManager::RequestAsync()
+        .and_then(|op| op.get())
+        .ok()?;
+
+    // 1. Prefer CurrentSession if it is actively Playing
+    if let Ok(current) = manager.GetCurrentSession() {
+        let is_playing = current
+            .GetPlaybackInfo()
+            .ok()
+            .and_then(|p| p.PlaybackStatus().ok())
+            .map(|st| st == GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing)
+            .unwrap_or(false);
+
+        if is_playing {
+            return Some(current);
+        }
+    }
+
+    // 2. Scan all sessions for any session that is actively Playing
+    if let Ok(sessions) = manager.GetSessions() {
+        if let Ok(count) = sessions.Size() {
+            for i in 0..count {
+                if let Ok(s) = sessions.GetAt(i) {
+                    let is_playing = s
+                        .GetPlaybackInfo()
+                        .ok()
+                        .and_then(|p| p.PlaybackStatus().ok())
+                        .map(|st| {
+                            st == GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing
+                        })
+                        .unwrap_or(false);
+
+                    if is_playing {
+                        return Some(s);
+                    }
+                }
+            }
+        }
+    }
+
+    // 3. If nothing is playing, fall back to CurrentSession (last focused media)
+    if let Ok(current) = manager.GetCurrentSession() {
+        return Some(current);
+    }
+
+    // 4. Fall back to first session in list
+    if let Ok(sessions) = manager.GetSessions() {
+        if let Ok(count) = sessions.Size() {
+            if count > 0 {
+                return sessions.GetAt(0).ok();
+            }
+        }
+    }
+
+    None
+}
+
+#[cfg(target_os = "windows")]
+fn query_media_info_internal(
+    last_title: &mut String,
+    last_artist: &mut String,
+    last_cover: &mut String,
+) -> MediaInfo {
+    use windows::Storage::Streams::DataReader;
+
+    let session = match find_media_session() {
+        Some(s) => s,
+        None => {
+            return MediaInfo {
+                is_playing: false,
+                title: "Nothing Playing".into(),
+                artist: "Idle".into(),
+                album: String::new(),
+                cover_base64: String::new(),
+            };
+        }
+    };
+
+    let is_playing = session
+        .GetPlaybackInfo()
+        .ok()
+        .and_then(|p| p.PlaybackStatus().ok())
+        .map(|s| {
+            s == windows::Media::Control::GlobalSystemMediaTransportControlsSessionPlaybackStatus::Playing
+        })
+        .unwrap_or(false);
+
+    let media_props = session
+        .TryGetMediaPropertiesAsync()
+        .and_then(|op| op.get())
+        .ok();
+
+    let (title, artist, album) = if let Some(props) = media_props.as_ref() {
+        let t = props.Title().map(|h| h.to_string()).unwrap_or_default();
+        let a = props.Artist().map(|h| h.to_string()).unwrap_or_default();
+        let alb = props
+            .AlbumTitle()
+            .map(|h| h.to_string())
+            .unwrap_or_default();
+        (t, a, alb)
+    } else {
+        (String::new(), String::new(), String::new())
+    };
+
+    if title.is_empty() && artist.is_empty() {
+        return MediaInfo {
+            is_playing,
+            title: if is_playing {
+                "Audio Playing".into()
+            } else {
+                "Nothing Playing".into()
+            },
+            artist: if is_playing {
+                "System Audio".into()
+            } else {
+                "Idle".into()
+            },
+            album: String::new(),
+            cover_base64: String::new(),
+        };
+    }
+
+    let mut cover_base64 = String::new();
+    let track_changed = *last_title != title || *last_artist != artist;
+
+    if !track_changed && !last_cover.is_empty() {
+        cover_base64 = last_cover.clone();
+    } else if let Some(props) = media_props.as_ref() {
+        if let Ok(thumb_ref) = props.Thumbnail() {
+            if let Ok(stream_op) = thumb_ref.OpenReadAsync() {
+                if let Ok(stream) = stream_op.get() {
+                    if let Ok(size) = stream.Size() {
+                        if size > 0 && size < 5 * 1024 * 1024 {
+                            if let Ok(reader) = DataReader::CreateDataReader(&stream) {
+                                if reader
+                                    .LoadAsync(size as u32)
+                                    .and_then(|op| op.get())
+                                    .is_ok()
+                                {
+                                    let mut bytes = vec![0u8; size as usize];
+                                    if reader.ReadBytes(&mut bytes).is_ok() {
+                                        cover_base64 = format!(
+                                            "data:image/jpeg;base64,{}",
+                                            encode_base64(&bytes)
+                                        );
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        *last_title = title.clone();
+        *last_artist = artist.clone();
+        *last_cover = cover_base64.clone();
+    }
+
+    MediaInfo {
+        is_playing,
+        title,
+        artist: if artist.is_empty() {
+            "Media Player".into()
+        } else {
+            artist
+        },
+        album: if album.is_empty() {
+            "Nothing OS".into()
+        } else {
+            album
+        },
+        cover_base64,
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn start_media_monitor() {
+    std::thread::Builder::new()
+        .name("media_monitor".into())
+        .spawn(|| {
+            let mut last_title = String::new();
+            let mut last_artist = String::new();
+            let mut last_cover = String::new();
+
+            loop {
+                let info =
+                    query_media_info_internal(&mut last_title, &mut last_artist, &mut last_cover);
+                if let Ok(mut slot) = CURRENT_MEDIA.lock() {
+                    *slot = Some(info);
+                }
+                std::thread::sleep(std::time::Duration::from_millis(600));
+            }
+        })
+        .expect("failed to spawn media monitor thread");
+}
+
+#[tauri::command]
+fn get_media_status() -> MediaInfo {
+    #[cfg(target_os = "windows")]
+    {
+        if let Ok(guard) = CURRENT_MEDIA.lock() {
+            if let Some(info) = guard.as_ref() {
+                return info.clone();
+            }
+        }
+        MediaInfo {
+            is_playing: false,
+            title: "Nothing Playing".into(),
+            artist: "Idle".into(),
+            album: String::new(),
+            cover_base64: String::new(),
+        }
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        MediaInfo {
+            is_playing: false,
+            title: "Nothing Playing".into(),
+            artist: "Idle".into(),
+            album: String::new(),
+            cover_base64: String::new(),
+        }
+    }
+}
+
+#[tauri::command]
+fn toggle_media_playback() -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        std::thread::spawn(|| {
+            if let Some(session) = find_media_session() {
+                let _ = session.TryTogglePlayPauseAsync();
+            }
+        });
+        true
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        true
+    }
+}
+
+#[tauri::command]
+fn next_media_track() -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        std::thread::spawn(|| {
+            if let Some(session) = find_media_session() {
+                let _ = session.TrySkipNextAsync();
+            }
+        });
+        true
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        true
+    }
+}
+
+#[tauri::command]
+fn previous_media_track() -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        std::thread::spawn(|| {
+            if let Some(session) = find_media_session() {
+                let _ = session.TrySkipPreviousAsync();
+            }
+        });
+        true
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        true
+    }
+}
+
+#[tauri::command]
+fn seek_media(delta_seconds: i64) -> bool {
+    #[cfg(target_os = "windows")]
+    {
+        std::thread::spawn(move || {
+            if let Some(session) = find_media_session() {
+                if let Ok(timeline) = session.GetTimelineProperties() {
+                    if let Ok(pos) = timeline.Position() {
+                        let current_ticks = pos.Duration;
+                        let delta_ticks = delta_seconds * 10_000_000;
+                        let new_ticks = (current_ticks + delta_ticks).max(0);
+                        let target_ticks = if let Ok(end) = timeline.EndTime() {
+                            if end.Duration > 0 {
+                                new_ticks.min(end.Duration)
+                            } else {
+                                new_ticks
+                            }
+                        } else {
+                            new_ticks
+                        };
+                        if let Ok(op) = session.TryChangePlaybackPositionAsync(target_ticks) {
+                            if let Ok(success) = op.get() {
+                                if success {
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+                // Fallback: If seeking is unsupported by the player, trigger skip
+                if delta_seconds > 0 {
+                    let _ = session.TrySkipNextAsync();
+                } else {
+                    let _ = session.TrySkipPreviousAsync();
+                }
+            }
+        });
+        true
+    }
+    #[cfg(not(target_os = "windows"))]
+    {
+        let _ = delta_seconds;
+        true
+    }
+}
+
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
@@ -456,6 +829,11 @@ pub fn run() {
             set_widget_regions,
             get_wifi_status,
             toggle_wifi,
+            get_media_status,
+            toggle_media_playback,
+            next_media_track,
+            previous_media_track,
+            seek_media,
         ])
         .setup(|app| {
             let handle = app.handle();
@@ -469,6 +847,7 @@ pub fn run() {
                 let hwnd = window.hwnd().unwrap();
                 mouse_hook::set_emitter(app.handle().clone());
                 mouse_hook::install(hwnd.0 as isize);
+                start_media_monitor();
             }
 
             // System tray

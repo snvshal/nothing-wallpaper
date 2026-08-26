@@ -26,6 +26,7 @@ const LABELS: Record<string, string> = {
   weather: "Weather",
   ram: "RAM",
   wifi: "Wi-Fi",
+  music: "Music",
 };
 
 const ORDER = Object.keys(LABELS);

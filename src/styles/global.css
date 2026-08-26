@@ -69,6 +69,16 @@
   --theme-clock-face: var(--color-nothing-black);
   --theme-clock-hour: var(--color-nothing-white);
   --theme-clock-minute: var(--color-nothing-dgrey);
+  --theme-cd-disc: conic-gradient(
+    from 0deg,
+    #18181b,
+    #3f3f46 25%,
+    #18181b 50%,
+    #52525b 75%,
+    #18181b 100%
+  );
+  --theme-cd-hub: #18181b;
+  --theme-cd-border: #3f3f46;
 }
 
 [data-theme="light"] {
@@ -84,6 +94,16 @@
   --theme-clock-face: var(--color-nothing-white);
   --theme-clock-hour: var(--color-nothing-black);
   --theme-clock-minute: var(--color-nothing-dgrey);
+  --theme-cd-disc: conic-gradient(
+    from 0deg,
+    #d4d4d8,
+    #ffffff 25%,
+    #d4d4d8 50%,
+    #e4e4e7 75%,
+    #d4d4d8 100%
+  );
+  --theme-cd-hub: #e4e4e7;
+  --theme-cd-border: #d4d4d8;
 }
 
 @utility bg-widget-surface {
