@@ -43,10 +43,10 @@ Nothing OS / Glyph-style live digital hourglass visualizer. 60 dots representing
 
 ## Behaviour
 
-| Property        | Value                                                              |
-| --------------- | ------------------------------------------------------------------ |
-| Typography      | Zero text — pure 1:1 square digital matrix visualizer              |
-| Gravity Physics | Each second, 1 dot drops down along its respective vertical column |
-| Update interval | 30ms smooth animation tick synchronized with system clock          |
-| Minute Reset    | 250ms snappy upward rewind lifting all 6 layers from floor to top  |
-| Performance     | 0% CPU impact (GPU-accelerated vector coordinates)                 |
+| Property        | Value                                                                                                                                            |
+| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------ |
+| Typography      | Zero text — pure 1:1 square digital matrix visualizer                                                                                            |
+| Gravity Physics | Each second, 1 dot falls along its vertical column following a quadratic gravitational acceleration curve ($d = \frac{1}{2}gt^2$, $t^2$ ease-in) |
+| Update interval | 30ms smooth animation tick synchronized with system clock                                                                                        |
+| Minute Reset    | 250ms snappy upward rewind lifting all 6 layers from floor to top                                                                                |
+| Performance     | 0% CPU impact (GPU-accelerated vector coordinates)                                                                                               |
