@@ -87,7 +87,9 @@ export default function App() {
   }, [dpr]);
 
   useEffect(() => {
-    loadSettings().then(setSettings);
+    loadSettings()
+      .then(setSettings)
+      .catch(() => setSettings(null));
 
     const preventDrag = (e: Event) => e.preventDefault();
     document.addEventListener("dragstart", preventDrag);
@@ -141,7 +143,7 @@ export default function App() {
       },
     [settings?.widgets],
   );
-  const savedPositions = useMemo(() => settings?.positions ?? {}, [settings]);
+  const savedPositions = useMemo(() => settings?.positions ?? {}, [settings?.positions]);
   const unit = settings?.unit ?? 16;
   const metrics = useMemo(() => gridMetrics(unit), [unit]);
 
@@ -178,6 +180,14 @@ export default function App() {
     () => Object.keys(defaultPositions(metrics)).filter((id) => visibleWidgets[id]),
     [visibleWidgets, metrics],
   );
+
+  const widgetContent = useMemo(() => {
+    const map: Record<string, React.ReactNode> = {};
+    for (const id of visibleIds) {
+      map[id] = renderWidgetContent(id, settings);
+    }
+    return map;
+  }, [visibleIds, settings]);
 
   const layout = useMemo(
     () => evaluateLayout(visibleIds, seededPositions, screen, metrics),
@@ -235,20 +245,36 @@ export default function App() {
     onDragEnd,
   });
 
+  const onPointerDownHandlers = useMemo(() => {
+    if (isTauri) return {};
+    const handlers: Record<string, (e: React.PointerEvent<HTMLDivElement>) => void> = {};
+    for (const id of visibleIds) {
+      handlers[id] = (e) => {
+        if (e.target instanceof HTMLElement && e.target.closest("button")) return;
+        e.preventDefault();
+        beginPointerDrag(id, e.clientX, e.clientY);
+      };
+    }
+    return handlers;
+  }, [visibleIds, beginPointerDrag]);
+
   useEffect(() => {
     if (!isTauri) return;
-    const scale = window.devicePixelRatio || 1;
-    const regions = Object.entries(positions).map(([id, p]) => {
-      const size = getWidgetPixelSize(id, metrics);
-      return {
-        id,
-        x: Math.round(p.x * scale),
-        y: Math.round(p.y * scale),
-        w: size.w * scale,
-        h: size.h * scale,
-      };
+    const id = requestAnimationFrame(() => {
+      const scale = window.devicePixelRatio || 1;
+      const regions = Object.entries(positions).map(([id, p]) => {
+        const size = getWidgetPixelSize(id, metrics);
+        return {
+          id,
+          x: Math.round(p.x * scale),
+          y: Math.round(p.y * scale),
+          w: size.w * scale,
+          h: size.h * scale,
+        };
+      });
+      invoke("set_widget_regions", { regions }).catch(() => {});
     });
-    invoke("set_widget_regions", { regions }).catch(() => {});
+    return () => cancelAnimationFrame(id);
   }, [positions, metrics, dpr]);
 
   useNativeDrag({ beginExternal, moveExternal, endExternal });
@@ -289,17 +315,9 @@ export default function App() {
             noPadding={NO_PADDING_WIDGETS.has(id)}
             unitsW={WIDGET_UNIT_SIZES[id]?.w ?? 9}
             unitsH={WIDGET_UNIT_SIZES[id]?.h ?? 9}
-            onPointerDown={
-              isTauri
-                ? undefined
-                : (e) => {
-                    if ((e.target as HTMLElement).closest("button")) return;
-                    e.preventDefault();
-                    beginPointerDrag(id, e.clientX, e.clientY);
-                  }
-            }
+            onPointerDown={onPointerDownHandlers[id]}
           >
-            {renderWidgetContent(id, settings)}
+            {widgetContent[id]}
           </DraggableWidget>
         );
       })}

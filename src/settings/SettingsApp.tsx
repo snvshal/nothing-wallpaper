@@ -45,7 +45,9 @@ export default function SettingsApp() {
   }, [settings]);
 
   useEffect(() => {
-    loadSettings().then(setSettings);
+    loadSettings()
+      .then(setSettings)
+      .catch(() => setSettings(null));
   }, []);
 
   useEffect(() => {
