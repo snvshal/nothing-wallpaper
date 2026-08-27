@@ -73,15 +73,12 @@ export default function MusicWidget() {
       } catch {
         // Ignore
       }
+    } else if (media.is_playing) {
+      setMedia(IDLE_MEDIA);
     } else {
-      setMedia((prev) => {
-        if (prev.is_playing) {
-          return IDLE_MEDIA;
-        }
-        const track = MOCK_TRACKS[mockIndex.current % MOCK_TRACKS.length];
-        mockIndex.current += 1;
-        return { ...track, is_playing: true, cover_base64: "" };
-      });
+      const track = MOCK_TRACKS[mockIndex.current % MOCK_TRACKS.length];
+      mockIndex.current += 1;
+      setMedia({ ...track, is_playing: true, cover_base64: "" });
     }
   };
 
@@ -94,13 +91,10 @@ export default function MusicWidget() {
       } catch {
         // Ignore
       }
-    } else {
-      setMedia((prev) => {
-        if (!prev.is_playing) return prev;
-        const track = MOCK_TRACKS[mockIndex.current % MOCK_TRACKS.length];
-        mockIndex.current += 1;
-        return { ...track, is_playing: true, cover_base64: "" };
-      });
+    } else if (media.is_playing) {
+      const track = MOCK_TRACKS[mockIndex.current % MOCK_TRACKS.length];
+      mockIndex.current += 1;
+      setMedia({ ...track, is_playing: true, cover_base64: "" });
     }
   };
 
@@ -113,14 +107,11 @@ export default function MusicWidget() {
       } catch {
         // Ignore
       }
-    } else {
-      setMedia((prev) => {
-        if (!prev.is_playing) return prev;
-        mockIndex.current = (mockIndex.current + MOCK_TRACKS.length - 2) % MOCK_TRACKS.length;
-        const track = MOCK_TRACKS[mockIndex.current];
-        mockIndex.current += 1;
-        return { ...track, is_playing: true, cover_base64: "" };
-      });
+    } else if (media.is_playing) {
+      mockIndex.current = (mockIndex.current + MOCK_TRACKS.length - 2) % MOCK_TRACKS.length;
+      const track = MOCK_TRACKS[mockIndex.current];
+      mockIndex.current += 1;
+      setMedia({ ...track, is_playing: true, cover_base64: "" });
     }
   };
 
@@ -244,7 +235,7 @@ export default function MusicWidget() {
             onClick={handlePrev}
             disabled={!hasActiveMedia}
             aria-label="Previous Track"
-            className="p-0 border-none bg-transparent outline-none cursor-pointer text-theme-primary hover:text-nothing-widget-red active:scale-90 transition-all duration-150 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center"
+            className="p-0 border-none bg-transparent outline-none cursor-pointer text-theme-primary hover:text-nothing-widget-red active:scale-90 transition-colors transition-transform duration-150 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center"
             title="Previous Track"
             style={{
               width: "calc(var(--unit) * 1.15)",
@@ -296,7 +287,7 @@ export default function MusicWidget() {
             onClick={handleNext}
             disabled={!hasActiveMedia}
             aria-label="Next Track"
-            className="p-0 border-none bg-transparent outline-none cursor-pointer text-theme-primary hover:text-nothing-widget-red active:scale-90 transition-all duration-150 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center"
+            className="p-0 border-none bg-transparent outline-none cursor-pointer text-theme-primary hover:text-nothing-widget-red active:scale-90 transition-colors transition-transform duration-150 disabled:opacity-25 disabled:cursor-not-allowed flex items-center justify-center"
             title="Next Track"
             style={{
               width: "calc(var(--unit) * 1.15)",

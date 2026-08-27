@@ -161,7 +161,7 @@ export function useDragSnap({
           : { ...dropTargetRef.current },
       );
     },
-    [widgetSize, gridSize, margin, metrics],
+    [gridSize, margin, metrics],
   );
 
   /**
