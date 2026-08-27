@@ -1148,9 +1148,9 @@ fn start_screentime_tracker() {
                 continue;
             }
             let today = get_today_key();
-            let mut day_guard = CURRENT_DAY.lock().unwrap();
-            let mut app_guard = APP_DURATIONS.lock().unwrap();
-            let mut hist_guard = DAILY_HISTORY.lock().unwrap();
+            let mut day_guard = CURRENT_DAY.lock().unwrap_or_else(|e| e.into_inner());
+            let mut app_guard = APP_DURATIONS.lock().unwrap_or_else(|e| e.into_inner());
+            let mut hist_guard = DAILY_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
 
             let map = app_guard.get_or_insert_with(std::collections::HashMap::new);
             let hist_map = hist_guard.get_or_insert_with(std::collections::HashMap::new);
@@ -1167,7 +1167,7 @@ fn start_screentime_tracker() {
 
 #[tauri::command]
 fn get_screen_time() -> ScreenTimeData {
-    let app_guard = APP_DURATIONS.lock().unwrap();
+    let app_guard = APP_DURATIONS.lock().unwrap_or_else(|e| e.into_inner());
     let map = match &*app_guard {
         Some(m) => m.clone(),
         None => std::collections::HashMap::new(),
@@ -1206,7 +1206,7 @@ fn get_screen_time() -> ScreenTimeData {
     }
 
     let today = get_today_key();
-    let hist_guard = DAILY_HISTORY.lock().unwrap();
+    let hist_guard = DAILY_HISTORY.lock().unwrap_or_else(|e| e.into_inner());
     let hist_map = match &*hist_guard {
         Some(h) => h.clone(),
         None => std::collections::HashMap::new(),

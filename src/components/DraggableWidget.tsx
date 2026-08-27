@@ -1,4 +1,4 @@
-import { type ReactNode } from "react";
+import { memo, type ReactNode } from "react";
 import { SETTLE_TRANSITION } from "../lib/motion";
 
 interface DraggableWidgetProps {
@@ -15,7 +15,7 @@ interface DraggableWidgetProps {
   children: ReactNode;
 }
 
-export default function DraggableWidget({
+export default memo(function DraggableWidget({
   id,
   x,
   y,
@@ -53,4 +53,4 @@ export default function DraggableWidget({
       {children}
     </div>
   );
-}
+});

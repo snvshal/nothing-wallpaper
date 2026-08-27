@@ -137,9 +137,16 @@ export default function ScreentimeWidget() {
   const targetMaxSeconds = targetMaxHours * 3600;
 
   return (
-    <div
-      className="w-full h-full flex flex-col justify-between select-none overflow-hidden cursor-pointer"
+    <button
+      type="button"
+      className="w-full h-full flex flex-col justify-between select-none overflow-hidden cursor-pointer text-left bg-transparent border-none p-0 m-0 font-[inherit]"
       onClick={() => setViewMode((prev) => (prev === "today" ? "history" : "today"))}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          setViewMode((prev) => (prev === "today" ? "history" : "today"));
+        }
+      }}
       title="Click to toggle Today / 10-Day History"
     >
       {viewMode === "today" ? (
@@ -236,6 +243,6 @@ export default function ScreentimeWidget() {
           </div>
         </>
       )}
-    </div>
+    </button>
   );
 }
