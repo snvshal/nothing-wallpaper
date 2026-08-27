@@ -15,7 +15,9 @@ function computeCellClass(row: number, col: number, seconds: number, ms: number)
   const activeTopRowFromBottom = Math.floor(seconds / COLS);
   const activeTopRow = TOP_ROWS - 1 - activeTopRowFromBottom;
   const activeBottomRow = ROWS - 1 - activeTopRowFromBottom;
-  const dropProgress = ms / 1000;
+  // Gravitational acceleration physics curve: d = 0.5 * g * t^2
+  const t = Math.min(1, Math.max(0, ms / 1000));
+  const dropProgress = t * t;
   const currentFallingRow =
     activeTopRow + Math.floor(dropProgress * (activeBottomRow - activeTopRow + 1));
 
