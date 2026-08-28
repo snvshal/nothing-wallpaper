@@ -19,10 +19,13 @@ tauri = { version = "2", features = ["protocol-asset", "tray-icon"] }
 tauri-plugin-wallpaper = "2"
 tauri-plugin-prevent-default = { version = "5", features = ["platform-windows"] }
 serde = { version = "1", features = ["derive"] }
+serde_json = "1"
 sysinfo = "0.39"
 tauri-plugin-store = "2.4.4"
 tauri-plugin-dialog = "2.7.2"
 tauri-plugin-autostart = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
 
 [target.'cfg(windows)'.dependencies]
 windows = { version = "0.61", features = [

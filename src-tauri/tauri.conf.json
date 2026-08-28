@@ -47,8 +47,17 @@
       }
     }
   },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJDNDk3MUY4MEZDODJCNUYKUldSZks4Z1ArSEZKdkw4c050VXhvYUdIRU43Lzk5aWx2VHVnM2ZXZGNSK01oM0ZwQzBySmRPRXkK",
+      "endpoints": [
+        "https://github.com/snvshal/nothing-wallpaper/releases/latest/download/latest.json"
+      ]
+    }
+  },
   "bundle": {
     "active": true,
+    "createUpdaterArtifacts": true,
     "targets": "all",
     "icon": [
       "icons/32x32.png",

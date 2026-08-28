@@ -547,3 +547,41 @@ body {
   font-size: 12px;
   color: var(--color-nothing-red);
 }
+
+/* Updates */
+.update-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+  border: 1px solid var(--theme-border-subtle);
+  border-radius: 8px;
+  background: transparent;
+}
+
+.update-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.update-version {
+  font-family: "Doto", monospace;
+  font-variation-settings: "ROND" 100;
+  font-size: 13px;
+  letter-spacing: 0.05em;
+  color: var(--theme-text-primary);
+}
+
+.update-status-label {
+  font-family: "Google Sans Code", monospace;
+  font-size: 12px;
+  color: var(--theme-text-muted);
+}
+
+.update-actions {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}

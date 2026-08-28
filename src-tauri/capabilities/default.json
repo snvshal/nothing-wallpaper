@@ -8,6 +8,8 @@
     "core:webview:allow-create-webview-window",
     "wallpaper:default",
     "store:default",
-    "autostart:default"
+    "autostart:default",
+    "updater:default",
+    "process:default"
   ]
 }

@@ -20,6 +20,7 @@ import WeatherSettings from "./WeatherSettings";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
 import StartupSettings from "./StartupSettings";
+import UpdateSettings from "./UpdateSettings";
 
 const WIDGET_IDS = [
   "clock",
@@ -166,6 +167,8 @@ export default function SettingsApp() {
             noSpaceIds={layout.skipped}
             onChange={(positions) => update({ positions })}
           />
+
+          <UpdateSettings />
         </div>
       </div>
     </div>
