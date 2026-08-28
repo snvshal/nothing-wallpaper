@@ -14,7 +14,12 @@ import ScreentimeWidget from "./components/ScreentimeWidget";
 import CountdownWidget from "./components/CountdownWidget";
 import BluetoothWidget from "./components/BluetoothWidget";
 import VolumeWidget from "./components/VolumeWidget";
-import { loadSettings, saveSettings, type AppSettings } from "./settings/settings-store";
+import {
+  ensureDefaultAutostart,
+  loadSettings,
+  saveSettings,
+  type AppSettings,
+} from "./settings/settings-store";
 import {
   defaultPositions,
   evaluateLayout,
@@ -87,6 +92,7 @@ export default function App() {
   }, [dpr]);
 
   useEffect(() => {
+    ensureDefaultAutostart().catch(() => {});
     loadSettings()
       .then(setSettings)
       .catch(() => setSettings(null));

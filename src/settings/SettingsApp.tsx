@@ -19,6 +19,7 @@ import WallpaperPicker from "./WallpaperPicker";
 import WeatherSettings from "./WeatherSettings";
 import WidgetToggles from "./WidgetToggles";
 import LayoutMinimap from "./LayoutMinimap";
+import StartupSettings from "./StartupSettings";
 
 const WIDGET_IDS = [
   "clock",
@@ -131,6 +132,8 @@ export default function SettingsApp() {
       <TitleBar />
       <div className="settings-body">
         <div className="settings-container">
+          <StartupSettings />
+
           <ThemePicker
             theme={settings.theme}
             surfaceStyle={settings.surfaceStyle}

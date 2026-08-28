@@ -1,5 +1,6 @@
 import { LazyStore } from "@tauri-apps/plugin-store";
 import { emit } from "@tauri-apps/api/event";
+import { enable, isEnabled } from "@tauri-apps/plugin-autostart";
 import { DEFAULT_UNIT, UNIT_OPTIONS } from "../lib/placement";
 import { isTauri } from "../lib/tauri";
 
@@ -62,14 +63,14 @@ function storageAvailable(): boolean {
   }
 }
 
-async function getValue<T>(key: string): Promise<T | null> {
+export async function getValue<T>(key: string): Promise<T | null> {
   if (tauriStore) return (await tauriStore.get<T>(key)) ?? null;
   if (!storageAvailable()) return (memoryFallback[key] as T) ?? null;
   const raw = localStorage.getItem(FALLBACK_PREFIX + key);
   return raw == null ? null : (JSON.parse(raw) as T);
 }
 
-async function setValue(key: string, value: unknown): Promise<void> {
+export async function setValue(key: string, value: unknown): Promise<void> {
   if (tauriStore) {
     await tauriStore.set(key, value);
     return;
@@ -77,6 +78,22 @@ async function setValue(key: string, value: unknown): Promise<void> {
   memoryFallback[key] = value;
   if (storageAvailable()) {
     localStorage.setItem(FALLBACK_PREFIX + key, JSON.stringify(value));
+  }
+}
+
+export async function ensureDefaultAutostart(): Promise<boolean> {
+  if (!isTauri) return true;
+  try {
+    const configured = await getValue<boolean>("autostart_configured");
+    if (configured === null || configured === undefined) {
+      await enable();
+      await setValue("autostart_configured", true);
+      return true;
+    }
+    return await isEnabled();
+  } catch (err) {
+    console.error("Failed to ensure default autostart:", err);
+    return false;
   }
 }
 
