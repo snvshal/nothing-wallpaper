@@ -121,7 +121,7 @@ export async function getAutoCity(): Promise<string> {
 const DEFAULT_FALLBACK: WeatherData = {
   temperature: 28,
   emoji: "\u2601",
-  city: "Villupuram",
+  city: "London",
   weatherCode: 3,
 };
 

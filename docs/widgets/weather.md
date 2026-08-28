@@ -20,7 +20,7 @@ Three-row vertical flex column: temperature at top, condition emoji centered, ci
 |                           |
 |             cloud         |
 |                           |
-|  Surat                    |
+|  London                   |
 +---------------------------+
 ```
 
