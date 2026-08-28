@@ -1,0 +1,45 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  check:
+    name: Lint & Build Verification
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: "./src-tauri -> target"
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Frontend checks (Format, Lint, Typecheck, Build)
+        run: |
+          bun run fmt:check
+          bun run check
+          bun run build
+
+      - name: Rust checks (Format & Clippy)
+        run: |
+          cargo fmt --all --manifest-path src-tauri/Cargo.toml -- --check
+          bun run check:rs
