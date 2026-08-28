@@ -133,8 +133,6 @@ export default function SettingsApp() {
       <TitleBar />
       <div className="settings-body">
         <div className="settings-container">
-          <StartupSettings />
-
           <ThemePicker
             theme={settings.theme}
             surfaceStyle={settings.surfaceStyle}
@@ -167,6 +165,8 @@ export default function SettingsApp() {
             noSpaceIds={layout.skipped}
             onChange={(positions) => update({ positions })}
           />
+
+          <StartupSettings />
 
           <UpdateSettings />
         </div>
