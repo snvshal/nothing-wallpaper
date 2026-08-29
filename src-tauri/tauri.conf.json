@@ -49,9 +49,9 @@
   },
   "plugins": {
     "updater": {
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEJDNDk3MUY4MEZDODJCNUYKUldSZks4Z1ArSEZKdkw4c050VXhvYUdIRU43Lzk5aWx2VHVnM2ZXZGNSK01oM0ZwQzBySmRPRXkK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJCOUMyREU3N0E5Q0VDNDIKUldSQzdKeDY1eTJjSzRFV2p5S1UxekpLUDR2eG1YRUd1ZEswSEFOc1FFSmJJMS9WMzA3bTJDY1UK",
       "endpoints": [
-        "https://nothing-wallpaper.snvshal.workers.dev"
+        "https://nothing-wallpaper.snvshal.workers.dev/latest.json"
       ]
     }
   },
