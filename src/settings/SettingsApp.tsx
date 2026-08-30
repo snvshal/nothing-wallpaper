@@ -4,6 +4,7 @@ import {
   clampToScreen,
   collidesWithAny,
   defaultPositions,
+  DEFAULT_UNIT,
   evaluateLayout,
   findFreePosition,
   gridMetrics,
@@ -80,7 +81,7 @@ export default function SettingsApp() {
     [settings],
   );
 
-  const unit = settings?.unit ?? 16;
+  const unit = settings?.unit ?? DEFAULT_UNIT;
   const activeTheme = useTheme(settings?.theme ?? "dark");
   const metrics = useMemo(() => gridMetrics(unit), [unit]);
 

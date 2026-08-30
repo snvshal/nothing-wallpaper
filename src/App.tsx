@@ -22,6 +22,7 @@ import {
 } from "./settings/settings-store";
 import {
   defaultPositions,
+  DEFAULT_UNIT,
   evaluateLayout,
   getWidgetPixelSize,
   gridMetrics,
@@ -150,7 +151,7 @@ export default function App() {
     [settings?.widgets],
   );
   const savedPositions = useMemo(() => settings?.positions ?? {}, [settings?.positions]);
-  const unit = settings?.unit ?? 16;
+  const unit = settings?.unit ?? DEFAULT_UNIT;
   const metrics = useMemo(() => gridMetrics(unit), [unit]);
 
   useEffect(() => {
