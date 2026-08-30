@@ -3,8 +3,8 @@ import {
   clampToScreen,
   collidesWithAny,
   findFreePosition,
+  getScreenGridOffsets,
   getWidgetPixelSize,
-  snap,
   type GridMetrics,
   type Position,
   type Screen,
@@ -66,9 +66,12 @@ export default function LayoutMinimap({
     return () => observer.disconnect();
   }, []);
 
-  const scale = width > 0 ? width / screen.width : 0;
-  const height = scale > 0 ? Math.round(screen.height * scale) : 0;
-  const cell = metrics.grid * scale;
+  const numCols = Math.max(1, Math.floor(screen.width / metrics.grid));
+  const numRows = Math.max(1, Math.floor(screen.height / metrics.grid));
+  const cell = width > 0 ? width / numCols : 0;
+  const height = Math.round(numRows * cell);
+  const minimapScale = cell > 0 ? cell / metrics.grid : 0;
+  const { offsetX, offsetY } = getScreenGridOffsets(screen, metrics);
 
   const othersOf = (id: string): Record<string, Position> => {
     const others: Record<string, Position> = {};
@@ -81,7 +84,7 @@ export default function LayoutMinimap({
   const startDrag = (id: string) => (e: React.PointerEvent<HTMLDivElement>) => {
     e.preventDefault();
     const origin = placed[id];
-    if (!origin || scale <= 0) return;
+    if (!origin || minimapScale <= 0) return;
     dragIdRef.current = id;
     dragStart.current = { clientX: e.clientX, clientY: e.clientY, origin };
     setDrag({ id, pos: origin, collides: false });
@@ -93,15 +96,10 @@ export default function LayoutMinimap({
     const start = dragStart.current;
     if (!id || !start || !drag) return;
     const raw = {
-      x: start.origin.x + (e.clientX - start.clientX) / scale,
-      y: start.origin.y + (e.clientY - start.clientY) / scale,
+      x: start.origin.x + (e.clientX - start.clientX) / minimapScale,
+      y: start.origin.y + (e.clientY - start.clientY) / minimapScale,
     };
-    const next = clampToScreen(
-      { x: snap(raw.x, metrics), y: snap(raw.y, metrics) },
-      screen,
-      metrics,
-      id,
-    );
+    const next = clampToScreen(raw, screen, metrics, id);
     setDrag({ id, pos: next, collides: collidesWithAny(id, next, othersOf(id), metrics) });
   };
 
@@ -128,10 +126,10 @@ export default function LayoutMinimap({
   const tileStyle = (pos: Position, id: string): React.CSSProperties => {
     const size = getWidgetPixelSize(id, metrics);
     return {
-      left: `${pos.x * scale}px`,
-      top: `${pos.y * scale}px`,
-      width: `${size.w * scale}px`,
-      height: `${size.h * scale}px`,
+      left: `${(pos.x - offsetX) * minimapScale}px`,
+      top: `${(pos.y - offsetY) * minimapScale}px`,
+      width: `${size.w * minimapScale}px`,
+      height: `${size.h * minimapScale}px`,
     };
   };
 
@@ -143,11 +141,44 @@ export default function LayoutMinimap({
         className="minimap"
         style={{
           height: `${height}px`,
-          backgroundSize: `${cell}px ${cell}px`,
-          backgroundPosition: `-${cell / 2}px -${cell / 2}px`,
         }}
       >
-        <div className="minimap-margin" style={{ inset: `${metrics.margin * scale}px` }} />
+        {cell > 0 && (
+          <svg
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              pointerEvents: "none",
+            }}
+          >
+            <defs>
+              <pattern
+                id="minimap-grid"
+                x={-cell / 2}
+                y={-cell / 2}
+                width={cell}
+                height={cell}
+                patternUnits="userSpaceOnUse"
+              >
+                <circle cx={cell / 2} cy={cell / 2} r={0.75} fill="var(--theme-minimap-dot)" />
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#minimap-grid)" />
+            {width > 2 * cell && height > 2 * cell && (
+              <rect
+                x={cell}
+                y={cell}
+                width={width - 2 * cell}
+                height={height - 2 * cell}
+                fill="none"
+                stroke="var(--theme-border-widget)"
+                strokeDasharray="4 4"
+              />
+            )}
+          </svg>
+        )}
         {ORDER.map((id) => {
           if (!widgets[id]) return null;
           const pos = drag?.id === id ? drag.pos : placed[id];
@@ -159,7 +190,10 @@ export default function LayoutMinimap({
               <div
                 key={id}
                 className="minimap-ghost nospace"
-                style={{ ...tileStyle(ghostPos, id), fontSize: `${Math.max(8, 11 * scale)}px` }}
+                style={{
+                  ...tileStyle(ghostPos, id),
+                  fontSize: `${Math.max(8, 11 * minimapScale)}px`,
+                }}
               >
                 {LABELS[id]}
               </div>
@@ -170,7 +204,10 @@ export default function LayoutMinimap({
             <div
               key={id}
               className={`minimap-tile${collides ? " collides" : ""}`}
-              style={{ ...tileStyle(pos, id), fontSize: `${Math.max(8, 11 * scale)}px` }}
+              style={{
+                ...tileStyle(pos, id),
+                fontSize: `${Math.max(8, 11 * minimapScale)}px`,
+              }}
               onPointerDown={startDrag(id)}
               onPointerMove={moveDrag}
               onPointerUp={endDrag}

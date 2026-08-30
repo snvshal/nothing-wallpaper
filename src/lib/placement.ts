@@ -66,10 +66,32 @@ const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   countdown: { x: 16, y: 26 },
 };
 
-export function defaultPositions(m: GridMetrics): Record<string, Position> {
+export interface ScreenGridOffsets {
+  numCols: number;
+  numRows: number;
+  remX: number;
+  remY: number;
+  offsetX: number;
+  offsetY: number;
+}
+
+export function getScreenGridOffsets(screen: Screen, m: GridMetrics): ScreenGridOffsets {
+  const numCols = Math.max(1, Math.floor(screen.width / m.grid));
+  const numRows = Math.max(1, Math.floor(screen.height / m.grid));
+  const remX = screen.width - numCols * m.grid;
+  const remY = screen.height - numRows * m.grid;
+  const offsetX = Math.floor(remX / 2);
+  const offsetY = Math.floor(remY / 2);
+  return { numCols, numRows, remX, remY, offsetX, offsetY };
+}
+
+export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string, Position> {
+  const { offsetX, offsetY } = screen
+    ? getScreenGridOffsets(screen, m)
+    : { offsetX: 0, offsetY: 0 };
   const out: Record<string, Position> = {};
   for (const [id, pos] of Object.entries(DEFAULT_POSITION_UNITS)) {
-    out[id] = { x: pos.x * m.unit, y: pos.y * m.unit };
+    out[id] = { x: offsetX + pos.x * m.unit, y: offsetY + pos.y * m.unit };
   }
   return out;
 }
@@ -105,34 +127,33 @@ function rectsOverlap(
   );
 }
 
-export function snap(value: number, m: GridMetrics): number {
-  return Math.round(value / m.grid) * m.grid;
+export function snap(value: number, m: GridMetrics, offset: number = 0): number {
+  return offset + Math.round((value - offset) / m.grid) * m.grid;
 }
 
-interface Bounds {
+export interface Bounds {
   minX: number;
   minY: number;
   maxX: number;
   maxY: number;
 }
 
-function screenBounds(screen: Screen, m: GridMetrics, id?: string): Bounds {
+export function screenBounds(screen: Screen, m: GridMetrics, id?: string): Bounds {
   const size = id ? getWidgetPixelSize(id, m) : { w: m.widgetSize, h: m.widgetSize };
-  const floorToLattice = (v: number) =>
-    Math.max(m.margin, m.margin + Math.max(0, Math.floor((v - m.margin) / m.grid)) * m.grid);
-  return {
-    minX: m.margin,
-    minY: m.margin,
-    maxX: floorToLattice(screen.width - m.margin - size.w),
-    maxY: floorToLattice(screen.height - m.margin - size.h),
-  };
+  const { offsetX, offsetY, numCols, numRows } = getScreenGridOffsets(screen, m);
+  const minX = offsetX + m.margin;
+  const minY = offsetY + m.margin;
+  const maxX = Math.max(minX, offsetX + (numCols - 1) * m.grid - size.w);
+  const maxY = Math.max(minY, offsetY + (numRows - 1) * m.grid - size.h);
+  return { minX, minY, maxX, maxY };
 }
 
 export function clampToScreen(p: Position, screen: Screen, m: GridMetrics, id?: string): Position {
   const { minX, minY, maxX, maxY } = screenBounds(screen, m, id);
+  const { offsetX, offsetY } = getScreenGridOffsets(screen, m);
   return {
-    x: Math.min(maxX, Math.max(minX, snap(p.x, m))),
-    y: Math.min(maxY, Math.max(minY, snap(p.y, m))),
+    x: Math.min(maxX, Math.max(minX, snap(p.x, m, offsetX))),
+    y: Math.min(maxY, Math.max(minY, snap(p.y, m, offsetY))),
   };
 }
 
@@ -180,12 +201,13 @@ export function evaluateLayout(
 ): LayoutResult {
   const placed: Record<string, Position> = {};
   const skipped: string[] = [];
-  const defaults = defaultPositions(m);
+  const defaults = defaultPositions(m, screen);
 
   for (const id of visibleIds) {
     const saved = positions[id];
+    const bounds = screenBounds(screen, m, id);
     let candidate = clampToScreen(
-      saved ?? defaults[id] ?? { x: m.margin, y: m.margin },
+      saved ?? defaults[id] ?? { x: bounds.minX, y: bounds.minY },
       screen,
       m,
       id,

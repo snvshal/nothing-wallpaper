@@ -85,8 +85,8 @@ export default function SettingsApp() {
   const metrics = useMemo(() => gridMetrics(unit), [unit]);
 
   const seededPositions = useMemo(
-    () => ({ ...defaultPositions(metrics), ...settings?.positions }),
-    [settings?.positions, metrics],
+    () => ({ ...defaultPositions(metrics, screen), ...settings?.positions }),
+    [settings?.positions, metrics, screen],
   );
 
   const layout = useMemo(

@@ -164,8 +164,8 @@ export default function App() {
   }, [settings?.surfaceStyle]);
 
   const seededPositions = useMemo(
-    () => ({ ...defaultPositions(metrics), ...savedPositions }),
-    [savedPositions, metrics],
+    () => ({ ...defaultPositions(metrics, screen), ...savedPositions }),
+    [savedPositions, metrics, screen],
   );
 
   const wallpaper = settings?.wallpaper ?? "default";

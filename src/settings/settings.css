@@ -481,14 +481,8 @@ body {
   width: 100%;
   background-color: var(--theme-minimap-bg);
   border: 1px solid var(--theme-border-subtle);
-  background-image: radial-gradient(circle, var(--theme-minimap-dot) 0.75px, transparent 1px);
+  border-radius: 8px;
   overflow: hidden;
-}
-
-.minimap-margin {
-  position: absolute;
-  border: 1px dashed var(--theme-border-widget);
-  pointer-events: none;
 }
 
 .minimap-tile {
