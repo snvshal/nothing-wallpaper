@@ -74,7 +74,9 @@ export default function MusicWidget() {
         // Ignore
       }
     } else if (media.is_playing) {
-      setMedia(IDLE_MEDIA);
+      setMedia((prev) => ({ ...prev, is_playing: false }));
+    } else if (media.title !== "Nothing Playing" && media.title !== "") {
+      setMedia((prev) => ({ ...prev, is_playing: true }));
     } else {
       const track = MOCK_TRACKS[mockIndex.current % MOCK_TRACKS.length];
       mockIndex.current += 1;
@@ -146,14 +148,13 @@ export default function MusicWidget() {
 
         {/* Spinning Metallic CD Disc (Full Height, Shifted Right with True Center Cutout Hole) */}
         <div
-          className={`relative rounded-full flex items-center justify-center flex-shrink-0 aspect-square h-full ${
-            media.is_playing ? "animate-[spin_6s_linear_infinite]" : ""
-          }`}
+          className="relative rounded-full flex items-center justify-center flex-shrink-0 aspect-square h-full animate-[spin_6s_linear_infinite]"
           style={{
             background: "var(--theme-cd-disc)",
             border: "1px solid var(--theme-cd-border)",
             maskImage: "radial-gradient(circle, transparent 5.4%, black 5.6%)",
             WebkitMaskImage: "radial-gradient(circle, transparent 5.4%, black 5.6%)",
+            animationPlayState: media.is_playing ? "running" : "paused",
           }}
         >
           {/* Center Spindle Ring */}
