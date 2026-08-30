@@ -1,5 +1,5 @@
 export const UNITS_PER_WIDGET = 9;
-export const DEFAULT_UNIT = 24;
+export const DEFAULT_UNIT = 20;
 export const UNIT_OPTIONS = [12, 16, 20, 24];
 
 export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
@@ -54,16 +54,16 @@ export interface Position {
 }
 
 export const DEFAULT_POSITION_UNITS: Record<string, Position> = {
-  calendar: { x: 2, y: 2 },
-  clock: { x: 12, y: 2 },
-  weather: { x: 2, y: 34 },
-  screentime: { x: 12, y: 34 },
-  countdown: { x: 59, y: 2 },
-  ram: { x: 69, y: 2 },
-  bluetooth: { x: 59, y: 23 },
-  volume: { x: 64, y: 23 },
-  wifi: { x: 69, y: 23 },
-  music: { x: 59, y: 34 },
+  calendar: { x: 1, y: 1 },
+  clock: { x: 11, y: 1 },
+  weather: { x: 1, y: 44 },
+  screentime: { x: 11, y: 44 },
+  countdown: { x: 76, y: 1 },
+  ram: { x: 86, y: 1 },
+  bluetooth: { x: 76, y: 39 },
+  volume: { x: 81, y: 39 },
+  wifi: { x: 86, y: 39 },
+  music: { x: 76, y: 44 },
 };
 
 export interface ScreenGridOffsets {
@@ -88,25 +88,26 @@ export function getScreenGridOffsets(screen: Screen, m: GridMetrics): ScreenGrid
 export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string, Position> {
   const { offsetX, offsetY, numCols, numRows } = screen
     ? getScreenGridOffsets(screen, m)
-    : { offsetX: 0, offsetY: 0, numCols: 80, numRows: 45 };
+    : { offsetX: 0, offsetY: 0, numCols: 96, numRows: 54 };
 
-  const isWide = numCols >= 44;
-  const rightX = isWide ? numCols - 2 : 21;
-  const bottomY = Math.max(13, numRows - 2);
-  const midY = Math.max(13, Math.min(bottomY - 6, Math.floor((2 + bottomY - 9) / 2) + 3));
+  const isWide = numCols >= 42;
+  const rightX = isWide ? numCols - 1 : 20;
+  const bottomY = Math.max(15, numRows - 1);
+  const musicY = bottomY - 9;
+  const quickControlsY = musicY - 1 - 4;
 
   const u = m.unit;
   return {
-    calendar: { x: offsetX + 2 * u, y: offsetY + 2 * u },
-    clock: { x: offsetX + 12 * u, y: offsetY + 2 * u },
-    weather: { x: offsetX + 2 * u, y: offsetY + (bottomY - 9) * u },
-    screentime: { x: offsetX + 12 * u, y: offsetY + (bottomY - 9) * u },
-    countdown: { x: offsetX + (rightX - 19) * u, y: offsetY + 2 * u },
-    ram: { x: offsetX + (rightX - 9) * u, y: offsetY + 2 * u },
-    bluetooth: { x: offsetX + (rightX - 19) * u, y: offsetY + midY * u },
-    volume: { x: offsetX + (rightX - 14) * u, y: offsetY + midY * u },
-    wifi: { x: offsetX + (rightX - 9) * u, y: offsetY + midY * u },
-    music: { x: offsetX + (rightX - 19) * u, y: offsetY + (bottomY - 9) * u },
+    calendar: { x: offsetX + 1 * u, y: offsetY + 1 * u },
+    clock: { x: offsetX + 11 * u, y: offsetY + 1 * u },
+    weather: { x: offsetX + 1 * u, y: offsetY + musicY * u },
+    screentime: { x: offsetX + 11 * u, y: offsetY + musicY * u },
+    countdown: { x: offsetX + (rightX - 19) * u, y: offsetY + 1 * u },
+    ram: { x: offsetX + (rightX - 9) * u, y: offsetY + 1 * u },
+    bluetooth: { x: offsetX + (rightX - 19) * u, y: offsetY + quickControlsY * u },
+    volume: { x: offsetX + (rightX - 14) * u, y: offsetY + quickControlsY * u },
+    wifi: { x: offsetX + (rightX - 9) * u, y: offsetY + quickControlsY * u },
+    music: { x: offsetX + (rightX - 19) * u, y: offsetY + musicY * u },
   };
 }
 

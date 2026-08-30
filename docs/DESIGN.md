@@ -115,12 +115,12 @@ Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widge
 
 ### Widget Grid System
 
-All widget dimensions and positions snap to the **grid unit** (default 24px,
+All widget dimensions and positions snap to the **grid unit** (default 20px,
 user-configurable in settings).
 
 | Property             | Value                       | Notes                                                         |
 | -------------------- | --------------------------- | ------------------------------------------------------------- |
-| Grid unit            | 24px (configurable 12–24px) | Settings › Grid unit; 1 unit = chosen px                      |
+| Grid unit            | 20px (configurable 12–24px) | Settings › Grid unit; 1 unit = chosen px                      |
 | Widget size variable | `--widget-size`             | `9 × unit`, set at runtime on `documentElement` with `--unit` |
 | Small widget         | 9 units                     | Odd number for symmetry                                       |
 | Medium widget        | 11 units                    | Odd number for symmetry                                       |
@@ -129,7 +129,7 @@ user-configurable in settings).
 | Grid snap            | 1 unit                      | Drag positions snap to nearest unit                           |
 | Widget gap           | 1 unit                      | Minimum space between any two widgets                         |
 | Edge padding         | 1 unit                      | Lattice-aligned reserved border band                          |
-| Border radius        | `var(--widget-size) / 6`    | `--radius-widget`; 36px at the default unit                   |
+| Border radius        | `var(--widget-size) / 6`    | `--radius-widget`; 30px at the default unit                   |
 
 ### Symmetrical Margin Centering
 
