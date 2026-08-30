@@ -48,7 +48,7 @@ Theme switching is mediated via semantic CSS variables at `:root` / `[data-theme
 The wallpaper supports two surface material styles (`solid`, `glass`):
 
 - **Solid**: Traditional high-contrast Nothing OS opaque widget cards (`#000000` in dark mode, `#FFFFFF` in light mode).
-- **Frosted Glass**: Translucent acrylic cards inspired by Nothing transparent hardware (`rgba` alpha transparency + `backdrop-filter: blur(16px)`), allowing wallpaper artwork to softly blur through the cards while preserving sharp border geometry and high-contrast typography.
+- **Frosted Glass**: Translucent acrylic cards inspired by Nothing transparent hardware (`rgba` alpha transparency + `backdrop-filter: blur(28px)`), allowing wallpaper artwork to softly blur through the cards while preserving sharp border geometry and high-contrast typography. Features a user-configurable opacity slider (10% to 80%, default 35%) mapped to `--glass-opacity`.
 
 ### Rules
 

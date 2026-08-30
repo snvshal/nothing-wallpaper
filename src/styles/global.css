@@ -84,7 +84,11 @@
 
 :root[data-surface="glass"],
 [data-theme="dark"][data-surface="glass"] {
-  --theme-bg-widget: color-mix(in srgb, var(--color-nothing-black) 35%, transparent);
+  --theme-bg-widget: color-mix(
+    in srgb,
+    var(--color-nothing-black) var(--glass-opacity, 35%),
+    transparent
+  );
   --theme-widget-backdrop: blur(28px) saturate(190%) contrast(105%) brightness(105%);
   --theme-border-widget: color-mix(in srgb, var(--color-nothing-white) 15%, transparent);
 }
@@ -116,7 +120,11 @@
 }
 
 [data-theme="light"][data-surface="glass"] {
-  --theme-bg-widget: color-mix(in srgb, var(--color-nothing-white) 45%, transparent);
+  --theme-bg-widget: color-mix(
+    in srgb,
+    var(--color-nothing-white) var(--glass-opacity, 35%),
+    transparent
+  );
   --theme-widget-backdrop: blur(28px) saturate(180%) contrast(105%);
   --theme-border-widget: color-mix(in srgb, var(--color-nothing-black) 10%, transparent);
 }

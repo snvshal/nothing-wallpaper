@@ -55,7 +55,11 @@ export default function SettingsApp() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-surface", settings?.surfaceStyle ?? "solid");
-  }, [settings?.surfaceStyle]);
+    document.documentElement.style.setProperty(
+      "--glass-opacity",
+      `${settings?.glassOpacity ?? 35}%`,
+    );
+  }, [settings?.surfaceStyle, settings?.glassOpacity]);
 
   useEffect(() => {
     emitTo("main", "request-screen", null).catch(() => {});
@@ -137,8 +141,10 @@ export default function SettingsApp() {
           <ThemePicker
             theme={settings.theme}
             surfaceStyle={settings.surfaceStyle}
+            glassOpacity={settings.glassOpacity ?? 35}
             onSelectTheme={(theme) => update({ theme })}
             onSelectSurface={(surfaceStyle) => update({ surfaceStyle })}
+            onChangeGlassOpacity={(glassOpacity) => update({ glassOpacity })}
           />
 
           <WallpaperPicker

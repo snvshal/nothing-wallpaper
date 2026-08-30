@@ -162,7 +162,11 @@ export default function App() {
 
   useEffect(() => {
     document.documentElement.setAttribute("data-surface", settings?.surfaceStyle ?? "solid");
-  }, [settings?.surfaceStyle]);
+    document.documentElement.style.setProperty(
+      "--glass-opacity",
+      `${settings?.glassOpacity ?? 35}%`,
+    );
+  }, [settings?.surfaceStyle, settings?.glassOpacity]);
 
   const seededPositions = useMemo(
     () => ({ ...defaultPositions(metrics, screen), ...savedPositions }),

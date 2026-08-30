@@ -15,6 +15,7 @@ export interface AppSettings {
   unit: number;
   theme: ThemeMode;
   surfaceStyle: SurfaceStyle;
+  glassOpacity: number;
   weatherCity: string;
   tempUnit: TempUnit;
 }
@@ -37,6 +38,7 @@ const DEFAULTS: AppSettings = {
   unit: DEFAULT_UNIT,
   theme: "dark",
   surfaceStyle: "solid",
+  glassOpacity: 35,
   weatherCity: "",
   tempUnit: "celsius",
 };
@@ -113,6 +115,11 @@ export async function loadSettings(): Promise<AppSettings> {
   const storedSurface = await getValue<SurfaceStyle>("surfaceStyle");
   const surfaceStyle =
     storedSurface === "glass" || storedSurface === "solid" ? storedSurface : DEFAULTS.surfaceStyle;
+  const storedGlassOpacity = await getValue<number>("glassOpacity");
+  const glassOpacity =
+    typeof storedGlassOpacity === "number" && storedGlassOpacity >= 10 && storedGlassOpacity <= 80
+      ? storedGlassOpacity
+      : DEFAULTS.glassOpacity;
   const weatherCity = (await getValue<string>("weatherCity")) ?? DEFAULTS.weatherCity;
   const storedTempUnit = await getValue<TempUnit>("tempUnit");
   const tempUnit =
@@ -126,6 +133,7 @@ export async function loadSettings(): Promise<AppSettings> {
     unit,
     theme,
     surfaceStyle,
+    glassOpacity,
     weatherCity,
     tempUnit,
   };
@@ -138,6 +146,7 @@ export async function saveSettings(settings: AppSettings): Promise<void> {
   await setValue("unit", settings.unit);
   await setValue("theme", settings.theme);
   await setValue("surfaceStyle", settings.surfaceStyle);
+  await setValue("glassOpacity", settings.glassOpacity);
   await setValue("weatherCity", settings.weatherCity);
   await setValue("tempUnit", settings.tempUnit);
   if (isTauri) await emit("settings-changed", settings);
