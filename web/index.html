@@ -213,26 +213,19 @@
     <footer>
       <span>WINDOWS 10 & 11 • 64-BIT</span>
       <span class="footer-disclaimer">NOT AFFILIATED WITH NOTHING TECHNOLOGY LIMITED</span>
-      <span>~8MB RAM USAGE</span>
+      <span>~12MB RAM USAGE</span>
     </footer>
   </div>
 
   <script>
-    document.getElementById('downloadBtn').addEventListener('click', function(e) {
-      e.preventDefault();
+    document.getElementById('downloadBtn').addEventListener('click', function() {
       var btnText = document.getElementById('btnText');
       var original = btnText.textContent;
       btnText.textContent = 'STARTING...';
 
-      var iframe = document.createElement('iframe');
-      iframe.style.display = 'none';
-      iframe.src = '/download';
-      document.body.appendChild(iframe);
-
       setTimeout(function() {
         btnText.textContent = original;
-        setTimeout(function() { iframe.remove(); }, 10000);
-      }, 2500);
+      }, 3000);
     });
   </script>
 </body>
