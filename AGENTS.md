@@ -6,6 +6,7 @@ Nothing OS-style live wallpaper for Windows (Tauri 2 + React 19 + Tailwind CSS v
 
 - `docs/DESIGN.md` — design-system source of truth (fonts, colors, sizes, layout)
 - `docs/widgets/*.md` — per-widget specs (clock, calendar, weather, ram, wifi, bluetooth, volume, music, screentime, countdown)
+- `docs/RELEASING.md` — release workflow & strict version-sync requirements
 - `CONTRIBUTING.md` — step-by-step checklist for building & registering new widgets
 - `docs/COPYRIGHT.md` — what must NEVER be bundled
 
@@ -29,4 +30,5 @@ bun run fmt:rs && bun run check:rs
 - Colors: theme tokens only (`--color-nothing-*`, `--color-widget-bg`); no default Tailwind palette classes, no new raw hex values
 - Fonts: only `font-dot` / `font-body` / `font-emoji` utilities; sizes via `text-widget-*` tokens; no inline `fontSize` calc
 - Never add Nothing proprietary fonts, images, or logos
+- Releasing: synchronize version across `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json` before tagging
 - Commits: lowercase conventional style (`feat:`, `fix:`, `chore:`)
