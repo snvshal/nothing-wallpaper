@@ -34,7 +34,7 @@ const DEFAULTS: AppSettings = {
     countdown: true,
   },
   positions: {},
-  unit: 16,
+  unit: DEFAULT_UNIT,
   theme: "dark",
   surfaceStyle: "solid",
   weatherCity: "",

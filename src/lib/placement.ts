@@ -1,5 +1,5 @@
 export const UNITS_PER_WIDGET = 9;
-export const DEFAULT_UNIT = 16;
+export const DEFAULT_UNIT = 24;
 export const UNIT_OPTIONS = [12, 16, 20, 24];
 
 export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
@@ -53,17 +53,17 @@ export interface Position {
   y: number;
 }
 
-const DEFAULT_POSITION_UNITS: Record<string, Position> = {
-  clock: { x: 6, y: 6 },
-  calendar: { x: 16, y: 6 },
-  weather: { x: 6, y: 16 },
-  ram: { x: 16, y: 16 },
-  wifi: { x: 26, y: 6 },
-  bluetooth: { x: 36, y: 6 },
-  volume: { x: 41, y: 6 },
-  music: { x: 26, y: 11 },
-  screentime: { x: 6, y: 26 },
-  countdown: { x: 16, y: 26 },
+export const DEFAULT_POSITION_UNITS: Record<string, Position> = {
+  calendar: { x: 2, y: 2 },
+  clock: { x: 12, y: 2 },
+  weather: { x: 2, y: 34 },
+  screentime: { x: 12, y: 34 },
+  countdown: { x: 59, y: 2 },
+  ram: { x: 69, y: 2 },
+  bluetooth: { x: 59, y: 23 },
+  volume: { x: 64, y: 23 },
+  wifi: { x: 69, y: 23 },
+  music: { x: 59, y: 34 },
 };
 
 export interface ScreenGridOffsets {
@@ -86,14 +86,28 @@ export function getScreenGridOffsets(screen: Screen, m: GridMetrics): ScreenGrid
 }
 
 export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string, Position> {
-  const { offsetX, offsetY } = screen
+  const { offsetX, offsetY, numCols, numRows } = screen
     ? getScreenGridOffsets(screen, m)
-    : { offsetX: 0, offsetY: 0 };
-  const out: Record<string, Position> = {};
-  for (const [id, pos] of Object.entries(DEFAULT_POSITION_UNITS)) {
-    out[id] = { x: offsetX + pos.x * m.unit, y: offsetY + pos.y * m.unit };
-  }
-  return out;
+    : { offsetX: 0, offsetY: 0, numCols: 80, numRows: 45 };
+
+  const isWide = numCols >= 44;
+  const rightX = isWide ? numCols - 2 : 21;
+  const bottomY = Math.max(13, numRows - 2);
+  const midY = Math.max(13, Math.min(bottomY - 6, Math.floor((2 + bottomY - 9) / 2) + 3));
+
+  const u = m.unit;
+  return {
+    calendar: { x: offsetX + 2 * u, y: offsetY + 2 * u },
+    clock: { x: offsetX + 12 * u, y: offsetY + 2 * u },
+    weather: { x: offsetX + 2 * u, y: offsetY + (bottomY - 9) * u },
+    screentime: { x: offsetX + 12 * u, y: offsetY + (bottomY - 9) * u },
+    countdown: { x: offsetX + (rightX - 19) * u, y: offsetY + 2 * u },
+    ram: { x: offsetX + (rightX - 9) * u, y: offsetY + 2 * u },
+    bluetooth: { x: offsetX + (rightX - 19) * u, y: offsetY + midY * u },
+    volume: { x: offsetX + (rightX - 14) * u, y: offsetY + midY * u },
+    wifi: { x: offsetX + (rightX - 9) * u, y: offsetY + midY * u },
+    music: { x: offsetX + (rightX - 19) * u, y: offsetY + (bottomY - 9) * u },
+  };
 }
 
 export function rescalePositions(
