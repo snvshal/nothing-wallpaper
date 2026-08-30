@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "nothing-wallpaper",
+  "productName": "XN Wallpaper",
   "version": "0.1.0",
-  "identifier": "com.nothing.wallpaper",
+  "identifier": "com.xn.wallpaper",
   "build": {
     "beforeDevCommand": "bun run dev",
     "devUrl": "http://localhost:1420",
@@ -13,7 +13,7 @@
     "windows": [
       {
         "label": "main",
-        "title": "Nothing Wallpaper",
+        "title": "XN Wallpaper",
         "width": 1920,
         "height": 1080,
         "decorations": false,
@@ -27,7 +27,7 @@
       },
       {
         "label": "settings",
-        "title": "Nothing Wallpaper",
+        "title": "XN Wallpaper",
         "width": 720,
         "height": 520,
         "center": true,

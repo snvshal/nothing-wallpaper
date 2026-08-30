@@ -7,7 +7,7 @@ export default function TitleBar() {
       <div className="titlebar-brand" data-tauri-drag-region>
         <img src={appIcon} alt="" className="titlebar-icon" data-tauri-drag-region />
         <span className="titlebar-title" data-tauri-drag-region>
-          NOTHING WALLPAPER
+          XN WALLPAPER
         </span>
       </div>
       <div className="titlebar-actions">

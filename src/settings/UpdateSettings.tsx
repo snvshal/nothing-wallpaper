@@ -93,7 +93,7 @@ export default function UpdateSettings() {
       <div className="settings-section-title">Updates</div>
       <div className="update-card">
         <div className="update-info">
-          <div className="update-version">Nothing Wallpaper v{appVersion}</div>
+          <div className="update-version">XN Wallpaper v{appVersion}</div>
           <div className="update-status-label">
             {status === "idle" && "Check for new releases & features"}
             {status === "checking" && "Checking GitHub releases..."}

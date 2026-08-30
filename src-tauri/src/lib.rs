@@ -553,7 +553,7 @@ fn open_settings(app: &tauri::AppHandle) {
         "settings",
         tauri::WebviewUrl::App("settings.html".into()),
     )
-    .title("Nothing Wallpaper")
+    .title("XN Wallpaper")
     .inner_size(720.0, 520.0)
     .center()
     .decorations(false)
@@ -1144,7 +1144,11 @@ fn start_screentime_tracker() {
     std::thread::spawn(|| loop {
         std::thread::sleep(std::time::Duration::from_secs(1));
         if let Some(app) = get_active_foreground_app() {
-            if app.to_lowercase().contains("nothing-wallpaper") {
+            let app_lower = app.to_lowercase();
+            if app_lower.contains("nothing-wallpaper")
+                || app_lower.contains("xn wallpaper")
+                || app_lower.contains("xn-wallpaper")
+            {
                 continue;
             }
             let today = get_today_key();
@@ -1291,7 +1295,7 @@ pub fn run() {
 
                 let _tray = TrayIconBuilder::with_id("main-tray")
                     .icon(app.default_window_icon().unwrap().clone())
-                    .tooltip("Nothing Wallpaper")
+                    .tooltip("XN Wallpaper")
                     .menu(&menu)
                     .show_menu_on_left_click(false)
                     .on_menu_event(|app, event| match event.id.as_ref() {
