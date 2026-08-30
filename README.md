@@ -7,7 +7,7 @@ A Nothing Phone-inspired desktop wallpaper application for Windows.
 ## Features
 
 - Desktop wallpaper layer — sits behind desktop icons, above system wallpaper
-- 4 widgets: analog clock, calendar, weather, RAM monitor
+- 10 widgets: analog clock, calendar, weather, RAM monitor, Wi-Fi, Bluetooth, volume, music player, screen time, sand timer
 - Draggable widgets with grid-snap and collision detection
 - Settings window: wallpaper picker (default / system / custom image) + per-widget toggles
 - Layout minimap: dot-grid desktop preview, drag to arrange, live two-way sync

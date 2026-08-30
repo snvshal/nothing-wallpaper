@@ -110,8 +110,8 @@ Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widge
 ### Grid
 
 - Format: 16:9 (1920×1080 desktop)
-- Column margin: 2.3% of format width
 - Centre-aligned composition for desktop wallpaper
+- Symmetrical margin distribution across opposing screen edges
 
 ### Widget Grid System
 
@@ -131,12 +131,27 @@ user-configurable in settings).
 | Edge padding         | 1 unit                      | Lattice-aligned reserved border band                          |
 | Border radius        | `var(--widget-size) / 6`    | `--radius-widget`; 36px at the default unit                   |
 
+### Symmetrical Margin Centering
+
+Screen display resolutions rarely divide by the chosen grid unit with zero remainder (e.g. non-divisible heights or widths such as 1376×774, 1366×768, or 1920×1080 with a 16px unit).
+
+To prevent asymmetric side margins, cut-off grid dots, or bottom dead space:
+
+- **Remainder Calculation**: The engine calculates leftover screen pixels:
+  - `remX = screen.width - numCols * grid`
+  - `remY = screen.height - numRows * grid`
+- **Symmetric Origin Shift**: The lattice origin is shifted by `offsetX = floor(remX / 2)` and `offsetY = floor(remY / 2)`, distributing remainder pixels equally across opposing edges.
+- **Balanced Boundaries**:
+  - Left margin = Right margin = `offsetX + margin`
+  - Top margin = Bottom margin = `offsetY + margin`
+- **Settings Layout Minimap**: The minimap container height is locked to `numRows * cell` and renders a unified SVG vector grid and 1-unit dashed margin rectangle, ensuring exact 1-cell margins on all four sides with the indicator line centered directly through the lattice dots.
+
 ### Placement Engine
 
 Widget placement logic lives in `src/lib/placement.ts` and is shared by the
 wallpaper window and the settings layout minimap.
 
-- **Collision rule** — a widget's footprint is size + gap (160px at the
+- **Collision rule** — a widget's footprint is size + gap (240px at the
   default unit); overlapping widgets are never rendered side by side
 - **Toggle-on placement** — when a widget is enabled, its previous position is
   restored if still valid; otherwise the first free slot scanning from the
