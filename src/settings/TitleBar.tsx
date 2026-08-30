@@ -1,11 +1,15 @@
 import { getCurrentWindow } from "@tauri-apps/api/window";
+import appIcon from "../assets/icon.png";
 
 export default function TitleBar() {
   return (
     <div className="titlebar" data-tauri-drag-region>
-      <span className="titlebar-title" data-tauri-drag-region>
-        NOTHING WALLPAPER
-      </span>
+      <div className="titlebar-brand" data-tauri-drag-region>
+        <img src={appIcon} alt="" className="titlebar-icon" data-tauri-drag-region />
+        <span className="titlebar-title" data-tauri-drag-region>
+          NOTHING WALLPAPER
+        </span>
+      </div>
       <div className="titlebar-actions">
         <button
           type="button"
