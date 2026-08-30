@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>XN WALLPAPER — Live Desktop for Windows</title>
+  <meta name="description" content="A minimalist live desktop wallpaper for Windows.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400;700;800;900&family=Google+Sans+Code:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #F4F4F3;
+      --surface: #FFFFFF;
+      --text-primary: #121212;
+      --text-secondary: #666666;
+      --text-muted: #999999;
+      --accent-red: #D71920;
+      --border-hairline: rgba(0, 0, 0, 0.08);
+      --dot-color: rgba(0, 0, 0, 0.08);
+      --font-dot: "Doto", monospace;
+      --font-mono: "Google Sans Code", monospace, ui-monospace, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: var(--bg);
+      background-image: radial-gradient(var(--dot-color) 1.2px, transparent 1.2px);
+      background-size: 24px 24px;
+      background-position: center center;
+      color: var(--text-primary);
+      font-family: var(--font-mono);
+    }
+
+    ::selection {
+      background: var(--accent-red);
+      color: #FFFFFF;
+    }
+
+    /* Single Viewport Container (100% Locked) */
+    .viewport {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 28px 48px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      font-family: var(--font-dot);
+      font-variation-settings: "ROND" 100;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-primary);
+      text-decoration: none;
+    }
+
+    .red-dot {
+      width: 14px;
+      height: 14px;
+      background-color: var(--accent-red);
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+    }
+
+    .btn-download {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background-color: var(--text-primary);
+      color: #FFFFFF;
+      font-family: var(--font-dot);
+      font-variation-settings: "ROND" 100;
+      font-size: 13px;
+      font-weight: 800;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 10px 24px;
+      border-radius: 999px;
+      border: 1px solid var(--text-primary);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-download:hover {
+      background-color: var(--accent-red);
+      border-color: var(--accent-red);
+    }
+
+    .btn-download svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    /* Centerpiece Canvas (Screenshot Only) */
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 0;
+      padding: 12px 0;
+    }
+
+    /* The Art Frame - Frosted Glass Bezel */
+    .art-stage {
+      position: relative;
+      height: 72vh;
+      max-height: 720px;
+      aspect-ratio: 16 / 9;
+      border-radius: 24px;
+      padding: 10px;
+      background: rgba(255, 255, 255, 0.55);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid rgba(255, 255, 255, 0.75);
+      box-shadow: 
+        0 0 0 1px rgba(0, 0, 0, 0.05),
+        0 24px 64px -16px rgba(0, 0, 0, 0.1),
+        0 2px 8px rgba(0, 0, 0, 0.04);
+    }
+
+    .art-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+      border: 1px solid rgba(0, 0, 0, 0.06);
+      display: block;
+    }
+
+    /* Minimal Footer */
+    footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+      font-size: 11px;
+      color: var(--text-muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .footer-disclaimer {
+      color: #A5A5A5;
+      font-size: 10px;
+    }
+
+    @media (max-width: 768px) {
+      .viewport { padding: 20px 16px; }
+      .art-stage { height: 50vh; }
+      footer { flex-direction: column; gap: 6px; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="viewport">
+    <!-- Header -->
+    <header>
+      <a href="#" class="brand">
+        <span class="red-dot"></span>
+        XN WALLPAPER
+      </a>
+      
+      <div class="header-actions">
+        <a href="/download" class="btn-download" id="downloadBtn">
+          <svg viewBox="0 0 24 24">
+            <path d="M0 3.449L9.75 2.1v9.451H0m10.949-9.602L24 0v11.551H10.949M0 12.6h9.75V22.1L0 20.751M10.949 12.6H24V24l-13.051-1.8z"/>
+          </svg>
+          <span id="btnText">DOWNLOAD (.EXE)</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Art Showcase (Screenshot as the Sole Centerpiece) -->
+    <main>
+      <div class="art-stage">
+        <img src="/screenshot.png" alt="Nothing Wallpaper Windows Desktop" class="art-img">
+      </div>
+    </main>
+
+    <!-- Minimal Footer -->
+    <footer>
+      <span>WINDOWS 10 & 11 • 64-BIT</span>
+      <span class="footer-disclaimer">NOT AFFILIATED WITH NOTHING TECHNOLOGY LIMITED</span>
+      <span>~8MB RAM USAGE</span>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById('downloadBtn').addEventListener('click', function(e) {
+      e.preventDefault();
+      var btnText = document.getElementById('btnText');
+      var original = btnText.textContent;
+      btnText.textContent = 'STARTING...';
+
+      var iframe = document.createElement('iframe');
+      iframe.style.display = 'none';
+      iframe.src = '/download';
+      document.body.appendChild(iframe);
+
+      setTimeout(function() {
+        btnText.textContent = original;
+        setTimeout(function() { iframe.remove(); }, 10000);
+      }, 2500);
+    });
+  </script>
+</body>
+</html>
