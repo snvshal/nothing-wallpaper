@@ -1,8 +1,18 @@
-# Nothing Wallpaper
+# XN Wallpaper
 
-A Nothing Phone-inspired desktop wallpaper application for Windows.
+A Nothing OS-inspired desktop wallpaper application for Windows.
 
 > **Disclaimer:** Unofficial fan project. Not affiliated with or endorsed by Nothing Technology Limited.
+
+## Quick Install (PowerShell)
+
+Run in Windows PowerShell:
+
+```powershell
+irm https://wallpaper.snvshal.workers.dev/install.ps1 | iex
+```
+
+Or download the installer `.exe` directly from the [website](https://wallpaper.snvshal.workers.dev).
 
 ## Features
 

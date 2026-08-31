@@ -1,6 +1,6 @@
 /**
- * Cloudflare Worker for Nothing Wallpaper
- * Domain: https://nothing-wallpaper.snvshal.workers.dev
+ * Cloudflare Worker for XN Wallpaper
+ * Domain: https://wallpaper.snvshal.workers.dev
  *
  * Routes:
  * - GET /              -> Serves web/index.html from private GitHub repo (cached 5 min)
@@ -183,6 +183,26 @@ export default {
         headers: {
           "Content-Type": "text/html; charset=utf-8",
           "Cache-Control": "public, max-age=300", // Cache 5 min
+        },
+      });
+    }
+
+    // 5. PowerShell one-liner installer script: /install.ps1
+    if (path === "/install.ps1") {
+      const ps1Url = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/contents/web/install.ps1?ref=${GITHUB_BRANCH}`;
+      const ps1Res = await fetch(ps1Url, {
+        headers: { ...ghHeaders, Accept: "application/vnd.github.raw" },
+      });
+
+      if (!ps1Res.ok) {
+        return new Response("Installer script not found", { status: 404 });
+      }
+
+      return new Response(ps1Res.body, {
+        headers: {
+          "Content-Type": "text/plain; charset=utf-8",
+          "Access-Control-Allow-Origin": "*",
+          "Cache-Control": "public, max-age=60",
         },
       });
     }

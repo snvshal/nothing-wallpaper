@@ -51,7 +51,7 @@
     "updater": {
       "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDJCOUMyREU3N0E5Q0VDNDIKUldSQzdKeDY1eTJjSzRFV2p5S1UxekpLUDR2eG1YRUd1ZEswSEFOc1FFSmJJMS9WMzA3bTJDY1UK",
       "endpoints": [
-        "https://nothing-wallpaper.snvshal.workers.dev/latest.json"
+        "https://wallpaper.snvshal.workers.dev/latest.json"
       ]
     }
   },

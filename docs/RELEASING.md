@@ -52,5 +52,5 @@ After pushing the tag:
 1. Check **GitHub Actions** (`.github/workflows/release.yml`) until the build succeeds.
 2. Verify the new release and installer assets appear under GitHub **Releases**.
 3. Verify the Cloudflare Worker endpoints:
-   - Installer redirect: `https://nothing-wallpaper.snvshal.workers.dev/download`
-   - Tauri update manifest: `https://nothing-wallpaper.snvshal.workers.dev/latest.json`
+   - Installer redirect: `https://wallpaper.snvshal.workers.dev/download`
+   - Tauri update manifest: `https://wallpaper.snvshal.workers.dev/latest.json`
