@@ -141,7 +141,7 @@ export default function UpdateSettings() {
               {status === "checking"
                 ? "Checking..."
                 : status === "downloading"
-                  ? `${progress}%`
+                  ? "Downloading..."
                   : "Check for Updates"}
             </button>
           )}
