@@ -44,8 +44,29 @@ export default {
         headers: { ...ghHeaders, Accept: "application/octet-stream" },
       });
 
-      return new Response(assetRes.body, {
-        status: assetRes.status,
+      if (!assetRes.ok) {
+        return new Response("Failed to fetch latest.json", { status: 502 });
+      }
+
+      const manifest = await assetRes.json();
+
+      // Rewrite platform URLs so private release assets can be downloaded without auth
+      if (manifest.platforms && typeof manifest.platforms === "object") {
+        for (const platformKey of Object.keys(manifest.platforms)) {
+          const platform = manifest.platforms[platformKey];
+          if (platform?.url) {
+            const rawUrl = platform.url;
+            const filename = rawUrl.substring(rawUrl.lastIndexOf("/") + 1);
+            const targetAsset = release.assets?.find((a) => a.name === filename);
+            if (targetAsset) {
+              platform.url = `${url.origin}/assets/${targetAsset.id}/${encodeURIComponent(targetAsset.name)}`;
+            }
+          }
+        }
+      }
+
+      return new Response(JSON.stringify(manifest, null, 2), {
+        status: 200,
         headers: {
           "Content-Type": "application/json",
           "Access-Control-Allow-Origin": "*",
@@ -54,7 +75,35 @@ export default {
       });
     }
 
-    // 2. Direct installer download: /download
+    // 2. Authenticated Release Asset Proxy: /assets/:assetId/:filename
+    if (path.startsWith("/assets/")) {
+      const parts = path.split("/").filter(Boolean); // ["assets", "12345", "filename"]
+      const assetId = parts[1];
+      if (!assetId) {
+        return new Response("Missing asset ID", { status: 400 });
+      }
+
+      const assetApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/assets/${assetId}`;
+      const assetRes = await fetch(assetApiUrl, {
+        headers: { ...ghHeaders, Accept: "application/octet-stream" },
+        redirect: "manual",
+      });
+
+      const downloadLocation = assetRes.headers.get("Location");
+      if (downloadLocation) {
+        return Response.redirect(downloadLocation, 302);
+      }
+
+      return new Response(assetRes.body, {
+        status: assetRes.status,
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Access-Control-Allow-Origin": "*",
+        },
+      });
+    }
+
+    // 3. Direct installer download: /download
     if (path === "/download") {
       const apiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/latest`;
       const res = await fetch(apiUrl, { headers: ghHeaders });
@@ -71,7 +120,24 @@ export default {
         return new Response("Installer asset not found", { status: 404 });
       }
 
-      return Response.redirect(exeAsset.browser_download_url, 302);
+      const assetApiUrl = `https://api.github.com/repos/${GITHUB_OWNER}/${GITHUB_REPO}/releases/assets/${exeAsset.id}`;
+      const assetRes = await fetch(assetApiUrl, {
+        headers: { ...ghHeaders, Accept: "application/octet-stream" },
+        redirect: "manual",
+      });
+
+      const downloadLocation = assetRes.headers.get("Location");
+      if (downloadLocation) {
+        return Response.redirect(downloadLocation, 302);
+      }
+
+      return new Response(assetRes.body, {
+        status: assetRes.status,
+        headers: {
+          "Content-Type": "application/octet-stream",
+          "Content-Disposition": `attachment; filename="${exeAsset.name}"`,
+        },
+      });
     }
 
     // 3. Screenshot image: /screenshot.png (cached via Cloudflare Edge Cache)

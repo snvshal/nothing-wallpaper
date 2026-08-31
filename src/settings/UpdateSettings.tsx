@@ -83,7 +83,13 @@ export default function UpdateSettings() {
       await relaunch();
     } catch (err) {
       console.error("Failed to install update:", err);
-      setErrorMessage(err instanceof Error ? err.message : "Installation failed");
+      const msg =
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+            ? err
+            : (err as { message?: string })?.message || "Installation failed";
+      setErrorMessage(msg);
       setStatus("error");
     }
   };
@@ -96,7 +102,7 @@ export default function UpdateSettings() {
           <div className="update-version">XN Wallpaper v{appVersion}</div>
           <div className="update-status-label">
             {status === "idle" && "Check for new releases & features"}
-            {status === "checking" && "Checking GitHub releases..."}
+            {status === "checking" && "Checking for updates..."}
             {status === "up-to-date" && "You're on the latest version"}
             {status === "available" && `New version v${updateInfo?.version} available`}
             {status === "downloading" && `Downloading update: ${progress}%`}
