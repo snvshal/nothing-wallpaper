@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { invoke } from "@tauri-apps/api/core";
 import { isTauri } from "../lib/tauri";
 import { MATRIX_DOT_RADIUS } from "../lib/constants";
@@ -103,6 +103,7 @@ export default function ScreentimeWidget() {
     isTauri ? { total_seconds: 0, top_apps: [], history_days: [] } : MOCK_DATA,
   );
   const [viewMode, setViewMode] = useState<"today" | "history">("today");
+  const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isTauri) return;
@@ -127,6 +128,16 @@ export default function ScreentimeWidget() {
     };
   }, []);
 
+  // Ensure scroll position is strictly pinned to top when switching views
+  useEffect(() => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+      if (containerRef.current.parentElement) {
+        containerRef.current.parentElement.scrollTop = 0;
+      }
+    }
+  }, [viewMode]);
+
   // History scaling: Highest day in 10-day window rounded UP to whole hours
   const rawMaxSeconds = Math.max(
     3600,
@@ -136,15 +147,27 @@ export default function ScreentimeWidget() {
   const targetMaxHours = Math.max(1, Math.ceil(rawMaxSeconds / 3600));
   const targetMaxSeconds = targetMaxHours * 3600;
 
+  const handleToggle = () => {
+    if (containerRef.current) {
+      containerRef.current.scrollTop = 0;
+      if (containerRef.current.parentElement) {
+        containerRef.current.parentElement.scrollTop = 0;
+      }
+    }
+    setViewMode((prev) => (prev === "today" ? "history" : "today"));
+  };
+
   return (
-    <button
-      type="button"
-      className="w-full h-full flex flex-col justify-between select-none overflow-hidden cursor-pointer text-left bg-transparent border-none p-0 m-0 font-[inherit]"
-      onClick={() => setViewMode((prev) => (prev === "today" ? "history" : "today"))}
+    <div
+      ref={containerRef}
+      role="button"
+      tabIndex={0}
+      className="w-full h-full flex flex-col justify-between select-none cursor-pointer outline-none focus:outline-none text-left bg-transparent border-none p-0 m-0 font-[inherit]"
+      onClick={handleToggle}
       onKeyDown={(e) => {
         if (e.key === "Enter" || e.key === " ") {
           e.preventDefault();
-          setViewMode((prev) => (prev === "today" ? "history" : "today"));
+          handleToggle();
         }
       }}
       title="Click to toggle Today / 10-Day History"
@@ -154,7 +177,7 @@ export default function ScreentimeWidget() {
           {/* Today View Header (Top) */}
           <div className="flex justify-between items-center w-full">
             <span
-              className="rounded-full bg-nothing-widget-red flex-shrink-0"
+              className="rounded-full bg-nothing-widget-red flex-shrink-0 block"
               style={{
                 width: "var(--text-widget-title)",
                 height: "var(--text-widget-title)",
@@ -193,7 +216,7 @@ export default function ScreentimeWidget() {
       ) : (
         <>
           {/* History View Header (Top) */}
-          <div className="flex justify-between items-start w-full">
+          <div className="flex justify-between items-center w-full">
             <div className="font-dot text-theme-primary tracking-widest leading-none text-widget-title">
               HISTORY
             </div>
@@ -206,8 +229,8 @@ export default function ScreentimeWidget() {
           </div>
 
           {/* 10-Day Dot Matrix Grid (Aligned at Bottom) */}
-          <div className="w-full flex items-center justify-center mt-auto">
-            <svg className="w-full h-full" viewBox="0 0 140 68">
+          <div className="w-full flex items-center justify-center mt-auto overflow-hidden">
+            <svg className="w-full block h-auto" viewBox="0 0 140 68">
               {Array.from({ length: COLS }).map((_, col) => {
                 // 10 days: 2 columns per day (d = 0..9)
                 const dayIndex = Math.floor(col / 2);
@@ -243,6 +266,6 @@ export default function ScreentimeWidget() {
           </div>
         </>
       )}
-    </button>
+    </div>
   );
 }

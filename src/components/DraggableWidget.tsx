@@ -31,6 +31,10 @@ export default memo(function DraggableWidget({
     <div
       data-widget-id={id}
       onPointerDown={onPointerDown}
+      onScroll={(e) => {
+        if (e.currentTarget.scrollTop !== 0) e.currentTarget.scrollTop = 0;
+        if (e.currentTarget.scrollLeft !== 0) e.currentTarget.scrollLeft = 0;
+      }}
       style={{
         position: "absolute",
         left: `${x}px`,
