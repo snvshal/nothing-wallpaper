@@ -39,13 +39,30 @@ $tempFile = [System.IO.Path]::Combine([System.IO.Path]::GetTempPath(), "XN.Wallp
 
 try {
     Write-Host "${C_BLUE}  [1/4] Connecting to server...${C_RESET}"
-    $webClient = New-Object System.Net.WebClient
-    $webClient.Headers.Add("User-Agent", "XN-Wallpaper-Installer")
+    Add-Type -AssemblyName System.Net.Http -ErrorAction SilentlyContinue
+    $handler = New-Object System.Net.Http.HttpClientHandler
+    $handler.AllowAutoRedirect = $true
+    $client = New-Object System.Net.Http.HttpClient($handler)
+    $client.Timeout = [System.TimeSpan]::FromMinutes(2)
+    $client.DefaultRequestHeaders.UserAgent.ParseAdd("XN-Wallpaper-Installer")
 
     Write-Host -NoNewline "${C_BLUE}  [2/4] Downloading latest release... ${C_RESET}"
-    $webClient.DownloadFile($downloadUrl, $tempFile)
-    $fileSize = (Get-Item $tempFile).Length / 1MB
-    Write-Host ("${C_GREY}(Downloaded {0:N1} MB)${C_RESET}" -f $fileSize)
+    $response = $client.GetAsync($downloadUrl).GetAwaiter().GetResult()
+    [void]$response.EnsureSuccessStatusCode()
+
+    $fileStream = [System.IO.File]::Create($tempFile)
+    $downloadStream = $response.Content.ReadAsStreamAsync().GetAwaiter().GetResult()
+    $downloadStream.CopyTo($fileStream)
+    $fileStream.Close()
+    $downloadStream.Close()
+    $client.Dispose()
+
+    $fileInfo = Get-Item $tempFile
+    $fileSizeMB = $fileInfo.Length / 1MB
+    if ($fileInfo.Length -lt 1MB) {
+        throw "Downloaded file is unexpectedly small ($([math]::Round($fileInfo.Length / 1KB, 1)) KB). The asset may be incomplete or invalid."
+    }
+    Write-Host ("${C_GREY}(Downloaded {0:N1} MB)${C_RESET}" -f $fileSizeMB)
 
     Write-Host "${C_BLUE}  [3/4] Preparing binary...${C_RESET}"
     Unblock-File -Path $tempFile -ErrorAction SilentlyContinue
@@ -54,7 +71,11 @@ try {
     Get-Process -Name "XN Wallpaper", "nothing-wallpaper" -ErrorAction SilentlyContinue | Stop-Process -Force
     $proc = Start-Process -FilePath $tempFile -ArgumentList "/S" -PassThru -Wait
 
-    # Launch installed application
+    if ($proc.ExitCode -ne 0) {
+        throw "Installer failed with exit code $($proc.ExitCode)."
+    }
+
+    # Launch installed application (fast O(1) direct paths + registry fallback)
     $appPaths = @(
         "$env:LOCALAPPDATA\Programs\XN Wallpaper\XN Wallpaper.exe",
         "$env:ProgramFiles\XN Wallpaper\XN Wallpaper.exe",
@@ -70,6 +91,24 @@ try {
         }
     }
 
+    if (-not $launched) {
+        $regKeys = @(
+            "HKCU:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*",
+            "HKLM:\Software\Microsoft\Windows\CurrentVersion\Uninstall\*"
+        )
+        $regApp = Get-ItemProperty -Path $regKeys -ErrorAction SilentlyContinue |
+            Where-Object { $_.DisplayName -eq "XN Wallpaper" -and $_.InstallLocation } |
+            Select-Object -First 1
+
+        if ($regApp) {
+            $regExe = [System.IO.Path]::Combine($regApp.InstallLocation, "XN Wallpaper.exe")
+            if (Test-Path $regExe) {
+                Start-Process -FilePath $regExe
+                $launched = $true
+            }
+        }
+    }
+
     Write-Host ""
     Write-Host "${C_GREEN}  [$CHECK] XN Wallpaper installed successfully!${C_RESET}"
     if ($launched) {
@@ -79,7 +118,7 @@ try {
 }
 catch {
     Write-Host ""
-    Write-Host "${C_RED}  [!] Installation error: $_${C_RESET}"
+    Write-Host "${C_RED}  [!] Installation error: $($_.Exception.Message)${C_RESET}"
     Write-Host "${C_GREY}  [!] You can download the manual installer at: $downloadUrl${C_RESET}"
     Write-Host ""
 }
