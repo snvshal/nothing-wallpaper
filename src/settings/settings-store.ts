@@ -33,6 +33,7 @@ const DEFAULTS: AppSettings = {
     music: true,
     screentime: true,
     countdown: true,
+    visualizer: false,
   },
   positions: {},
   unit: DEFAULT_UNIT,

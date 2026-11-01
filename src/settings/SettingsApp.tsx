@@ -34,6 +34,7 @@ const WIDGET_IDS = [
   "music",
   "screentime",
   "countdown",
+  "visualizer",
 ];
 
 const FALLBACK_SCREEN: Screen = { width: 1920, height: 1080 };

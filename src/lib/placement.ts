@@ -13,6 +13,7 @@ export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
   music: { w: 19, h: 9 },
   screentime: { w: 9, h: 9 },
   countdown: { w: 9, h: 9 },
+  visualizer: { w: 9, h: 9 },
 };
 
 export interface GridMetrics {
@@ -64,6 +65,7 @@ export const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   volume: { x: 81, y: 39 },
   wifi: { x: 86, y: 39 },
   music: { x: 76, y: 44 },
+  visualizer: { x: 66, y: 44 },
 };
 
 export interface ScreenGridOffsets {
@@ -108,6 +110,7 @@ export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string
     volume: { x: offsetX + (rightX - 14) * u, y: offsetY + quickControlsY * u },
     wifi: { x: offsetX + (rightX - 9) * u, y: offsetY + quickControlsY * u },
     music: { x: offsetX + (rightX - 19) * u, y: offsetY + musicY * u },
+    visualizer: { x: offsetX + (rightX - 29) * u, y: offsetY + musicY * u },
   };
 }
 

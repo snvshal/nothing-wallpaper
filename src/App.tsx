@@ -14,6 +14,7 @@ import ScreentimeWidget from "./components/ScreentimeWidget";
 import CountdownWidget from "./components/CountdownWidget";
 import BluetoothWidget from "./components/BluetoothWidget";
 import VolumeWidget from "./components/VolumeWidget";
+import AudioVisualizerWidget from "./components/AudioVisualizerWidget";
 import {
   ensureDefaultAutostart,
   loadSettings,
@@ -65,6 +66,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <ScreentimeWidget />;
     case "countdown":
       return <CountdownWidget />;
+    case "visualizer":
+      return <AudioVisualizerWidget />;
     default:
       return null;
   }
