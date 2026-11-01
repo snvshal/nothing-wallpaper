@@ -130,20 +130,24 @@ fn capture_audio_session() -> Result<(), ()> {
             } else {
                 u32::from(tag)
             };
-            CoTaskMemFree(Some(format.cast()));
-            if !matches!((subtype, bits), (3, 32) | (1, 16)) || channels == 0 || block_align == 0 {
+            if !matches!((subtype, bits), (3, 32) | (1, 16))
+                || channels == 0
+                || block_align == 0
+                || rate == 0
+            {
+                CoTaskMemFree(Some(format.cast()));
                 return Err(windows::core::Error::from_win32());
             }
-            let format = audio.GetMixFormat()?;
-            audio.Initialize(
+            let initialized = audio.Initialize(
                 AUDCLNT_SHAREMODE_SHARED,
                 AUDCLNT_STREAMFLAGS_LOOPBACK,
                 1_000_000,
                 0,
                 format,
                 None,
-            )?;
+            );
             CoTaskMemFree(Some(format.cast()));
+            initialized?;
             let capture: IAudioCaptureClient = audio.GetService()?;
             audio.Start()?;
             Ok(CaptureSession {
@@ -169,6 +173,8 @@ fn capture_audio_session() -> Result<(), ()> {
         let sample_rate = session.sample_rate;
         let mut samples = Vec::<f32>::with_capacity(1024);
         let mut last_endpoint_check = Instant::now();
+        let mut last_packet_at = Instant::now();
+        let mut last_level_update = Instant::now();
         while AUDIO_VISUALIZER_RUNNING.load(Ordering::Relaxed) {
             if last_endpoint_check.elapsed() >= std::time::Duration::from_secs(1) {
                 let default_device = enumerator
@@ -194,6 +200,9 @@ fn capture_audio_session() -> Result<(), ()> {
                 capture
                     .GetBuffer(&mut data, &mut frames, &mut flags, None, None)
                     .map_err(|_| ())?;
+                if frames > 0 {
+                    last_packet_at = Instant::now();
+                }
                 let silent = flags & AUDCLNT_BUFFERFLAGS_SILENT.0 as u32 != 0;
                 for frame in 0..frames as usize {
                     let mut mono = 0.0f32;
@@ -242,6 +251,28 @@ fn capture_audio_session() -> Result<(), ()> {
                             (*old * 0.72).max(new)
                         };
                     }
+                }
+                last_level_update = Instant::now();
+            }
+
+            let now = Instant::now();
+            if now.duration_since(last_packet_at) >= std::time::Duration::from_millis(40) {
+                // Preserve partial blocks while packets are arriving, but discard stale tail
+                // samples after the stream has genuinely gone idle.
+                samples.clear();
+                let idle_for = now.duration_since(last_level_update);
+                if idle_for >= std::time::Duration::from_millis(10) {
+                    let block_duration = 512.0 / sample_rate as f32;
+                    let decay = 0.72f32.powf(idle_for.as_secs_f32() / block_duration);
+                    if let Ok(mut current) = AUDIO_VISUALIZER_LEVELS.lock() {
+                        for level in current.iter_mut() {
+                            *level *= decay;
+                            if *level < 0.01 {
+                                *level = 0.0;
+                            }
+                        }
+                    }
+                    last_level_update = now;
                 }
             }
             std::thread::sleep(std::time::Duration::from_millis(10));

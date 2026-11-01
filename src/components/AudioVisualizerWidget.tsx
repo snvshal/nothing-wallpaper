@@ -63,8 +63,8 @@ export default function AudioVisualizerWidget() {
           const level = Math.max(0, Math.min(1, levels[col] ?? 0));
           const activeRows = Math.round(level * ROWS);
           const isActive = rowFromBottom < activeRows;
-          const cx = 7 + col * 11.5;
-          const cy = 7 + row * 11.5;
+          const cx = 6.75 + col * 11.5;
+          const cy = 6.75 + row * 11.5;
           return (
             <circle
               key={index}
