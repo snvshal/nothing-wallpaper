@@ -32,5 +32,6 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Bluetooth   | [bluetooth.md](bluetooth.md)   | Circular quick toggle           |
 | Volume      | [volume.md](volume.md)         | Circular mute quick toggle      |
 | Music       | [music.md](music.md)           | Spinning CD media player        |
+| Visualizer  | [visualizer.md](visualizer.md) | Live dotted system spectrum     |
 | Screen Time | [screentime.md](screentime.md) | Live active app usage tracker   |
 | Sand Timer  | [countdown.md](countdown.md)   | Live 1-minute digital sandglass |

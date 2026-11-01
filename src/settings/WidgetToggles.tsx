@@ -14,6 +14,7 @@ const WIDGET_LABELS: Record<string, string> = {
   music: "Music",
   screentime: "Screen Time",
   countdown: "Sand Timer",
+  visualizer: "Audio Visualizer",
 };
 
 export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps) {

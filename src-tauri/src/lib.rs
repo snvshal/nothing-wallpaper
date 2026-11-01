@@ -15,6 +15,241 @@ struct NetworkSpeedTracker {
 }
 
 static NET_TRACKER: Mutex<Option<NetworkSpeedTracker>> = Mutex::new(None);
+static AUDIO_VISUALIZER_LEVELS: Mutex<[f32; 12]> = Mutex::new([0.0; 12]);
+static AUDIO_VISUALIZER_RUNNING: AtomicBool = AtomicBool::new(false);
+#[cfg(target_os = "windows")]
+static AUDIO_VISUALIZER_THREAD: Mutex<Option<std::thread::JoinHandle<()>>> = Mutex::new(None);
+
+#[tauri::command]
+fn get_audio_visualizer_levels() -> [f32; 12] {
+    AUDIO_VISUALIZER_LEVELS
+        .lock()
+        .map(|levels| *levels)
+        .unwrap_or([0.0; 12])
+}
+
+#[tauri::command]
+fn set_audio_visualizer_active(active: bool) {
+    #[cfg(target_os = "windows")]
+    set_windows_audio_visualizer_active(active);
+
+    #[cfg(not(target_os = "windows"))]
+    let _ = active;
+}
+
+#[cfg(target_os = "windows")]
+fn set_windows_audio_visualizer_active(active: bool) {
+    let Ok(mut worker) = AUDIO_VISUALIZER_THREAD.lock() else {
+        return;
+    };
+
+    if active {
+        if let Some(thread) = worker.take() {
+            if !thread.is_finished() {
+                *worker = Some(thread);
+                return;
+            }
+            let _ = thread.join();
+        }
+        AUDIO_VISUALIZER_RUNNING.store(true, Ordering::SeqCst);
+        *worker = Some(std::thread::spawn(run_audio_visualizer));
+    } else {
+        AUDIO_VISUALIZER_RUNNING.store(false, Ordering::SeqCst);
+        if let Some(thread) = worker.take() {
+            thread.thread().unpark();
+            let _ = thread.join();
+        }
+        if let Ok(mut levels) = AUDIO_VISUALIZER_LEVELS.lock() {
+            *levels = [0.0; 12];
+        }
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn run_audio_visualizer() {
+    use windows::Win32::System::Com::{CoInitializeEx, CoUninitialize, COINIT_MULTITHREADED};
+
+    unsafe {
+        let com_initialized = CoInitializeEx(None, COINIT_MULTITHREADED).is_ok();
+        while AUDIO_VISUALIZER_RUNNING.load(Ordering::Relaxed) {
+            let _ = capture_audio_session();
+            if let Ok(mut levels) = AUDIO_VISUALIZER_LEVELS.lock() {
+                *levels = [0.0; 12];
+            }
+            if AUDIO_VISUALIZER_RUNNING.load(Ordering::Relaxed) {
+                std::thread::park_timeout(std::time::Duration::from_secs(1));
+            }
+        }
+        if com_initialized {
+            CoUninitialize();
+        }
+    }
+}
+
+#[cfg(target_os = "windows")]
+fn capture_audio_session() -> Result<(), ()> {
+    use windows::Win32::Media::Audio::{
+        eConsole, eRender, IAudioCaptureClient, IAudioClient, IMMDeviceEnumerator,
+        MMDeviceEnumerator, AUDCLNT_BUFFERFLAGS_SILENT, AUDCLNT_SHAREMODE_SHARED,
+        AUDCLNT_STREAMFLAGS_LOOPBACK, WAVEFORMATEXTENSIBLE,
+    };
+    use windows::Win32::System::Com::{CoCreateInstance, CoTaskMemFree, CLSCTX_ALL};
+
+    unsafe {
+        struct CaptureSession {
+            audio: IAudioClient,
+            capture: IAudioCaptureClient,
+            enumerator: IMMDeviceEnumerator,
+            endpoint_key: Vec<u16>,
+            channels: u16,
+            bits: u16,
+            block_align: u16,
+            sample_rate: u32,
+        }
+
+        let setup = || -> windows::core::Result<CaptureSession> {
+            let enumerator: IMMDeviceEnumerator =
+                CoCreateInstance(&MMDeviceEnumerator, None, CLSCTX_ALL)?;
+            let device = enumerator.GetDefaultAudioEndpoint(eRender, eConsole)?;
+            let endpoint_id = device.GetId()?;
+            let endpoint_key = endpoint_id.as_wide().to_vec();
+            CoTaskMemFree(Some(endpoint_id.0.cast()));
+            let audio: IAudioClient = device.Activate(CLSCTX_ALL, None)?;
+            let format = audio.GetMixFormat()?;
+            let (tag, channels, bits, block_align, rate) = (
+                std::ptr::addr_of!((*format).wFormatTag).read_unaligned(),
+                std::ptr::addr_of!((*format).nChannels).read_unaligned(),
+                std::ptr::addr_of!((*format).wBitsPerSample).read_unaligned(),
+                std::ptr::addr_of!((*format).nBlockAlign).read_unaligned(),
+                std::ptr::addr_of!((*format).nSamplesPerSec).read_unaligned(),
+            );
+            let subtype = if tag == 0xfffe {
+                std::ptr::addr_of!((*(format.cast::<WAVEFORMATEXTENSIBLE>())).SubFormat)
+                    .read_unaligned()
+                    .data1
+            } else {
+                u32::from(tag)
+            };
+            CoTaskMemFree(Some(format.cast()));
+            if !matches!((subtype, bits), (3, 32) | (1, 16)) || channels == 0 || block_align == 0 {
+                return Err(windows::core::Error::from_win32());
+            }
+            let format = audio.GetMixFormat()?;
+            audio.Initialize(
+                AUDCLNT_SHAREMODE_SHARED,
+                AUDCLNT_STREAMFLAGS_LOOPBACK,
+                1_000_000,
+                0,
+                format,
+                None,
+            )?;
+            CoTaskMemFree(Some(format.cast()));
+            let capture: IAudioCaptureClient = audio.GetService()?;
+            audio.Start()?;
+            Ok(CaptureSession {
+                audio,
+                capture,
+                enumerator,
+                endpoint_key,
+                channels,
+                bits,
+                block_align,
+                sample_rate: rate,
+            })
+        };
+
+        let session = setup().map_err(|_| ())?;
+        let audio = session.audio;
+        let capture = session.capture;
+        let enumerator = session.enumerator;
+        let endpoint_key = session.endpoint_key;
+        let channels = session.channels;
+        let bits = session.bits;
+        let block_align = session.block_align;
+        let sample_rate = session.sample_rate;
+        let mut samples = Vec::<f32>::with_capacity(1024);
+        let mut last_endpoint_check = Instant::now();
+        while AUDIO_VISUALIZER_RUNNING.load(Ordering::Relaxed) {
+            if last_endpoint_check.elapsed() >= std::time::Duration::from_secs(1) {
+                let default_device = enumerator
+                    .GetDefaultAudioEndpoint(eRender, eConsole)
+                    .map_err(|_| ())?;
+                let current_id = default_device.GetId().map_err(|_| ())?;
+                let endpoint_changed = current_id.as_wide() != endpoint_key;
+                CoTaskMemFree(Some(current_id.0.cast()));
+                if endpoint_changed {
+                    return Err(());
+                }
+                last_endpoint_check = Instant::now();
+            }
+
+            loop {
+                let packet = capture.GetNextPacketSize().map_err(|_| ())?;
+                if packet == 0 {
+                    break;
+                }
+                let mut data = std::ptr::null_mut();
+                let mut frames = 0u32;
+                let mut flags = 0u32;
+                capture
+                    .GetBuffer(&mut data, &mut frames, &mut flags, None, None)
+                    .map_err(|_| ())?;
+                let silent = flags & AUDCLNT_BUFFERFLAGS_SILENT.0 as u32 != 0;
+                for frame in 0..frames as usize {
+                    let mut mono = 0.0f32;
+                    if !silent && !data.is_null() {
+                        for channel in 0..channels as usize {
+                            let offset =
+                                frame * block_align as usize + channel * (bits / 8) as usize;
+                            mono += if bits == 32 {
+                                std::ptr::read_unaligned(data.add(offset).cast::<f32>())
+                            } else {
+                                std::ptr::read_unaligned(data.add(offset).cast::<i16>()) as f32
+                                    / 32768.0
+                            };
+                        }
+                        mono /= channels as f32;
+                    }
+                    samples.push(mono);
+                }
+                capture.ReleaseBuffer(frames).map_err(|_| ())?;
+            }
+
+            while samples.len() >= 512 {
+                let block: Vec<f32> = samples.drain(..512).collect();
+                let mut levels = [0.0f32; 12];
+                for (band, level) in levels.iter_mut().enumerate() {
+                    let frequency = 55.0 * 2.0f32.powf(band as f32 * 0.62);
+                    if frequency >= sample_rate as f32 * 0.48 {
+                        continue;
+                    }
+                    let omega = 2.0 * std::f32::consts::PI * frequency / sample_rate as f32;
+                    let coeff = 2.0 * omega.cos();
+                    let (mut s1, mut s2) = (0.0f32, 0.0f32);
+                    for sample in &block {
+                        let s0 = *sample + coeff * s1 - s2;
+                        s2 = s1;
+                        s1 = s0;
+                    }
+                    let power = (s1 * s1 + s2 * s2 - coeff * s1 * s2).max(0.0);
+                    *level = (power.sqrt() / 18.0).clamp(0.0, 1.0).powf(0.65);
+                }
+                if let Ok(mut current) = AUDIO_VISUALIZER_LEVELS.lock() {
+                    for (old, new) in current.iter_mut().zip(levels) {
+                        *old = if new > *old {
+                            new
+                        } else {
+                            (*old * 0.72).max(new)
+                        };
+                    }
+                }
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        }
+        let _ = audio.Stop();
+        Ok(())
+    }
+}
 
 fn format_speed(bytes_per_sec: f64) -> String {
     if bytes_per_sec >= 1024.0 * 1024.0 {
@@ -1272,6 +1507,8 @@ pub fn run() {
             get_bluetooth_status,
             toggle_bluetooth,
             get_audio_volume,
+            set_audio_visualizer_active,
+            get_audio_visualizer_levels,
             toggle_audio_mute,
             get_media_status,
             toggle_media_playback,
