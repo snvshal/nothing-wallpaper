@@ -5,9 +5,9 @@ Live 9×9 system output visualizer. A 12-band spectrum animates inside a square 
 ## Layout and appearance
 
 - Uses the standard 9×9 widget footprint, card radius, and padding.
-- The SVG uses the shared `140×140` matrix coordinate space and `MATRIX_DOT_RADIUS` (`1.8`) from `src/lib/constants.ts`.
+- The SVG uses a centered 16×16 (256-dot) grid in the shared `140×140` matrix space, with `MATRIX_DOT_RADIUS` (`1.8`) from `src/lib/constants.ts`.
 - Active dots use `fill-theme-primary`; inactive dots use `fill-theme-inactive`, matching the RAM and Sand Timer matrices in light and dark themes.
-- Twelve frequency bands rise from the bottom edge. The label-free square matrix scales with the grid unit.
+- Twelve analyzed audio bands are interpolated across 16 columns; each column rises from the bottom edge. The denser, label-free matrix scales with the grid unit.
 - No album metadata or playback controls; the existing Music widget remains the playback surface.
 - Keep the spectrum monochrome: the design guide reserves colored fills from graphics. Nothing Widget Red remains available for interactive or status accents elsewhere in the widget system.
 

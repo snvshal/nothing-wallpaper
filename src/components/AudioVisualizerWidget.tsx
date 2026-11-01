@@ -4,8 +4,11 @@ import { isTauri } from "../lib/tauri";
 import { MATRIX_DOT_RADIUS } from "../lib/constants";
 
 const BANDS = 12;
-const ROWS = 12;
+const COLS = 16;
+const ROWS = 16;
 const EMPTY = Array.from({ length: BANDS }, () => 0);
+const DOT_SPACING = 8.4;
+const DOT_ORIGIN = 7;
 
 export default function AudioVisualizerWidget() {
   const [levels, setLevels] = useState<number[]>(EMPTY);
@@ -56,15 +59,25 @@ export default function AudioVisualizerWidget() {
         aria-label="Live system audio visualizer"
         role="img"
       >
-        {Array.from({ length: BANDS * ROWS }, (_, index) => {
-          const col = index % BANDS;
-          const row = Math.floor(index / BANDS);
+        {Array.from({ length: COLS * ROWS }, (_, index) => {
+          const col = index % COLS;
+          const row = Math.floor(index / COLS);
           const rowFromBottom = ROWS - 1 - row;
-          const level = Math.max(0, Math.min(1, levels[col] ?? 0));
+          const bandPosition = (col / (COLS - 1)) * (BANDS - 1);
+          const lowerBand = Math.floor(bandPosition);
+          const upperBand = Math.min(lowerBand + 1, BANDS - 1);
+          const bandMix = bandPosition - lowerBand;
+          const level = Math.max(
+            0,
+            Math.min(
+              1,
+              (levels[lowerBand] ?? 0) * (1 - bandMix) + (levels[upperBand] ?? 0) * bandMix,
+            ),
+          );
           const activeRows = Math.round(level * ROWS);
           const isActive = rowFromBottom < activeRows;
-          const cx = 6.75 + col * 11.5;
-          const cy = 6.75 + row * 11.5;
+          const cx = DOT_ORIGIN + col * DOT_SPACING;
+          const cy = DOT_ORIGIN + row * DOT_SPACING;
           return (
             <circle
               key={index}
