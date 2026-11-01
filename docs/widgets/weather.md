@@ -39,14 +39,14 @@ Three-row vertical flex column: temperature at top, condition emoji centered, ci
 
 ### Weather Condition Emoji (main visual)
 
-| Property    | Value                                                 |
-| ----------- | ----------------------------------------------------- |
-| Font        | Noto Emoji (`font-emoji`)                             |
-| Size        | `--widget-size * 0.39`                                |
-| Colour      | `--theme-text-primary`                                |
-| Position    | Centered (`my-auto flex items-center justify-center`) |
-| Line height | `leading-none`                                        |
-| Mapping     | WMO code to Noto Emoji glyphs (sun, cloud, rain, etc) |
+| Property    | Value                                                                                   |
+| ----------- | --------------------------------------------------------------------------------------- |
+| Font        | Noto Emoji (`font-emoji`)                                                               |
+| Size        | `--widget-size * 0.39`                                                                  |
+| Colour      | `--theme-text-primary`                                                                  |
+| Position    | Centered (`my-auto flex items-center justify-center`)                                   |
+| Line height | `leading-none`                                                                          |
+| Mapping     | WMO code & day/night status to Noto Emoji glyphs (sun, 8 astronomical moon phases, etc) |
 
 ### City Name
 
@@ -62,9 +62,11 @@ Three-row vertical flex column: temperature at top, condition emoji centered, ci
 
 ## Behaviour
 
-| Property        | Value                                                              |
-| --------------- | ------------------------------------------------------------------ |
-| Data source     | Open-Meteo Forecast & Geocoding APIs (free, no API key required)   |
-| Location        | Auto-detected via IP geolocation or custom city name from settings |
-| Update interval | 1 hour (3,600,000ms) with local cache fallback                     |
-| Units           | Celsius (°C) or Fahrenheit (°F) user-configurable                  |
+| Property        | Value                                                                   |
+| --------------- | ----------------------------------------------------------------------- |
+| Data source     | Open-Meteo Forecast & Geocoding APIs (free, no API key required)        |
+| Location        | Auto-detected via IP geolocation or custom city name from settings      |
+| Day/Night cycle | Open-Meteo `is_day` displays sun during day or live moon phase at night |
+| Lunar phases    | Synodic calculation maps clear night skies to 8 moon phases (🌑 to 🌘)  |
+| Update interval | 1 hour (3,600,000ms) with local cache fallback                          |
+| Units           | Celsius (°C) or Fahrenheit (°F) user-configurable                       |

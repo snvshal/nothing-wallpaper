@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { fetchWeather, type WeatherData } from "../lib/weather";
+import { fetchWeather, getWeatherEmoji, type WeatherData } from "../lib/weather";
 import type { TempUnit } from "../settings/settings-store";
 
 interface WeatherWidgetProps {
@@ -30,7 +30,11 @@ export default function WeatherWidget({ city = "", tempUnit = "celsius" }: Weath
   }, [city, tempUnit]);
 
   const displayTemp = weather ? `${weather.temperature}\u00B0` : "--\u00B0";
-  const displayEmoji = weather?.emoji ?? "\u2601";
+  const displayEmoji = weather
+    ? typeof weather.isDay === "number"
+      ? getWeatherEmoji(weather.weatherCode, weather.isDay)
+      : (weather.emoji ?? "\u2601")
+    : "\u2601";
   const displayCity = weather?.city ?? (city || "Weather");
 
   return (
