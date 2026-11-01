@@ -2,6 +2,7 @@
 mod mouse_hook;
 
 use serde::{Deserialize, Serialize};
+use std::sync::atomic::{AtomicBool, Ordering};
 use std::sync::Mutex;
 use std::time::Instant;
 use sysinfo::{Networks, System};
@@ -542,13 +543,19 @@ fn round_corners(win: &tauri::WebviewWindow<tauri::Wry>) {
     }
 }
 
+static SETTINGS_OPENING: AtomicBool = AtomicBool::new(false);
+
 fn open_settings(app: &tauri::AppHandle) {
     if let Some(win) = app.get_webview_window("settings") {
         focus_window(&win);
         return;
     }
 
-    if let Ok(win) = tauri::WebviewWindowBuilder::new(
+    if SETTINGS_OPENING.swap(true, Ordering::SeqCst) {
+        return;
+    }
+
+    let opened = tauri::WebviewWindowBuilder::new(
         app,
         "settings",
         tauri::WebviewUrl::App("settings.html".into()),
@@ -563,8 +570,11 @@ fn open_settings(app: &tauri::AppHandle) {
     .additional_browser_args(
         "--disable-features=msWebOOUI,msPdfOOUI,msSmartScreenProtection,ElasticOverscroll,OverscrollHistoryNavigation,msExperimentalScrolling",
     )
-    .build()
-    {
+    .build();
+
+    SETTINGS_OPENING.store(false, Ordering::SeqCst);
+
+    if let Ok(win) = opened {
         focus_window(&win);
         #[cfg(target_os = "windows")]
         round_corners(&win);
@@ -1240,6 +1250,9 @@ fn get_screen_time() -> ScreenTimeData {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+            open_settings(app);
+        }))
         .plugin(tauri_plugin_wallpaper::init())
         .plugin(tauri_plugin_store::Builder::default().build())
         .plugin(tauri_plugin_dialog::init())
