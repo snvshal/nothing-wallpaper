@@ -16,5 +16,5 @@ Live 9×9 system output visualizer. A 12-band spectrum animates inside a square 
 - Windows WASAPI shared-mode loopback captures the default output endpoint only while the widget is enabled; samples are analyzed in memory and not saved or transmitted.
 - Native code calculates 12 Goertzel frequency bands and exposes only normalized levels through `get_audio_visualizer_levels`.
 - Disabling the widget stops capture and clears the levels. Capture setup and device errors trigger a retry while the widget remains enabled.
-- The UI polls at 20 Hz and applies a quick attack with a slower decay for readable motion.
+- The native analyzer applies an immediate attack and slower decay, including a fade to silence when output pauses; the UI polls its levels at 20 Hz.
 - Browser preview uses a synthetic moving spectrum.
