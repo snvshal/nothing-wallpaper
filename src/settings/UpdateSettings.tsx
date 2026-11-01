@@ -1,7 +1,8 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { check, type Update } from "@tauri-apps/plugin-updater";
 import { relaunch } from "@tauri-apps/plugin-process";
 import { isTauri } from "../lib/tauri";
+import { isNetworkError, isOffline, toErrorMessage, withTimeout } from "../lib/updater";
 
 type UpdateStatus =
   | "idle"
@@ -10,7 +11,13 @@ type UpdateStatus =
   | "available"
   | "downloading"
   | "ready"
+  | "offline"
   | "error";
+
+const CHECK_TIMEOUT_MS = 12_000;
+const OFFLINE_MESSAGE = "You're offline. Connect to the internet to check for updates.";
+const UNREACHABLE_MESSAGE =
+  "Couldn't reach the update server. Check your connection and try again.";
 
 export default function UpdateSettings() {
   const [appVersion, setAppVersion] = useState("0.1.0");
@@ -18,6 +25,11 @@ export default function UpdateSettings() {
   const [updateInfo, setUpdateInfo] = useState<Update | null>(null);
   const [progress, setProgress] = useState<number>(0);
   const [errorMessage, setErrorMessage] = useState<string>("");
+  const statusRef = useRef<UpdateStatus>("idle");
+
+  useEffect(() => {
+    statusRef.current = status;
+  }, [status]);
 
   useEffect(() => {
     if (isTauri) {
@@ -30,9 +42,23 @@ export default function UpdateSettings() {
     }
   }, []);
 
-  const checkForUpdates = async () => {
-    setStatus("checking");
+  useEffect(() => {
+    if (isOffline()) {
+      setErrorMessage(OFFLINE_MESSAGE);
+      setStatus("offline");
+    }
+  }, []);
+
+  const checkForUpdates = useCallback(async () => {
     setErrorMessage("");
+
+    if (isOffline()) {
+      setErrorMessage(OFFLINE_MESSAGE);
+      setStatus("offline");
+      return;
+    }
+
+    setStatus("checking");
 
     if (!isTauri) {
       setTimeout(() => {
@@ -42,7 +68,7 @@ export default function UpdateSettings() {
     }
 
     try {
-      const update = await check();
+      const update = await withTimeout(check(), CHECK_TIMEOUT_MS);
       if (update) {
         setUpdateInfo(update);
         setStatus("available");
@@ -51,13 +77,58 @@ export default function UpdateSettings() {
       }
     } catch (err) {
       console.error("Failed to check for updates:", err);
-      setErrorMessage(err instanceof Error ? err.message : "Check failed");
-      setStatus("error");
+      if (isOffline() || isNetworkError(err)) {
+        setErrorMessage(isOffline() ? OFFLINE_MESSAGE : UNREACHABLE_MESSAGE);
+        setStatus("offline");
+      } else {
+        setErrorMessage(toErrorMessage(err, "Check failed"));
+        setStatus("error");
+      }
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    const handleOffline = () => {
+      if (
+        statusRef.current === "available" ||
+        statusRef.current === "downloading" ||
+        statusRef.current === "ready"
+      ) {
+        return;
+      }
+      setErrorMessage(OFFLINE_MESSAGE);
+      setStatus("offline");
+    };
+    const handleOnline = () => {
+      if (statusRef.current === "offline") void checkForUpdates();
+    };
+    const handleFocus = () => {
+      if (statusRef.current === "offline" && !isOffline()) void checkForUpdates();
+    };
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") handleFocus();
+    };
+
+    window.addEventListener("offline", handleOffline);
+    window.addEventListener("online", handleOnline);
+    window.addEventListener("focus", handleFocus);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    return () => {
+      window.removeEventListener("offline", handleOffline);
+      window.removeEventListener("online", handleOnline);
+      window.removeEventListener("focus", handleFocus);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [checkForUpdates]);
 
   const installUpdate = async () => {
     if (!updateInfo || !isTauri) return;
+
+    if (isOffline()) {
+      setErrorMessage(OFFLINE_MESSAGE);
+      setStatus("offline");
+      return;
+    }
 
     try {
       setStatus("downloading");
@@ -83,14 +154,13 @@ export default function UpdateSettings() {
       await relaunch();
     } catch (err) {
       console.error("Failed to install update:", err);
-      const msg =
-        err instanceof Error
-          ? err.message
-          : typeof err === "string"
-            ? err
-            : (err as { message?: string })?.message || "Installation failed";
-      setErrorMessage(msg);
-      setStatus("error");
+      if (isOffline() || isNetworkError(err)) {
+        setErrorMessage(isOffline() ? OFFLINE_MESSAGE : UNREACHABLE_MESSAGE);
+        setStatus("offline");
+      } else {
+        setErrorMessage(toErrorMessage(err, "Installation failed"));
+        setStatus("error");
+      }
     }
   };
 
@@ -107,6 +177,7 @@ export default function UpdateSettings() {
             {status === "available" && `New version v${updateInfo?.version} available`}
             {status === "downloading" && `Downloading update: ${progress}%`}
             {status === "ready" && "Update installed. Restarting..."}
+            {status === "offline" && (errorMessage || OFFLINE_MESSAGE)}
             {status === "error" && (errorMessage || "Unable to check updates")}
           </div>
         </div>
@@ -142,7 +213,9 @@ export default function UpdateSettings() {
                 ? "Checking..."
                 : status === "downloading"
                   ? "Downloading..."
-                  : "Check for Updates"}
+                  : status === "offline"
+                    ? "Retry"
+                    : "Check for Updates"}
             </button>
           )}
         </div>
