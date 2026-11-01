@@ -235,7 +235,6 @@ body {
   margin-top: -6px;
   border-radius: 50%;
   background-color: var(--color-nothing-red);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-nothing-red) 18%, transparent);
   cursor: grab;
   transition:
     box-shadow 0.15s,
@@ -265,7 +264,6 @@ body {
   border-radius: 50%;
   background-color: var(--color-nothing-red);
   border: none;
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-nothing-red) 18%, transparent);
   cursor: grab;
   transition:
     box-shadow 0.15s,
@@ -482,14 +480,16 @@ body {
   height: 14px;
   border-radius: 50%;
   background-color: var(--color-nothing-red);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-nothing-red) 18%, transparent);
   transform: translate(-50%, -50%);
-  transition: left 0.15s;
+  transition:
+    left 0.15s,
+    box-shadow 0.15s;
   cursor: grab;
   z-index: 1;
 }
 
 .grid-unit-slider.dragging .grid-unit-thumb {
+  box-shadow: 0 0 0 6px color-mix(in srgb, var(--color-nothing-red) 28%, transparent);
   cursor: grabbing;
 }
 
