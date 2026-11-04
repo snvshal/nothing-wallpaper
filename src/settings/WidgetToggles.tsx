@@ -15,6 +15,7 @@ const WIDGET_LABELS: Record<string, string> = {
   screentime: "Screen Time",
   countdown: "Sand Timer",
   visualizer: "Audio Visualizer",
+  year: "Year Progress",
 };
 
 export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps) {
@@ -36,7 +37,7 @@ export default function WidgetToggles({ widgets, onToggle }: WidgetTogglesProps)
                 id={`widget-toggle-${id}`}
                 name={`widget-toggle-${id}`}
                 type="checkbox"
-                checked={widgets[id] ?? true}
+                checked={widgets[id] ?? false}
                 onChange={() => toggle(id)}
                 aria-labelledby={`widget-label-${id}`}
               />

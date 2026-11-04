@@ -35,3 +35,4 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Visualizer  | [visualizer.md](visualizer.md) | Live dotted system spectrum     |
 | Screen Time | [screentime.md](screentime.md) | Live active app usage tracker   |
 | Sand Timer  | [countdown.md](countdown.md)   | Live 1-minute digital sandglass |
+| Year        | [year.md](year.md)             | Year-in-dots progress tracker   |

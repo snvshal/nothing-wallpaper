@@ -98,6 +98,10 @@ In [`src/lib/placement.ts`](src/lib/placement.ts):
      battery: { x: 26, y: 11 },
    };
    ```
+3. Map its runtime default placement in `defaultPositions()`:
+   ```ts
+   battery: { x: offsetX + 26 * u, y: offsetY + 11 * u },
+   ```
 
 ### Step 3: Register in the Wallpaper App
 In [`src/App.tsx`](src/App.tsx):
@@ -125,7 +129,7 @@ In [`src/App.tsx`](src/App.tsx):
      weather: true,
      ram: true,
      wifi: true,
-     battery: true, // <-- Enabled by default
+     battery: false, // <-- New widgets ship disabled; users opt in
    },
    ```
 2. **Toggle List** in [`src/settings/WidgetToggles.tsx`](src/settings/WidgetToggles.tsx):
@@ -137,6 +141,22 @@ In [`src/App.tsx`](src/App.tsx):
      weather: "Weather",
      ram: "RAM Usage",
      wifi: "Wi-Fi",
+     battery: "Battery",
+   };
+   ```
+3. **Settings widget list** in [`src/settings/SettingsApp.tsx`](src/settings/SettingsApp.tsx):
+   Add the widget ID to `WIDGET_IDS` so it participates in layout evaluation and placement from Settings:
+   ```ts
+   const WIDGET_IDS = [
+     // ...
+     "battery",
+   ];
+   ```
+4. **Layout minimap** in [`src/settings/LayoutMinimap.tsx`](src/settings/LayoutMinimap.tsx):
+   Add its label to `LABELS` so it renders in the minimap and no-space warnings:
+   ```ts
+   const LABELS: Record<string, string> = {
+     // ...
      battery: "Battery",
    };
    ```

@@ -29,6 +29,7 @@ bun run fmt:rs && bun run check:rs
 - Follow `docs/` exactly when touching design, layout, or widgets
 - Colors: theme tokens only (`--color-nothing-*`, `--color-widget-bg`); no default Tailwind palette classes, no new raw hex values
 - Fonts: only `font-dot` / `font-body` / `font-emoji` utilities; sizes via `text-widget-*` tokens; no inline `fontSize` calc
+- New widgets default to disabled (`false`) in `DEFAULTS.widgets`
 - Never add Nothing proprietary fonts, images, or logos
 - Releasing: synchronize version across `package.json`, `src-tauri/Cargo.toml`, and `src-tauri/tauri.conf.json` before tagging
 - Commits: lowercase conventional style (`feat:`, `fix:`, `chore:`)

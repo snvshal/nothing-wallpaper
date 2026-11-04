@@ -32,6 +32,7 @@ const LABELS: Record<string, string> = {
   screentime: "Screen Time",
   countdown: "Sand Timer",
   visualizer: "Visualizer",
+  year: "Year Progress",
 };
 
 const ORDER = Object.keys(LABELS);
