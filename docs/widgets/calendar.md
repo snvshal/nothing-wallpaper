@@ -1,6 +1,6 @@
 # Calendar Widget
 
-Large date display with day name accent in Nothing style.
+Large date display with a day-name label in Nothing style.
 
 ## DraggableWidget Config
 
@@ -39,13 +39,13 @@ Centered date number with day name positioned in the top-right corner.
 | Line height     | `leading-none`                 |
 | Case            | Numeric (no case)              |
 
-### Day Name (accent)
+### Day Name
 
 | Property       | Value                                     |
 | -------------- | ----------------------------------------- |
 | Font           | Doto (`font-dot`)                         |
 | Size           | `--widget-size * 0.1`                     |
-| Colour         | `text-nothing-widget-red` (`#D71920`)     |
+| Colour         | `text-theme-primary`                      |
 | Position       | `absolute top-0 right-0`                  |
 | Letter spacing | `tracking-wider`                          |
 | Case           | Uppercase (via `toUpperCase()`)           |

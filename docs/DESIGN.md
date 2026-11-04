@@ -31,7 +31,7 @@ For detailed per-widget specs, see [docs/widgets/](widgets/).
 | N-Yellow   | `#FFC700` | 255/199/0 | Accent highlights         |
 | Widget Red | `#D71920` | 215/25/32 | Nothing OS widget accents |
 
-All eight values above are the official published palette and are exposed as theme tokens (`--color-nothing-*`) in `global.css`. **Widget Red is active** for all widget-layer accents (calendar day name, clock second hand, drag borders, snap indicators); **N-Red remains in use for settings-window UI accents only**. **N-Blue and N-Yellow are currently reserved** — defined but unused. Two project-local utility neutrals sit outside this palette and are used only for UI scaffolding: `nothing-dgrey` (`#6E6E6E`, muted borders/details) and `widget-bg` (`#111111`, minimap tiles).
+All eight values above are the official published palette and are exposed as theme tokens (`--color-nothing-*`) in `global.css`. **Widget Red is active** for widget-layer accents (clock second hand, drag borders, snap indicators); **N-Red remains in use for settings-window UI accents only**. **N-Blue and N-Yellow are currently reserved** — defined but unused. Two project-local utility neutrals sit outside this palette and are used only for UI scaffolding: `nothing-dgrey` (`#6E6E6E`, muted borders/details) and `widget-bg` (`#111111`, minimap tiles).
 
 ### Theme System (Dark & Light Modes)
 
@@ -92,16 +92,16 @@ Both font families are SIL OFL 1.1 licensed (`OFL.txt` bundled alongside).
 
 ### Wallpaper Element Mapping
 
-| Element        | Font             | Size                   | Colour    | Case          |
-| -------------- | ---------------- | ---------------------- | --------- | ------------- |
-| Calendar date  | Google Sans Code | `--widget-size * 0.39` | `#FFFFFF` | Sentence case |
-| Calendar day   | Doto             | `--widget-size * 0.1`  | `#D71920` | Uppercase     |
-| Weather temp   | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| Weather city   | Google Sans Code | `--widget-size * 0.07` | `#DCD7D2` | Sentence case |
-| Weather emoji  | Noto Emoji       | `--widget-size * 0.39` | `#FFFFFF` | N/A           |
-| RAM title      | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| RAM percentage | Doto             | `--widget-size * 0.1`  | `#FFFFFF` | Uppercase     |
-| RAM GB values  | Google Sans Code | `--widget-size * 0.06` | `#DCD7D2` | N/A           |
+| Element        | Font             | Size                   | Colour        | Case          |
+| -------------- | ---------------- | ---------------------- | ------------- | ------------- |
+| Calendar date  | Google Sans Code | `--widget-size * 0.39` | `#FFFFFF`     | Sentence case |
+| Calendar day   | Doto             | `--widget-size * 0.1`  | Theme primary | Uppercase     |
+| Weather temp   | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
+| Weather city   | Google Sans Code | `--widget-size * 0.07` | `#DCD7D2`     | Sentence case |
+| Weather emoji  | Noto Emoji       | `--widget-size * 0.39` | `#FFFFFF`     | N/A           |
+| RAM title      | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
+| RAM percentage | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
+| RAM GB values  | Google Sans Code | `--widget-size * 0.06` | `#DCD7D2`     | N/A           |
 
 Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widget-display` (×0.39), `text-widget-title` (×0.1), `text-widget-subtitle` (×0.07), `text-widget-detail` (×0.06) — tune the scale by editing those four variables only.
 
@@ -178,11 +178,11 @@ All widget content scales relative to `--widget-size` CSS variable using `calc()
 font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 ```
 
-| Element         | Multiplier | Description                                  |
-| --------------- | ---------- | -------------------------------------------- |
-| Main number     | 0.39       | Calendar date, weather emoji                 |
-| Secondary label | 0.1        | RAM title/percentage, weather temp, day name |
-| Small text      | 0.07       | City name                                    |
+| Element     | Multiplier | Description                                  |
+| ----------- | ---------- | -------------------------------------------- |
+| Main number | 0.39       | Calendar date, weather emoji                 |
+| Title text  | 0.1        | RAM title/percentage, weather temp, day name |
+| Small text  | 0.07       | City name                                    |
 
 ### Dot Matrix Grid Standard
 
