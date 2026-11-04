@@ -186,7 +186,7 @@ font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 
 ### Dot Matrix Grid Standard
 
-All vector dot-matrix widgets (RAM usage, Screen Time history, Sand Timer countdown) share unified SVG coordinate tokens defined in `src/lib/constants.ts`:
+All vector dot-matrix widgets (RAM usage, Screen Time history, Sand Timer countdown, Year progress) share unified SVG coordinate tokens defined in `src/lib/constants.ts`:
 
 - **`MATRIX_VIEWBOX_WIDTH = 140`** — Standard horizontal SVG coordinate baseline.
 - **`MATRIX_DOT_RADIUS = 1.8`** — Unified dot radius across all matrix components.

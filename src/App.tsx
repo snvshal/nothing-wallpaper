@@ -15,6 +15,7 @@ import CountdownWidget from "./components/CountdownWidget";
 import BluetoothWidget from "./components/BluetoothWidget";
 import VolumeWidget from "./components/VolumeWidget";
 import AudioVisualizerWidget from "./components/AudioVisualizerWidget";
+import YearWidget from "./components/YearWidget";
 import {
   ensureDefaultAutostart,
   loadSettings,
@@ -68,6 +69,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <CountdownWidget />;
     case "visualizer":
       return <AudioVisualizerWidget />;
+    case "year":
+      return <YearWidget />;
     default:
       return null;
   }

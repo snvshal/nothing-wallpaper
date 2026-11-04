@@ -34,6 +34,7 @@ const DEFAULTS: AppSettings = {
     screentime: true,
     countdown: true,
     visualizer: false,
+    year: false,
   },
   positions: {},
   unit: DEFAULT_UNIT,
