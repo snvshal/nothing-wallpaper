@@ -1,6 +1,6 @@
 [package]
 name = "nothing-wallpaper"
-version = "0.1.2"
+version = "0.2.0"
 description = "Nothing-inspired desktop wallpaper for Windows"
 edition = "2021"
 
