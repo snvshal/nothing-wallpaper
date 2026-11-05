@@ -51,7 +51,8 @@ export default function YearWidget() {
       >
         {Array.from({ length: ROWS }).map((_, row) =>
           Array.from({ length: COLS }).map((_, col) => {
-            const index = row * COLS + col;
+            const rowFromBottom = ROWS - 1 - row;
+            const index = rowFromBottom * COLS + col;
             if (index >= totalDays) return null;
             return (
               <circle

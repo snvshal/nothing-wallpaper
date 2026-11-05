@@ -57,14 +57,15 @@ Single header row at top, a `0.4u` gap, then the dot-matrix year filling the rem
 
 ### SVG Specs
 
-| Property   | Value                                    |
-| ---------- | ---------------------------------------- |
-| ViewBox    | `0 0 140 112`                            |
-| Columns    | 22                                       |
-| Rows       | 17                                       |
-| Dot radius | `MATRIX_DOT_RADIUS` (1.8)                |
-| Fill order | Row-major (left to right, top to bottom) |
+| Property   | Value                                        |
+| ---------- | -------------------------------------------- |
+| ViewBox    | `0 0 140 112`                                |
+| Columns    | 22                                           |
+| Rows       | 17                                           |
+| Dot radius | `MATRIX_DOT_RADIUS` (1.8)                    |
+| Fill order | Bottom row first, left to right, then upward |
 
+- Jan 1 is the bottom-left dot; the final partial row appears at the top.
 - 374 lattice cells; only `totalDays` (365 or 366) render, leaving a short trailing row.
 - A leap year renders 366 dots; a common year renders 365.
 
