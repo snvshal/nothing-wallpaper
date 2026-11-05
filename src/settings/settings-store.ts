@@ -24,6 +24,7 @@ const DEFAULTS: AppSettings = {
   wallpaper: "default",
   widgets: {
     clock: true,
+    digital: false,
     calendar: true,
     weather: true,
     ram: true,

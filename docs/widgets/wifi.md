@@ -6,7 +6,7 @@ Interactive 9x4 rectangular card widget with live connection status, speed monit
 
 | Property         | Value                         |
 | ---------------- | ----------------------------- |
-| Size             | 9x4 grid units (144px x 64px) |
+| Size             | 9x4 grid units (180px x 80px) |
 | Border radius    | Capsule / Pill (`9999px`)     |
 | Padding          | Default (`p-4` / `16px`)      |
 | Initial position | `{ x: 26, y: 6 }` (units)     |

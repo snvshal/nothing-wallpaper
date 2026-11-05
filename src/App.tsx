@@ -5,6 +5,7 @@ import { useDragSnap } from "./hooks/useDragSnap";
 import { useNativeDrag } from "./hooks/useNativeDrag";
 import DraggableWidget from "./components/DraggableWidget";
 import ClockWidget from "./components/ClockWidget";
+import DigitalTimeWidget from "./components/DigitalTimeWidget";
 import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
 import RamWidget from "./components/RamWidget";
@@ -38,17 +39,20 @@ import "./styles/global.css";
 
 const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
+  digital: "9999px",
   wifi: "9999px",
   bluetooth: "50%",
   volume: "50%",
 };
 
-const NO_PADDING_WIDGETS = new Set(["clock", "wifi", "bluetooth", "volume"]);
+const NO_PADDING_WIDGETS = new Set(["clock", "digital", "wifi", "bluetooth", "volume"]);
 
 const renderWidgetContent = (id: string, settings: AppSettings | null) => {
   switch (id) {
     case "clock":
       return <ClockWidget />;
+    case "digital":
+      return <DigitalTimeWidget />;
     case "calendar":
       return <CalendarWidget />;
     case "weather":

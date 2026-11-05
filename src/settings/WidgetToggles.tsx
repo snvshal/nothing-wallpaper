@@ -5,6 +5,7 @@ interface WidgetTogglesProps {
 
 const WIDGET_LABELS: Record<string, string> = {
   clock: "Clock",
+  digital: "Digital Time",
   calendar: "Calendar",
   weather: "Weather",
   ram: "RAM",

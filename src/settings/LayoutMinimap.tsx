@@ -22,6 +22,7 @@ interface LayoutMinimapProps {
 
 const LABELS: Record<string, string> = {
   clock: "Clock",
+  digital: "Digital Time",
   calendar: "Calendar",
   weather: "Weather",
   ram: "RAM",

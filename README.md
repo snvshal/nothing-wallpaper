@@ -17,7 +17,7 @@ Or download the installer `.exe` directly from the [website](https://wallpaper.s
 ## Features
 
 - Desktop wallpaper layer — sits behind desktop icons, above system wallpaper
-- 12 widgets: analog clock, calendar, weather, RAM monitor, Wi-Fi, Bluetooth, volume, music player, audio visualizer, screen time, sand timer, year progress
+- 13 widgets: analog clock, digital time, calendar, weather, RAM monitor, Wi-Fi, Bluetooth, volume, music player, audio visualizer, screen time, sand timer, year progress
 - Draggable widgets with grid-snap and collision detection
 - Settings window: wallpaper picker (default / system / custom image) + per-widget toggles
 - Layout minimap: dot-grid desktop preview, drag to arrange, live two-way sync

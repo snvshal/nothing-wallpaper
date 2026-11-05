@@ -4,6 +4,7 @@ export const UNIT_OPTIONS = [12, 16, 20, 24];
 
 export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
   clock: { w: 9, h: 9 },
+  digital: { w: 9, h: 4 },
   calendar: { w: 9, h: 9 },
   weather: { w: 9, h: 9 },
   ram: { w: 9, h: 9 },
@@ -58,6 +59,7 @@ export interface Position {
 export const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   calendar: { x: 1, y: 1 },
   clock: { x: 11, y: 1 },
+  digital: { x: 31, y: 1 },
   weather: { x: 1, y: 44 },
   screentime: { x: 11, y: 44 },
   countdown: { x: 76, y: 1 },
@@ -104,6 +106,7 @@ export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string
   return {
     calendar: { x: offsetX + 1 * u, y: offsetY + 1 * u },
     clock: { x: offsetX + 11 * u, y: offsetY + 1 * u },
+    digital: { x: offsetX + 31 * u, y: offsetY + 1 * u },
     weather: { x: offsetX + 1 * u, y: offsetY + musicY * u },
     screentime: { x: offsetX + 11 * u, y: offsetY + musicY * u },
     countdown: { x: offsetX + (rightX - 19) * u, y: offsetY + 1 * u },

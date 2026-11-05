@@ -25,6 +25,7 @@ import UpdateSettings from "./UpdateSettings";
 
 const WIDGET_IDS = [
   "clock",
+  "digital",
   "calendar",
   "weather",
   "ram",

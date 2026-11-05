@@ -64,11 +64,11 @@ The wallpaper supports two surface material styles (`solid`, `glass`):
 
 Located in `src/assets/fonts/` and `src/assets/emojis/`:
 
-| File                                               | Format       | Typeface         | Role                                            |
-| -------------------------------------------------- | ------------ | ---------------- | ----------------------------------------------- |
-| `Doto/Doto-VariableFont.ttf`                       | TTF variable | Doto             | Dot-matrix display: RAM title, percentage, temp |
-| `Google_Sans_Code/GoogleSansCode-VariableFont.ttf` | TTF variable | Google Sans Code | Body/UI: date, city name, RAM GB values         |
-| `NotoEmoji-VariableFont_wght.ttf`                  | TTF variable | Noto Emoji       | Weather cloud emoji                             |
+| File                                               | Format       | Typeface         | Role                                                            |
+| -------------------------------------------------- | ------------ | ---------------- | --------------------------------------------------------------- |
+| `Doto/Doto-VariableFont.ttf`                       | TTF variable | Doto             | Dot-matrix display: RAM title, percentage, temp, digital period |
+| `Google_Sans_Code/GoogleSansCode-VariableFont.ttf` | TTF variable | Google Sans Code | Body/UI: date, digital time, city name, RAM GB values           |
+| `NotoEmoji-VariableFont_wght.ttf`                  | TTF variable | Noto Emoji       | Weather cloud emoji                                             |
 
 Both font families are SIL OFL 1.1 licensed (`OFL.txt` bundled alongside).
 
@@ -80,7 +80,7 @@ Both font families are SIL OFL 1.1 licensed (`OFL.txt` bundled alongside).
 - **License**: SIL OFL 1.1
 - **Variation axes**: `wght` 100–900, `ROND` 0–100 (`ROND 100` = round dots, matching the NDot aesthetic)
 - **Case**: Uppercase preferred
-- **Wallpaper use**: Calendar day, weather temperature, RAM title/percentage
+- **Wallpaper use**: Calendar day, digital period, weather temperature, RAM title/percentage
 
 #### Google Sans Code
 
@@ -88,22 +88,24 @@ Both font families are SIL OFL 1.1 licensed (`OFL.txt` bundled alongside).
 - **License**: SIL OFL 1.1
 - **Variation axes**: `wght` 100–800, `MONO` 0–1
 - **Case**: Sentence case
-- **Wallpaper use**: Calendar date, weather city, RAM GB values
+- **Wallpaper use**: Calendar date, digital time, weather city, RAM GB values
 
 ### Wallpaper Element Mapping
 
-| Element        | Font             | Size                   | Colour        | Case          |
-| -------------- | ---------------- | ---------------------- | ------------- | ------------- |
-| Calendar date  | Google Sans Code | `--widget-size * 0.39` | `#FFFFFF`     | Sentence case |
-| Calendar day   | Doto             | `--widget-size * 0.1`  | Theme primary | Uppercase     |
-| Weather temp   | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
-| Weather city   | Google Sans Code | `--widget-size * 0.07` | `#DCD7D2`     | Sentence case |
-| Weather emoji  | Noto Emoji       | `--widget-size * 0.39` | `#FFFFFF`     | N/A           |
-| RAM title      | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
-| RAM percentage | Doto             | `--widget-size * 0.1`  | `#FFFFFF`     | Uppercase     |
-| RAM GB values  | Google Sans Code | `--widget-size * 0.06` | `#DCD7D2`     | N/A           |
+| Element        | Font             | Size                    | Colour        | Case          |
+| -------------- | ---------------- | ----------------------- | ------------- | ------------- |
+| Calendar date  | Google Sans Code | `--widget-size * 0.39`  | `#FFFFFF`     | Sentence case |
+| Calendar day   | Doto             | `--widget-size * 0.1`   | Theme primary | Uppercase     |
+| Digital time   | Google Sans Code | `--widget-size * 0.21`  | `#FFFFFF`     | N/A           |
+| Digital period | Doto             | `--widget-size * 0.085` | Theme primary | Uppercase     |
+| Weather temp   | Doto             | `--widget-size * 0.1`   | `#FFFFFF`     | Uppercase     |
+| Weather city   | Google Sans Code | `--widget-size * 0.07`  | `#DCD7D2`     | Sentence case |
+| Weather emoji  | Noto Emoji       | `--widget-size * 0.39`  | `#FFFFFF`     | N/A           |
+| RAM title      | Doto             | `--widget-size * 0.1`   | `#FFFFFF`     | Uppercase     |
+| RAM percentage | Doto             | `--widget-size * 0.1`   | `#FFFFFF`     | Uppercase     |
+| RAM GB values  | Google Sans Code | `--widget-size * 0.06`  | `#DCD7D2`     | N/A           |
 
-Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widget-display` (×0.39), `text-widget-title` (×0.1), `text-widget-subtitle` (×0.07), `text-widget-detail` (×0.06) — tune the scale by editing those four variables only.
+Font sizes are centralized as Tailwind theme tokens in `global.css`: `text-widget-display` (×0.39), `text-widget-time` (×0.21), `text-widget-period` (×0.085), `text-widget-title` (×0.1), `text-widget-subtitle` (×0.07), `text-widget-detail` (×0.06) — tune the scale by editing those six variables only.
 
 ## Layout
 
@@ -178,11 +180,14 @@ All widget content scales relative to `--widget-size` CSS variable using `calc()
 font-size: calc(var(--widget-size) * 0.39); /* 39% of widget width */
 ```
 
-| Element     | Multiplier | Description                                  |
-| ----------- | ---------- | -------------------------------------------- |
-| Main number | 0.39       | Calendar date, weather emoji                 |
-| Title text  | 0.1        | RAM title/percentage, weather temp, day name |
-| Small text  | 0.07       | City name                                    |
+| Element        | Multiplier | Description                                  |
+| -------------- | ---------- | -------------------------------------------- |
+| Main number    | 0.39       | Calendar date, weather emoji                 |
+| Digital time   | 0.21       | Capsule clock hours and minutes              |
+| Digital period | 0.085      | Capsule clock AM/PM label                    |
+| Title text     | 0.1        | RAM title/percentage, weather temp, day name |
+| Small text     | 0.07       | City name                                    |
+| Detail text    | 0.06       | RAM GB values                                |
 
 ### Dot Matrix Grid Standard
 
@@ -191,7 +196,6 @@ All vector dot-matrix widgets (RAM usage, Screen Time history, Sand Timer countd
 - **`MATRIX_VIEWBOX_WIDTH = 140`** — Standard horizontal SVG coordinate baseline.
 - **`MATRIX_DOT_RADIUS = 1.8`** — Unified dot radius across all matrix components.
 - **Active / Inactive Tokens**: `fill-theme-primary` for illuminated state, `fill-theme-inactive` for empty lattice points.
-  | Detail text | 0.06 | RAM GB values |
 
 Spacing follows the unit the same way:
 
@@ -253,10 +257,10 @@ This ensures widgets maintain proportions when size changes.
 
 ## Current Deviations
 
-| Issue                | Current                         | Notes                                                         |
-| -------------------- | ------------------------------- | ------------------------------------------------------------- |
-| Background           | `background.png` image          | Original generated artwork at 3840×2160 — black + dot grid    |
-| Widget border-radius | `16px`                          | Intentional deviation — matches Nothing card spec             |
-| Clock widget         | Circular with hands             | Nothing Phone lockscreen inspired — no digital time displayed |
-| Widget background    | `bg-nothing-black` (pure black) | Compliant with Nothing spec                                   |
-| All sizing           | Relative (`--widget-size`)      | Scales with widget — no fixed pixel sizes                     |
+| Issue                | Current                         | Notes                                                                     |
+| -------------------- | ------------------------------- | ------------------------------------------------------------------------- |
+| Background           | `background.png` image          | Original generated artwork at 3840×2160 — black + dot grid                |
+| Widget border-radius | `16px`                          | Intentional deviation — matches Nothing card spec                         |
+| Clock widget         | Circular with hands             | Nothing Phone lockscreen inspired; digital time is a separate 9x4 capsule |
+| Widget background    | `bg-nothing-black` (pure black) | Compliant with Nothing spec                                               |
+| All sizing           | Relative (`--widget-size`)      | Scales with widget — no fixed pixel sizes                                 |
