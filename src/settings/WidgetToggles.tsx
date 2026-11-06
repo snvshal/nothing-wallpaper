@@ -8,6 +8,7 @@ const WIDGET_LABELS: Record<string, string> = {
   digital: "Digital Time",
   calendar: "Calendar",
   weather: "Weather",
+  globe: "Globe",
   ram: "RAM",
   wifi: "Wi-Fi",
   bluetooth: "Bluetooth",

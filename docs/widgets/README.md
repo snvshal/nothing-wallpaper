@@ -6,19 +6,19 @@ Detailed design specifications for each widget.
 
 All widgets are wrapped in `DraggableWidget` which provides:
 
-| Property     | Value                                                       | Notes                                                                                  |
-| ------------ | ----------------------------------------------------------- | -------------------------------------------------------------------------------------- |
-| Size         | Width 9 units (`--widget-size`; 180px default)              | Height varies by widget (4-9 units)                                                    |
-| Background   | `bg-nothing-black`                                          | Pure black `#000000`                                                                   |
-| Border       | `border-nothing-white/20`                                   | 1px, 20% white opacity                                                                 |
-| Drag border  | `border-nothing-widget-red`                                 | Widget Red `#D71920` when dragging                                                     |
-| Drag z-index | 50                                                          | Rises above other widgets                                                              |
-| Idle z-index | 10                                                          | Normal stacking                                                                        |
-| Transition   | `left/top/transform` `0.22s cubic-bezier(0.2, 0.8, 0.2, 1)` | Smooth snap animation on drop; none while dragging                                     |
-| Grid snap    | 1 unit                                                      | Positions snap to nearest grid unit                                                    |
-| Padding      | 1 unit (`var(--unit)`)                                      | Inner padding; clock, digital time, Wi-Fi, Bluetooth, and volume opt out (`noPadding`) |
-| Edge padding | 1 unit                                                      | Lattice-aligned reserved border band                                                   |
-| Collision    | Enabled                                                     | Widgets cannot overlap                                                                 |
+| Property     | Value                                                       | Notes                                                                                               |
+| ------------ | ----------------------------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| Size         | Width 9 units (`--widget-size`; 180px default)              | Height varies by widget (4-9 units)                                                                 |
+| Background   | `bg-widget-surface`                                         | Theme-aware solid/glass surface with shared opacity/backdrop; Globe opts out (`transparentSurface`) |
+| Border       | `border-widget-subtle`                                      | 1px, theme-aware subtle border                                                                      |
+| Drag border  | `border-nothing-widget-red`                                 | Widget Red `#D71920` when dragging                                                                  |
+| Drag z-index | 50                                                          | Rises above other widgets                                                                           |
+| Idle z-index | 10                                                          | Normal stacking                                                                                     |
+| Transition   | `left/top/transform` `0.22s cubic-bezier(0.2, 0.8, 0.2, 1)` | Smooth snap animation on drop; none while dragging                                                  |
+| Grid snap    | 1 unit                                                      | Positions snap to nearest grid unit                                                                 |
+| Padding      | 1 unit (`var(--unit)`)                                      | Inner padding; clock, digital time, Wi-Fi, Bluetooth, volume, and globe opt out (`noPadding`)       |
+| Edge padding | 1 unit                                                      | Lattice-aligned reserved border band                                                                |
+| Collision    | Enabled                                                     | Widgets cannot overlap                                                                              |
 
 ## Widgets
 
@@ -28,6 +28,7 @@ All widgets are wrapped in `DraggableWidget` which provides:
 | Digital Time | [digital-time.md](digital-time.md) | Capsule digital clock           |
 | Calendar     | [calendar.md](calendar.md)         | Date display with day name      |
 | Weather      | [weather.md](weather.md)           | Live weather display            |
+| Globe        | [globe.md](globe.md)               | Rotating globe with city marker |
 | RAM          | [ram.md](ram.md)                   | Real-time memory monitor        |
 | Wi-Fi        | [wifi.md](wifi.md)                 | Interactive quick toggle        |
 | Bluetooth    | [bluetooth.md](bluetooth.md)       | Circular quick toggle           |

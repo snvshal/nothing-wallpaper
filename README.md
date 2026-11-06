@@ -17,7 +17,7 @@ Or download the installer `.exe` directly from the [website](https://wallpaper.s
 ## Features
 
 - Desktop wallpaper layer — sits behind desktop icons, above system wallpaper
-- 13 widgets: analog clock, digital time, calendar, weather, RAM monitor, Wi-Fi, Bluetooth, volume, music player, audio visualizer, screen time, sand timer, year progress
+- 14 widgets: analog clock, digital time, calendar, weather, globe, RAM monitor, Wi-Fi, Bluetooth, volume, music player, audio visualizer, screen time, sand timer, year progress
 - Draggable widgets with grid-snap and collision detection
 - Settings window: wallpaper picker (default / system / custom image) + per-widget toggles
 - Layout minimap: dot-grid desktop preview, drag to arrange, live two-way sync
@@ -69,3 +69,4 @@ No proprietary Nothing assets are included in this repository.
 
 - [Nothing Brand Reference](https://nothing.wiki/nothing/brand_reference) — design system reference
 - [Nothing](https://nothing.tech) — inspiration and design language
+- [Cobe](https://github.com/shuding/cobe) — WebGL globe rendering (MIT)

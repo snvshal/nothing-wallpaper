@@ -8,6 +8,7 @@ import ClockWidget from "./components/ClockWidget";
 import DigitalTimeWidget from "./components/DigitalTimeWidget";
 import CalendarWidget from "./components/CalendarWidget";
 import WeatherWidget from "./components/WeatherWidget";
+import GlobeWidget from "./components/GlobeWidget";
 import RamWidget from "./components/RamWidget";
 import WifiWidget from "./components/WifiWidget";
 import MusicWidget from "./components/MusicWidget";
@@ -39,13 +40,15 @@ import "./styles/global.css";
 
 const WIDGET_RADIUS: Record<string, string> = {
   clock: "50%",
+  globe: "50%",
   digital: "9999px",
   wifi: "9999px",
   bluetooth: "50%",
   volume: "50%",
 };
 
-const NO_PADDING_WIDGETS = new Set(["clock", "digital", "wifi", "bluetooth", "volume"]);
+const NO_PADDING_WIDGETS = new Set(["clock", "globe", "digital", "wifi", "bluetooth", "volume"]);
+const TRANSPARENT_SURFACE_WIDGETS = new Set(["globe"]);
 
 const renderWidgetContent = (id: string, settings: AppSettings | null) => {
   switch (id) {
@@ -57,6 +60,8 @@ const renderWidgetContent = (id: string, settings: AppSettings | null) => {
       return <CalendarWidget />;
     case "weather":
       return <WeatherWidget city={settings?.weatherCity} tempUnit={settings?.tempUnit} />;
+    case "globe":
+      return <GlobeWidget city={settings?.weatherCity} />;
     case "ram":
       return <RamWidget />;
     case "wifi":
@@ -334,6 +339,7 @@ export default function App() {
             isDragging={isDragging}
             radius={WIDGET_RADIUS[id]}
             noPadding={NO_PADDING_WIDGETS.has(id)}
+            transparentSurface={TRANSPARENT_SURFACE_WIDGETS.has(id)}
             unitsW={WIDGET_UNIT_SIZES[id]?.w ?? 9}
             unitsH={WIDGET_UNIT_SIZES[id]?.h ?? 9}
             onPointerDown={onPointerDownHandlers[id]}

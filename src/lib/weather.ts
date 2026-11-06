@@ -66,7 +66,7 @@ export function getWeatherEmoji(code: number, isDay: number = 1, date: Date = ne
   return "\u2601"; // Default cloud
 }
 
-interface LocationCoord {
+export interface LocationCoord {
   latitude: number;
   longitude: number;
   city: string;
@@ -129,6 +129,21 @@ async function resolveLocation(cityQuery?: string): Promise<LocationCoord> {
   };
 }
 
+const locationCache = new Map<string, Promise<LocationCoord>>();
+
+export function getLocation(cityQuery?: string): Promise<LocationCoord> {
+  const key = cityQuery?.trim().toLowerCase() || "auto";
+  const cached = locationCache.get(key);
+  if (cached) return cached;
+
+  const pending = resolveLocation(cityQuery);
+  locationCache.set(key, pending);
+  pending.catch(() => {
+    if (locationCache.get(key) === pending) locationCache.delete(key);
+  });
+  return pending;
+}
+
 export function getLastAutoCity(): string {
   try {
     return localStorage.getItem("nothing-weather:last-auto-city") || "";
@@ -141,7 +156,7 @@ export async function getAutoCity(): Promise<string> {
   const cached = getLastAutoCity();
   if (cached) return cached;
   try {
-    const loc = await resolveLocation();
+    const loc = await getLocation();
     if (loc.city && loc.city !== "Local") {
       try {
         localStorage.setItem("nothing-weather:last-auto-city", loc.city);
@@ -186,7 +201,7 @@ export async function fetchWeather(
   }
 
   try {
-    const loc = await resolveLocation(cityQuery);
+    const loc = await getLocation(cityQuery);
     const weatherUrl = `https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${
       loc.longitude
     }&current=temperature_2m,weather_code,is_day&temperature_unit=${

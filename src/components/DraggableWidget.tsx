@@ -8,6 +8,7 @@ interface DraggableWidgetProps {
   isDragging: boolean;
   radius?: string;
   noPadding?: boolean;
+  transparentSurface?: boolean;
   unitsW?: number;
   unitsH?: number;
   /** Browser-preview drag entry; the desktop app drags via the native hook. */
@@ -22,6 +23,7 @@ export default memo(function DraggableWidget({
   isDragging,
   radius = "var(--radius-widget)",
   noPadding = false,
+  transparentSurface = false,
   unitsW = 9,
   unitsH = 9,
   onPointerDown,
@@ -45,14 +47,12 @@ export default memo(function DraggableWidget({
         touchAction: "none",
         borderRadius: radius,
         overflow: "hidden",
-        backdropFilter: "var(--theme-widget-backdrop, none)",
-        WebkitBackdropFilter: "var(--theme-widget-backdrop, none)",
         transition: isDragging ? "none" : SETTLE_TRANSITION,
         willChange: isDragging ? "transform" : undefined,
       }}
-      className={`cursor-grab flex flex-col justify-between border bg-widget-surface text-theme-primary ${
-        isDragging ? "cursor-grabbing border-nothing-widget-red z-50" : "border-widget-subtle z-10"
-      }`}
+      className={`cursor-grab flex flex-col justify-between border text-theme-primary ${
+        transparentSurface ? "" : "bg-widget-surface"
+      } ${isDragging ? "cursor-grabbing border-nothing-widget-red z-50" : "border-widget-subtle z-10"}`}
     >
       {children}
     </div>

@@ -27,6 +27,7 @@ const DEFAULTS: AppSettings = {
     digital: false,
     calendar: true,
     weather: true,
+    globe: false,
     ram: true,
     wifi: true,
     bluetooth: true,

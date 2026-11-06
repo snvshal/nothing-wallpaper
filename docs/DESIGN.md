@@ -262,5 +262,6 @@ This ensures widgets maintain proportions when size changes.
 | Background           | `background.png` image          | Original generated artwork at 3840×2160 — black + dot grid                |
 | Widget border-radius | `16px`                          | Intentional deviation — matches Nothing card spec                         |
 | Clock widget         | Circular with hands             | Nothing Phone lockscreen inspired; digital time is a separate 9x4 capsule |
+| Globe widget         | Transparent surface             | Full-bleed globe keeps the shared 1px border; Cobe glow is masked         |
 | Widget background    | `bg-nothing-black` (pure black) | Compliant with Nothing spec                                               |
 | All sizing           | Relative (`--widget-size`)      | Scales with widget — no fixed pixel sizes                                 |
