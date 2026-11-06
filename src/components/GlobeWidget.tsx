@@ -15,6 +15,14 @@ const FALLBACK_PRIMARY: [number, number, number] = [1, 1, 1];
 const FALLBACK_MUTED: [number, number, number] = [0.7, 0.7, 0.7];
 const FALLBACK_RED: [number, number, number] = [0.84, 0.1, 0.13];
 const FALLBACK_BG: [number, number, number] = [1, 1, 1];
+const CONTEXT_ATTRIBUTES: WebGLContextAttributes = {
+  alpha: true,
+  antialias: false,
+  depth: false,
+  stencil: false,
+  preserveDrawingBuffer: false,
+  powerPreference: "low-power",
+};
 
 function clamp01(value: number): number {
   return Math.min(1, Math.max(0, value));
@@ -80,14 +88,6 @@ export default function GlobeWidget({ city }: GlobeWidgetProps) {
     const container = containerRef.current;
     if (!container) return;
 
-    const testCanvas = document.createElement("canvas");
-    const testGl = testCanvas.getContext("webgl2") ?? testCanvas.getContext("webgl");
-    if (!testGl) {
-      setFailed(true);
-      return;
-    }
-    testGl.getExtension("WEBGL_lose_context")?.loseContext();
-
     const canvas = document.createElement("canvas");
     canvas.style.width = "100%";
     canvas.style.height = "100%";
@@ -99,6 +99,15 @@ export default function GlobeWidget({ city }: GlobeWidgetProps) {
     canvas.style.setProperty("-webkit-mask-image", mask);
     canvas.setAttribute("role", "img");
     canvas.setAttribute("aria-label", "Rotating globe");
+
+    const gl =
+      canvas.getContext("webgl2", CONTEXT_ATTRIBUTES) ??
+      canvas.getContext("webgl", CONTEXT_ATTRIBUTES);
+    if (!gl) {
+      setFailed(true);
+      return;
+    }
+
     container.appendChild(canvas);
     canvasRef.current = canvas;
 
@@ -119,9 +128,10 @@ export default function GlobeWidget({ city }: GlobeWidgetProps) {
       dark: 1,
       markerElevation: MARKER_ELEVATION,
       scale: GLOBE_SCALE,
-      context: { powerPreference: "low-power" },
+      context: CONTEXT_ATTRIBUTES,
     });
     globeRef.current = globe;
+    const loseContext = gl.getExtension("WEBGL_lose_context");
 
     let rafId = 0;
     let last = 0;
@@ -195,6 +205,9 @@ export default function GlobeWidget({ city }: GlobeWidgetProps) {
       themeObserver.disconnect();
       document.removeEventListener("visibilitychange", onVisibilityChange);
       globe.destroy();
+      canvas.width = 0;
+      canvas.height = 0;
+      loseContext?.loseContext();
       globeRef.current = null;
       canvasRef.current = null;
       container.replaceChildren();

@@ -37,7 +37,7 @@ The WebGL canvas fills the circular widget inside the shared 1px border. The glo
 | DPR              | `min(window.devicePixelRatio, 2)`                        |
 | Frame rate       | 30 FPS, driven by the widget rather than Cobe            |
 | Rotation         | `0.1 rad/s`                                              |
-| Context          | `powerPreference: "low-power"`                           |
+| Context          | `powerPreference: "low-power"; antialias: false`         |
 
 Colours are resolved from the active CSS theme tokens at runtime; Cobe receives normalized RGB arrays.
 
@@ -61,4 +61,5 @@ Colours are resolved from the active CSS theme tokens at runtime; Cobe receives 
 - Caps device pixel ratio at 2.
 - Pauses on `visibilitychange`.
 - Uses `ResizeObserver` so resizing only updates the canvas buffer when needed.
+- Releases the WebGL context and canvas buffers on unmount so disabling Globe reclaims GPU memory.
 - Widget is disabled by default.
