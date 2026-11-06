@@ -56,7 +56,7 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 | Fonts                        | Doto + Google Sans Code + Noto Emoji — all SIL OFL 1.1, licenses bundled                                                      |
 | Colour palette usage         | Palettes are not copyrightable; these hex values are published openly by Nothing. Trademark risk applies to naming/logos only |
 | No Nothing icons/logos used  | All widget icons are generic or self-created                                                                                  |
-| Third-party globe library    | Cobe 2.0.1 — MIT, license notice included below                                                                               |
+| Third-party globe library    | Cobe 2.0.1 — MIT, notice bundled in `public/THIRD_PARTY_NOTICES.txt` and included below                                       |
 | Default background image     | Original generated dot-grid artwork (3840×2160)                                                                               |
 | Disclaimer                   | Present in README                                                                                                             |
 | App name "Nothing Wallpaper" | Personal use only — rename before any public distribution                                                                     |
