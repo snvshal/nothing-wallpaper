@@ -28,6 +28,7 @@ const WIDGET_IDS = [
   "digital",
   "calendar",
   "weather",
+  "globe",
   "ram",
   "wifi",
   "bluetooth",

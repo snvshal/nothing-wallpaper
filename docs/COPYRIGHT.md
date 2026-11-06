@@ -56,6 +56,7 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 | Fonts                        | Doto + Google Sans Code + Noto Emoji — all SIL OFL 1.1, licenses bundled                                                      |
 | Colour palette usage         | Palettes are not copyrightable; these hex values are published openly by Nothing. Trademark risk applies to naming/logos only |
 | No Nothing icons/logos used  | All widget icons are generic or self-created                                                                                  |
+| Third-party globe library    | Cobe 2.0.1 — MIT, license notice included below                                                                               |
 | Default background image     | Original generated dot-grid artwork (3840×2160)                                                                               |
 | Disclaimer                   | Present in README                                                                                                             |
 | App name "Nothing Wallpaper" | Personal use only — rename before any public distribution                                                                     |
@@ -65,6 +66,36 @@ Nothing explicitly states that the following are **copyright Nothing** and canno
 1. **Before public distribution** — rename the app and identifier away from the "Nothing" trademark (fine for personal use as-is)
 2. **Never bundle Nothing assets** — no icons, images, logos, or fonts from Nothing in the repository
 3. **Commercial use** — contact Nothing via [Press Contact](https://nothing.tech/pages/press-contact) or [Business Enquiry](https://nothing.tech/pages/business-enquiry) first
+
+## Third-Party Notices
+
+### Cobe
+
+The Globe widget uses [Cobe](https://github.com/shuding/cobe) 2.0.1, licensed under the MIT License:
+
+```text
+MIT License
+
+Copyright (c) 2021 Shu Ding
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+```
 
 ## Sources
 

@@ -7,6 +7,7 @@ export const WIDGET_UNIT_SIZES: Record<string, { w: number; h: number }> = {
   digital: { w: 9, h: 4 },
   calendar: { w: 9, h: 9 },
   weather: { w: 9, h: 9 },
+  globe: { w: 9, h: 9 },
   ram: { w: 9, h: 9 },
   wifi: { w: 9, h: 4 },
   bluetooth: { w: 4, h: 4 },
@@ -60,6 +61,7 @@ export const DEFAULT_POSITION_UNITS: Record<string, Position> = {
   calendar: { x: 1, y: 1 },
   clock: { x: 11, y: 1 },
   digital: { x: 31, y: 1 },
+  globe: { x: 41, y: 1 },
   weather: { x: 1, y: 44 },
   screentime: { x: 11, y: 44 },
   countdown: { x: 76, y: 1 },
@@ -101,12 +103,14 @@ export function defaultPositions(m: GridMetrics, screen?: Screen): Record<string
   const bottomY = Math.max(15, numRows - 1);
   const musicY = bottomY - 9;
   const quickControlsY = musicY - 1 - 4;
+  const globeY = numCols < 71 ? 11 : 1;
 
   const u = m.unit;
   return {
     calendar: { x: offsetX + 1 * u, y: offsetY + 1 * u },
     clock: { x: offsetX + 11 * u, y: offsetY + 1 * u },
     digital: { x: offsetX + 31 * u, y: offsetY + 1 * u },
+    globe: { x: offsetX + 41 * u, y: offsetY + globeY * u },
     weather: { x: offsetX + 1 * u, y: offsetY + musicY * u },
     screentime: { x: offsetX + 11 * u, y: offsetY + musicY * u },
     countdown: { x: offsetX + (rightX - 19) * u, y: offsetY + 1 * u },
